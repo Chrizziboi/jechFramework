@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jechFramework
+namespace jechFramework.Services
 {
-    internal interface Interface1
+    internal class WarehouseService
     {
-
     }
 }
