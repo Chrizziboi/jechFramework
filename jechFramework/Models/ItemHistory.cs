@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-namespace jechFramework.Interfaces
+namespace jechFramework.Models
 {
-    internal interface IWarehouseService
-
+    internal class ItemHistory
     {
-
     }
 }
