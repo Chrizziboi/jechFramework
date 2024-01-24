@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jechFramework.Models
+namespace jechFramework.Interfaces
 {
-    internal class Warehouse
+    internal interface IPalletService
     {
 
     }

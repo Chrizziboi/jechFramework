@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jechFramework.Models
+namespace jechFramework.Services
 {
-    internal class Warehouse
+    internal class PalletService
     {
-
     }
 }
