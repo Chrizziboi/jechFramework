@@ -18,7 +18,7 @@ namespace jechFramework.Models
         { get; private set; }
 
         public string description 
-        { get; private set; }
+        { get;  set; }
 
         public int weight
         { get; private set; }
@@ -27,28 +27,30 @@ namespace jechFramework.Models
         { get; private set; }
 
         public string storageType
-        { get; private set; }
+        { get; set; }
 
         public string location 
-        { get; private set; }
+        { get;  set; }
 
         public int quantity 
-        { get; private set; }
+        { get;  set; }
 
-        public Item(int internalId, string name, string type, string storageType) 
+        public Item(int internalId, string name, int weight, string type, string storageType) 
         {
             this.internalId = internalId;
             this.name = name;
+            this.weight = weight;
             this.type = type;
             this.storageType = storageType;
 
         }
-        public Item(int internalId, int externalId, string name, string description, string type, string storageType)
+        public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType)
         { 
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
             this.description = description;
+            this.weight = weight;
             this.type = type;
             this.storageType = storageType;
             
@@ -67,26 +69,29 @@ namespace jechFramework.Models
 
         }
 
-        public int getWeight()
-        {
-            this.weight = weight;
-            return weight;
-        }
-        public int getQuantity()
-        {
-            this.quantity = quantity;
-            return quantity;
-        }
+        //public int getWeight()
+        //{
+        //    this.weight = weight;
+        //    return weight;
+        //}
+        //public int getQuantity()
+        //{
+        //    this.quantity = quantity;
+        //    return quantity;
+        //}
 
         public int CalculateWeightForItem()
         {
-            int totalWeight = 0;
+            int totalWeight;
             {
-
                 totalWeight = weight * quantity;
                 return totalWeight;
-
+                
             }
+
         }
+
+
+
     }
 }

@@ -57,7 +57,7 @@
             foreach (var I in itemList)
             {
                 totalWeight += I.weight;
-                
+
             }
             return totalWeight;
         }

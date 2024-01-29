@@ -10,15 +10,23 @@ namespace jechFramework.Services
     internal class ItemService
     {
         private List<Item> itemList;
-        
-        public ItemService() 
-        {
-            itemList = new List<Item>();
-        }
+
+        //public ItemService()
+        //{
+        //    itemList = new List<Item>();
+        //
+        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+
+
 
         public void AddItem(Item item)
         { 
             itemList.Add(item);
+         
         }
 
         public void RemoveItem(Item item) 

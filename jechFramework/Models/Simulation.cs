@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace jechFramework.Interfaces
+namespace jechFramework.Models
 {
-    internal interface IPalletService
+    public class Simulation
     {
-        void CalculateWeightForPallet();
+        public Simulation() 
+        {
+
+
+        }
 
     }
 }
