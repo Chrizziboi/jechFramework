@@ -9,6 +9,10 @@ namespace jechFramework.Services
 {
     internal class ItemService
     {
+        /// <summary>
+        /// Funksjoner for Item.cs
+        /// </summary>
+        /// 
         private List<Item> itemList;
 
         //public ItemService()
@@ -22,7 +26,8 @@ namespace jechFramework.Services
         /// <param name="item"></param>
 
 
-
+        
+        
         public void AddItem(Item item)
         { 
             itemList.Add(item);

@@ -9,6 +9,9 @@ namespace jechFramework.Interfaces
 {
     internal interface IItemService 
     {
+        /// <summary>
+        /// Her er det interface for ItemService.cs
+        /// </summary>
         void CalculateWeightForItem();
 
         void AddItem();
