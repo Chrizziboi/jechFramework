@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using jechFramework.Models;
 
-namespace jechFramework.Models
+namespace jechFramework.Services
 {
-    internal class Warehouse
+    internal class PalletService
     {
-
+       
     }
 }

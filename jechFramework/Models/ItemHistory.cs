@@ -8,5 +8,7 @@ namespace jechFramework.Models
 {
     internal class ItemHistory
     {
+
+
     }
 }

@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
-    internal class Warehouse
+    public class Simulation
     {
+        public Simulation() 
+        {
+
+
+        }
 
     }
 }
