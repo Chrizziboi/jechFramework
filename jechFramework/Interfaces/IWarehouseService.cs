@@ -10,6 +10,6 @@ namespace jechFramework.Interfaces
     internal interface IWarehouseService
 
     {
-
+        // test
     }
 }
