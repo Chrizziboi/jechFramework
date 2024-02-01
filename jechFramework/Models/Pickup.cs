@@ -12,8 +12,8 @@ namespace jechFramework.Models
     /// </summary>
     public class Pickup
     {
-        public int Id { get; set; }
-        public int ItemId { get; set; }
+        public int PickupId { get; set; }
+        public int InternalId { get; set; }
         public DateTime ScheduledTime { get; set; }
     }
 
@@ -23,8 +23,8 @@ namespace jechFramework.Models
     /// </summary>
     public class RecurringPickup
     {
-        public int Id { get; set; }
-        public int ItemId { get; set; }
+        public int PickupId { get; set; }
+        public int InternalId { get; set; }
         public DateTime StartTime { get; set; }
         public RecurrencePattern RecurrencePattern { get; set; }
     }
