@@ -18,6 +18,9 @@
         public int palletWeight
         { get; private set; }
 
+        public string palletStorageType
+        { get; private set; }
+
         public string palletLocation
         { get; private set; }
 
@@ -51,16 +54,18 @@
         /// <param name="palletDescription"></param> beskrivelse for pallen.
         /// <param name="palletWeight"></param> Vekt for den gitte pallen. denne vekten pleier ikke å endre seg mye med tiden så hvis en pall med vareid 1 veier 750 så gjør den noe
         /// det i senere tid også.
+        /// <param name="palletStorageType"></param> storageType er for informasjon om hvilket type lager det burde/må stå på.
         /// <param name="palletLocation"></param> Location for lokasjon på pallen i lageret.
         /// <param name="palletQuantity"></param> Quantity for kvantitet av pallen. vurderes tatt vekk siden det opprettes en ny id for hver pall som blir
         /// opprettet.
         /// <param name="itemList"></param> En liste med varer som er på pallen, denne må vurderes videre om den faktisk trengs i senere utvikling
-        public Pallet(int internalPalletId, string palletName, string palletDescription, int palletWeight, string palletLocation, int palletQuantity, List<Item> itemList)
+        public Pallet(int internalPalletId, string palletName, string palletDescription, int palletWeight,string palletStorageType, string palletLocation, int palletQuantity, List<Item> itemList)
         {
             this.internalPalletId = internalPalletId;
             this.palletName = palletName;
             this.palletDescription = palletDescription;
             this.palletWeight = palletWeight;
+            this.palletStorageType = palletStorageType;
             this.palletLocation = palletLocation;
             this.palletQuantity = palletQuantity;
             this.itemList = itemList;
@@ -84,8 +89,5 @@
             }
             return totalWeight;
         }
-
-
-
     }
 }
