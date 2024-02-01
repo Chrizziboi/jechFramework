@@ -72,7 +72,7 @@ namespace jechFramework.Models
         /// <param name="name"></param> navn er for å kunne gi navn til en gitt vare.
         /// <param name="description"></param> description for å kunne gi en lett beskrivelse av vare og eventuelt ekstra informasjon.
         /// <param name="type"></param> type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.
-        /// <param name="storageType"></param> storageType er for informasjon om hvilket type lager det burde stå på.
+        /// <param name="storageType"></param> storageType er for informasjon om hvilket type lager det burde/må stå på.
         /// <param name="location"></param> Lcation er for å vise hvor i lageret det ligger.
         /// <param name="quantity"></param> Quantity er for hvor mange av den gitte varen det er på lager.
         public Item(int internalId, int externalId, string name, string description, string type, string storageType, string location, int quantity)
