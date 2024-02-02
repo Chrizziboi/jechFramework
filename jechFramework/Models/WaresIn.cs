@@ -12,9 +12,18 @@ namespace jechFramework.Models
     /// </summary>
     public class WaresIn
     {
-        public int OrderId { get; set; }
-        public int InternalId { get; set; }
-        public DateTime ScheduledTime { get; set; }
+        public int OrderId { get; set; } // Unik ordre-ID
+        public List<WareItem> Items { get; set; } // Liste over varer i ordren
+        public DateTime ScheduledTime { get; set; } // Planlagt tidspunkt for mottak
+        public Zone StorageZone { get; set; } // Referanse til lagerets sone
+        public TimeSpan ProcessingTime { get; set; } // Tidsforbruk fra mottak til plassering
+    }
+
+    public class WareItem
+    {
+        public int ExternalId { get; set; } // Ekstern ID fra 'Item'-klassen
+        public int InternalId { get; set; } // Intern ID fra 'Item'-klassen
+        // Du kan legge til flere egenskaper som er relevante for hver vare
     }
 
     /// <summary>
