@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Interfaces
 {
-    internal interface IDeliveryService
+    public interface IDeliveryService
     {
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Interfaces
 {
-    internal class IEmployeeService
+    public class IEmployeeService
     {
 
 

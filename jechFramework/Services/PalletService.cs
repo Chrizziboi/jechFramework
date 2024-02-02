@@ -9,6 +9,6 @@ namespace jechFramework.Services
 {
     internal class PalletService
     {
-       
+
     }
 }
