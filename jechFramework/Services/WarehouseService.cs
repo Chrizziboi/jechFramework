@@ -8,5 +8,7 @@ namespace jechFramework.Services
 {
     internal class WarehouseService
     {
+        public movePallet(int palletId, )
+  
     }
 }
