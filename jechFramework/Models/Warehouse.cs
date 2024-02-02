@@ -17,20 +17,54 @@ namespace jechFramework.Models
         public int warehouseCapacity { get; set; }
         public int warehousePalletShelfWidth { get; set; } = 80;
         public string warehouseType { get; set; } //kjølelager, fryselager osv
-        public string warehouseZone { get; set; } //for å kunne dele et lager inn i soner
+        public int warehouseZone { get; set; } //for å kunne dele et lager inn i soner
         public int warehouseHasEmployeeId { get; set; }
+
+        public List<Zone> zones;
+        public Warehouse() 
+        { 
+        }
         public Warehouse(string warehouseName, string warehouseDescription, string warehouseAddress, 
+            string warehouseCity, string warehouseCountry, int warehouseCapacity, List<Zone> zones)
+        {
+            this.warehouseName = warehouseName;
+            this.warehouseDescription = warehouseDescription;
+            this.warehouseAddress = warehouseAddress;
+            this.warehouseCity = warehouseCity;
+            this.warehouseCountry = warehouseCountry;
+            this.warehouseCapacity = warehouseCapacity;
+            this.zones = zones;
+        }public Warehouse(string warehouseName, string warehouseDescription, string warehouseAddress, 
             string warehouseCity, string warehouseCountry, int warehouseCapacity)
         {
             this.warehouseName = warehouseName;
             this.warehouseDescription = warehouseDescription;
             this.warehouseAddress = warehouseAddress;
-            this.warehouseCountry = warehouseCountry;
             this.warehouseCity = warehouseCity;
+            this.warehouseCountry = warehouseCountry;
             this.warehouseCapacity = warehouseCapacity;
         }
+
+        public Warehouse(string warehouseName, string warehouseAddress, string warehouseCity, 
+            string warehouseCountry, int warehouseCapacity)
+        { 
+            this.warehouseName = warehouseName;
+            this.warehouseAddress = warehouseAddress;
+            this.warehouseCity = warehouseCity;
+            this.warehouseCountry = warehouseCountry;
+            this.warehouseCapacity = warehouseCapacity; 
+        }        
+        public Warehouse(string warehouseName, string warehouseAddress, string warehouseCity, 
+            string warehouseCountry, int warehouseCapacity, List<Zone> zones)
+        { 
+            this.warehouseName = warehouseName;
+            this.warehouseAddress = warehouseAddress;
+            this.warehouseCity = warehouseCity;
+            this.warehouseCountry = warehouseCountry;
+            this.warehouseCapacity = warehouseCapacity;
+            this.zones = zones;
+        }
+
         
-
-
     }
 }
