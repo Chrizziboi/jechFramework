@@ -9,7 +9,7 @@ namespace jechFramework.Interfaces
     /// <summary>
     /// Interface for pall funksjoner
     /// </summary>
-    internal interface IPalletService
+    public interface IPalletService
     {
         void CalculateWeightForPallet();
 

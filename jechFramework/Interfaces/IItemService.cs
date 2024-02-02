@@ -7,7 +7,7 @@ using jechFramework.Models;
 
 namespace jechFramework.Interfaces
 {
-    internal interface IItemService 
+    public interface IItemService 
     {
         /// <summary>
         /// Her er det interface for ItemService.cs
@@ -18,8 +18,9 @@ namespace jechFramework.Interfaces
 
         void RemoveItem();
 
-        void UpdateWeightForItem();
-           
+        void FindHowManyItemsInItemList();
+
+
 
     }
 }

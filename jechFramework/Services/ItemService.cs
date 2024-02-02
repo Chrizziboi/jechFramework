@@ -35,25 +35,28 @@ namespace jechFramework.Services
         public void RemoveItem(Item item) 
         {
             itemList.Remove(item);
+
         }
 
-        public void MoveItemInWarehouse(Item item, Warehouse warehouse)
+
+        ///
+        /// public void MoveItemToDifferentZone(Item internalId, Zone zoneId)
+        /// {
+        ///     var internalId = Item.internalId;
+        ///     
+        /// }
+
+        public void MoveItemToLocation(String Location) 
         {
-            
+
         }
 
-        public void MoveItemFromWarehouse(Item item, Warehouse warehouse1, Warehouse warehouse2)
+
+        public void FindHowManyItemsInItemList(string itemname) 
         {
+            itemList.Count(item => item.name == itemname);
 
         }
-
-        public void MoveItemList() 
-        {
-            foreach (Item item in itemList) 
-            {  }
-        }
-
-
 
 
     }

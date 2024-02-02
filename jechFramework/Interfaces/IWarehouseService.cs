@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Interfaces
 {
-    internal interface IWarehouseService
+    public interface IWarehouseService
 
     {
       
