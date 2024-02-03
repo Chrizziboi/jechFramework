@@ -8,7 +8,6 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            IItemService itemService = new ItemService();
 
         }
     }
