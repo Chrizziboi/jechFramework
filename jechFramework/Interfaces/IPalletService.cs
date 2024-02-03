@@ -1,4 +1,5 @@
-﻿using System;
+﻿using jechFramework.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,9 @@ namespace jechFramework.Interfaces
     /// </summary>
     public interface IPalletService
     {
-        void CalculateWeightForPallet();
+        int CalculateWeightForPallet(int internalPalletId);
+
+        void MovePalletToLocation(int internalPalletId, string newLocation);
 
     }
 }

@@ -3,32 +3,32 @@
     internal class Pallet
     {
         /// <summary>
-        /// Pallet klassen er laget for nasse samlinger av en gitt Item for å kunne lagre paller av en vare
+        /// Pallet klassen er laget for masse-samlinger av en gitt Item for å kunne lagre paller av en vare
         /// som kommer inn, i stedet for å skrive 500 nye varer av prduktid 1 så kan man opprette en pall av produktid 1.
         /// </summary>
         public int internalPalletId  //item + pallet id
-        { get; private set; }
+        { get; set; }
 
-        public string palletName
-        { get; private set; }
+        public string? palletName
+        { get; set; }
 
-        public string palletDescription
-        { get; private set; }
+        public string? palletDescription
+        { get; set; }
 
         public int palletWeight
-        { get; private set; }
+        { get; set; }
 
         public string palletStorageType
-        { get; private set; }
+        { get; set; }
 
-        public string palletLocation
-        { get; private set; }
+        public string? palletLocation
+        { get; set; }
 
         public int palletQuantity
-        { get; private set; }
+        { get; set; }
 
         public List<Item> itemList 
-        { get; private set; }
+        { get; set; }
 
         private Pallet(int internalPalletId, string palletName)
         {
@@ -72,22 +72,6 @@
 
         }
 
-        /// <summary>
-        ///  en intern funksjon for å kunne kalkulere hvor mye en pall vil veie uten at man skulle trenge å veie hver pall.
-        ///  det er en forventing til hva slags pall som skal brukes, denne forventningen er satt til europaller som veier fra 20 til 25 kilo.
-        ///  det er derfor vi setter 25 før kalkulasjonen.
-        /// </summary>
-        /// <returns></returns>
-        public int CalculateWeightForPallet()
-        {
-            int totalWeight = 25;
-            foreach (var I in itemList)
-
-            {
-                totalWeight += I.weight;
-
-            }
-            return totalWeight;
-        }
+     
     }
 }
