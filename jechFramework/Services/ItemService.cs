@@ -1,4 +1,5 @@
-﻿using jechFramework.Models;
+﻿using jechFramework.Interfaces;
+using jechFramework.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,54 +8,52 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    internal class ItemService
+    internal class ItemService : IItemService //implementerer itemservice på interfacet IItemService
     {
         /// <summary>
         /// Funksjoner for Item.cs
         /// </summary>
         /// 
-        private List<Item> itemList;
-
-        //public ItemService()
-        //{
-        //    itemList = new List<Item>();
-        //
-        //}
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="item"></param>
-                
+        public ItemService()
+        {
+            itemList = new List<Item>();
         
-        public void AddItem(Item item)
-        { 
+        }
+
+        public List<Item> itemList;
+
+        public void AddItem(int internalId)
+        {
+            var item = itemList.FirstOrDefault(item => item.internalId == internalId);
             itemList.Add(item);
          
         }
 
-        public void RemoveItem(Item item) 
+        public void RemoveItem(int internalId) 
         {
+            var item = itemList.FirstOrDefault(item => item.internalId == internalId);
             itemList.Remove(item);
 
         }
 
 
-        ///
-        /// public void MoveItemToDifferentZone(Item internalId, Zone zoneId)
-        /// {
-        ///     var internalId = Item.internalId;
-        ///     
-        /// }
-
-        public void MoveItemToLocation(String Location) 
+        public void MoveItemToLocation(int internalId, string newLocation) 
         {
+            var item = itemList.FirstOrDefault(item => item.internalId == internalId);
+
+            if (internalId != null)
+            {
+                item.location = newLocation;
+                
+            }
 
         }
 
 
-        public void FindHowManyItemsInItemList(string itemname) 
+        public int FindHowManyItemsInItemList(int internalId) 
         {
-            itemList.Count(item => item.name == itemname);
+            itemList.Count(item => item.internalId == internalId);
+            return itemList.Count;
 
         }
 

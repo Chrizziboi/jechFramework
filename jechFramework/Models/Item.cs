@@ -15,13 +15,13 @@ namespace jechFramework.Models
         public int internalId 
         { get; set; }
 
-        public int externalId
+        public int? externalId
         { get; set; }
 
         public string name 
         { get; set; }
 
-        public string description 
+        public string? description 
         { get;  set; }
 
         public int weight
@@ -33,7 +33,7 @@ namespace jechFramework.Models
         public string storageType
         { get; set; }
 
-        public string location 
+        public string? location 
         { get;  set; }
 
         public int quantity 

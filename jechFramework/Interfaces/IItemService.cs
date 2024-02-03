@@ -12,15 +12,14 @@ namespace jechFramework.Interfaces
         /// <summary>
         /// Her er det interface for ItemService.cs
         /// </summary>
-        void CalculateWeightForItem();
 
-        void AddItem();
+        void AddItem(int internalId);
 
-        void RemoveItem();
+        void RemoveItem(int internalId);
 
-        void FindHowManyItemsInItemList();
+        void MoveItemToLocation(int internalId, string newLocation);
 
-
+        int FindHowManyItemsInItemList(int internalId);
 
     }
 }
