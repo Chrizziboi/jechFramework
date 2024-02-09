@@ -10,24 +10,34 @@ namespace jechFramework.Models
     /// Representerer en enkeltgangshenting av en vare fra lageret.
     /// Inneholder all nødvendig informasjon for å identifisere og planlegge hentingen.
     /// </summary>
-    public class waresOut
+    public class WaresOut
     {
-        public int DeliveryId { get; set; } // Unik utlevering-ID
-        public List<WareItem> Items { get; set; } // Liste over varer i utleveringen
-        public DateTime ScheduledTime { get; set; } // Planlagt tid for utlevering
-        public Zone storageZone { get; set; } // Referanse til lagerets sone
-        public TimeSpan ProcessingTime { get; set; } // Tidsforbruk fra plassering til utlevering
+        public int DeliveryId { get; set; }
+        // Unik utlevering-ID
+
+        public DateTime ScheduledTime { get; set; }
+        // Planlagt tid for utlevering
+        public Zone storageZone { get; set; }
+        // Referanse til lagerets sone
+        public TimeSpan ProcessingTime { get; set; }
+        // Tidsforbruk fra plassering til utlevering
+
+        public List<Item> itemList;
+        // Liste over varer i utleveringen
 
         public void RemoveItemFromWarehouse(int internalId)
         {
-            // Finn varen basert på internalId i Items-listen for varer i utleveringen
+            
             WareItem itemToRemove = Items.Find(item => item.InternalId == internalId);
+            // Finn varen basert på internalId i Items-listen for varer i utleveringen
 
-            // Sjekk om varen er funnet
+           
             if (itemToRemove != null)
+            // Sjekk om varen er funnet
             {
-                // Fjern varen fra listen
+                
                 Items.Remove(itemToRemove);
+                // Fjern varen fra listen
 
                 // Oppdater lagerets kvantitet eller gjør andre nødvendige endringer
                 // (avhengig av hvordan du har implementert lageret)
@@ -41,8 +51,10 @@ namespace jechFramework.Models
 
     public class WareItem
     {
-        public int ExternalId { get; set; } // Ekstern ID fra 'Item'-klassen
-        public int InternalId { get; set; } // Intern ID fra 'Item'-klassen
+        public int ExternalId { get; set; }
+        // Ekstern ID fra 'Item'-klassen
+        public int InternalId { get; set; }
+        // Intern ID fra 'Item'-klassen
     }
 
 
