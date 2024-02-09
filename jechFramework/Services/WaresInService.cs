@@ -2,6 +2,7 @@
 using jechFramework.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace jechFramework.Services
 {
@@ -17,8 +18,8 @@ namespace jechFramework.Services
         public void ScheduleWaresIn(WaresIn waresIn)
         {
             // Her kan du legge til logikk for å validere waresIn-detaljer.
+            // For eksempel, sjekk for gyldig Item og Zone.
             _scheduledWaresIns.Add(waresIn);
-            // Implementer funksjonalitet for å faktisk planlegge vareinnkomsten.
         }
 
         /// <summary>
@@ -27,9 +28,10 @@ namespace jechFramework.Services
         /// <param name="recurringOrder">Inneholder detaljer om den gjentagende vareinnkomsten som skal planlegges.</param>
         public void ScheduleRecurringOrder(RecurringOrder recurringOrder)
         {
-            // Her kan du legge til logikk for å validere recurringOrder-detaljer.
+            // Her kan vi legge til logikk for å validere recurringOrder-detaljer.
+            // For eksempel, sjekk for gyldige Items og deres Zone.
             _scheduledRecurringOrders.Add(recurringOrder);
-            // Implementer funksjonalitet for å håndtere gjentagende vareinnkomster.
         }
+
     }
 }

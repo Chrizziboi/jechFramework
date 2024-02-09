@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System;
+using System.Collections.Generic;
+
 namespace jechFramework.Models
 {
-    /// <summary>
-    /// Representerer en enkeltgangs innkomst av varer til lageret.
-    /// Inneholder all nødvendig informasjon for å identifisere og planlegge mottak av varer.
-    /// </summary>
     public class WaresIn
     {
         public int OrderId { get; set; } // Unik ordre-ID
@@ -32,10 +31,10 @@ namespace jechFramework.Models
     /// </summary>
     public class RecurringOrder
     {
-        public int OrderId { get; set; }
-        public int InternalId { get; set; }
-        public DateTime StartTime { get; set; }
-        public RecurrencePattern RecurrencePattern { get; set; }
+        public int OrderId { get; set; } // Unik ordre-ID
+        public List<WareItem> Items { get; set; } // Liste over varer i den gjentagende ordren
+        public DateTime StartTime { get; set; } // Starttidspunkt for den første gjentagelsen
+        public RecurrencePattern RecurrencePattern { get; set; } // Mønster for gjentakelse
     }
 
     /// <summary>
