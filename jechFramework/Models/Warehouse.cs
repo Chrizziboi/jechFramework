@@ -19,11 +19,14 @@ namespace jechFramework.Models
         public string warehouseCountry { get; set; }
         public int warehouseCapacity { get; set; }
         public int warehousePalletShelfWidth { get; set; } = 80;
-        public string warehouseType { get; set; } //kjølelager, fryselager osv
-        public int warehouseZone { get; set; } //for å kunne dele et lager inn i soner
+        public string warehouseType { get; set; }
+        //kjølelager, fryselager osv
+        public int warehouseZone { get; set; }
+        //for å kunne dele et lager inn i soner
         public int warehouseHasEmployeeId { get; set; }
 
         public List<Zone> zones;
+        
 
         public Warehouse() 
         { 

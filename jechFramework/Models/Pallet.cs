@@ -6,29 +6,23 @@
         /// Pallet klassen er laget for masse-samlinger av en gitt Item for å kunne lagre paller av en vare
         /// som kommer inn, i stedet for å skrive 500 nye varer av prduktid 1 så kan man opprette en pall av produktid 1.
         /// </summary>
-        public int internalPalletId  //item + pallet id
-        { get; set; }
+        public int internalPalletId { get; set; }
+        //item + pallet id
 
-        public string? palletName
-        { get; set; }
+        public string? palletName { get; set; }
 
-        public string? palletDescription
-        { get; set; }
+        public string? palletDescription { get; set; }
 
-        public int palletWeight
-        { get; set; }
+        public int palletWeight { get; set; }
 
-        public string palletStorageType
-        { get; set; }
+        public string palletStorageType { get; set; }
 
-        public string? palletLocation
-        { get; set; }
+        public string? palletLocation { get; set; }
 
-        public int palletQuantity
-        { get; set; }
+        public int palletQuantity { get; set; }
 
-        public List<Item> itemList 
-        { get; set; }
+        public List<Item> itemList { get; set; }
+
 
         private Pallet(int internalPalletId, string palletName)
         {

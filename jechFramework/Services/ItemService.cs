@@ -8,17 +8,19 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    internal class ItemService : IItemService //implementerer itemservice på interfacet IItemService
+    
+    internal class ItemService : IItemService
+    //implementerer itemservice på interfacet IItemService
     {
         /// <summary>
         /// Funksjoner for Item.cs
         /// </summary>
         /// 
-        public ItemService()
-        {
-            itemList = new List<Item>();
-        
-        }
+        // public ItemService()
+        // {
+        //     itemList = new List<Item>();
+        // 
+        // }
 
         public List<Item> itemList;
 
@@ -29,7 +31,8 @@ namespace jechFramework.Services
          
         }
 
-        public void RemoveItem(int internalId) 
+
+          public void RemoveItem(int internalId) 
         {
             var item = itemList.FirstOrDefault(item => item.internalId == internalId);
             itemList.Remove(item);
@@ -53,10 +56,10 @@ namespace jechFramework.Services
         public int FindHowManyItemsInItemList(int internalId) 
         {
             itemList.Count(item => item.internalId == internalId);
+
             return itemList.Count;
 
         }
-
 
     }
 }

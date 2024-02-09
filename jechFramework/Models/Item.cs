@@ -12,38 +12,30 @@ namespace jechFramework.Models
         /// Item klassen er laget for å kunne opprette gjenstander på lageret.
         /// </summary>
 
-        public int internalId 
-        { get; set; }
+        public int internalId { get; set; }
 
-        public int? externalId
-        { get; set; }
+        public int? externalId { get; set; }
 
-        public string name 
-        { get; set; }
+        public string name { get; set; }
 
-        public string? description 
-        { get;  set; }
+        public string? description { get; set; }
 
-        public int weight
-        { get; set; }
+        public int weight { get; set; }
 
-        public string type 
-        { get; set; }
+        public string type { get; set; }
 
-        public string storageType
-        { get; set; }
+        public string storageType { get; set; }
 
-        public string? location 
-        { get;  set; }
+        public string? location { get; set; }
 
-        public int quantity 
-        { get;  set; }
+        public int quantity { get; set; }
+
 
         /// <summary>
         /// det er laget konstruktører for å kunne opprette objekter av klassen item.
         /// </summary>
         /// 
-        public Item(int internalId, string name, int weight, string type, string storageType) 
+        public Item(int internalId, string name, int weight, string type, string storageType)
         {
             this.internalId = internalId;
             this.name = name;
@@ -53,7 +45,7 @@ namespace jechFramework.Models
 
         }
         public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType)
-        { 
+        {
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
@@ -61,7 +53,7 @@ namespace jechFramework.Models
             this.weight = weight;
             this.type = type;
             this.storageType = storageType;
-            
+
         }
 
         /// <summary>
@@ -76,7 +68,7 @@ namespace jechFramework.Models
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param> 
         /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param> 
         public Item(int internalId, int externalId, string name, string description, string type, string storageType, string location, int quantity)
-        { 
+        {
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
@@ -87,6 +79,6 @@ namespace jechFramework.Models
             this.quantity = quantity;
 
         }
-
+        
     }
 }
