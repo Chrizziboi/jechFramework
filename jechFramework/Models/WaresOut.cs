@@ -6,24 +6,65 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
-    public class WaresOut
+    /// <summary>
+    /// Representerer en enkeltgangshenting av en vare fra lageret.
+    /// Inneholder all nødvendig informasjon for å identifisere og planlegge hentingen.
+    /// </summary>
+    public class waresOut
     {
-        public int OrderId { get; set; }
-        public int InternalId { get; set; }
-        public DateTime ScheduledTime { get; set; }
+        public int DeliveryId { get; set; } // Unik utlevering-ID
+        public List<WareItem> Items { get; set; } // Liste over varer i utleveringen
+        public DateTime ScheduledTime { get; set; } // Planlagt tid for utlevering
+        public Zone storageZone { get; set; } // Referanse til lagerets sone
+        public TimeSpan ProcessingTime { get; set; } // Tidsforbruk fra plassering til utlevering
+
+        public void RemoveItemFromWarehouse(int internalId)
+        {
+            // Finn varen basert på internalId i Items-listen for varer i utleveringen
+            WareItem itemToRemove = Items.Find(item => item.InternalId == internalId);
+
+            // Sjekk om varen er funnet
+            if (itemToRemove != null)
+            {
+                // Fjern varen fra listen
+                Items.Remove(itemToRemove);
+
+                // Oppdater lagerets kvantitet eller gjør andre nødvendige endringer
+                // (avhengig av hvordan du har implementert lageret)
+            }
+            else
+            {
+                throw new ArgumentException($"Vare med InternalId {internalId} ble ikke funnet i utleveringen.");
+            }
+        }
     }
 
+    public class WareItem
+    {
+        public int ExternalId { get; set; } // Ekstern ID fra 'Item'-klassen
+        public int InternalId { get; set; } // Intern ID fra 'Item'-klassen
+    }
+
+
+
+    /// <summary>
+    /// Representerer en plan for gjentagende hentinger av varer fra lageret.
+    /// Inkluderer starttidspunkt og mønsteret for gjentakelse (f.eks., daglig eller ukentlig).
+    /// </summary>
     public class RecurringWaresOut
     {
-        public int OrderId { get; set; }
+        public int DeliveryId { get; set; }
         public int InternalId { get; set; }
         public DateTime StartTime { get; set; }
         public RecurrencePattern RecurrencePattern { get; set; }
     }
 
+    /// <summary>
+    /// Definerer ulike mønstre for gjentakelse av hentinger.
+    /// </summary>
     public enum RecurrencePattern
     {
-        Daily,
-        Weekly
+        Daily,   // Henting skjer hver dag.
+        Weekly   // Henting skjer ukentlig.
     }
 }
