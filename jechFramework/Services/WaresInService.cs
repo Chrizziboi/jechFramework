@@ -1,5 +1,5 @@
-﻿using jechFramework.Models;
-using jechFramework.Interfaces;
+﻿using jechFramework.Interfaces;
+using jechFramework.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,27 +11,45 @@ namespace jechFramework.Services
         private readonly List<WaresIn> _scheduledWaresIns = new List<WaresIn>();
         private readonly List<RecurringOrder> _scheduledRecurringOrders = new List<RecurringOrder>();
 
-        /// <summary>
-        /// Planlegger en enkeltgangs innkomst av varer til lageret.
-        /// </summary>
-        /// <param name="waresIn">Inneholder detaljer om vareinnkomsten som skal planlegges.</param>
         public void ScheduleWaresIn(WaresIn waresIn)
         {
-            // Her kan du legge til logikk for å validere waresIn-detaljer.
-            // For eksempel, sjekk for gyldig Item og Zone.
+            if (waresIn == null) throw new ArgumentNullException(nameof(waresIn));
+            if (_scheduledWaresIns.Any(wi => wi.OrderId == waresIn.OrderId))
+                throw new InvalidOperationException($"A WaresIn with OrderId {waresIn.OrderId} is already scheduled.");
             _scheduledWaresIns.Add(waresIn);
         }
 
-        /// <summary>
-        /// Planlegger gjentagende innkomster av varer til lageret basert på et definert mønster (f.eks. daglig eller ukentlig).
-        /// </summary>
-        /// <param name="recurringOrder">Inneholder detaljer om den gjentagende vareinnkomsten som skal planlegges.</param>
         public void ScheduleRecurringOrder(RecurringOrder recurringOrder)
         {
-            // Her kan vi legge til logikk for å validere recurringOrder-detaljer.
-            // For eksempel, sjekk for gyldige Items og deres Zone.
+            if (recurringOrder == null) throw new ArgumentNullException(nameof(recurringOrder));
             _scheduledRecurringOrders.Add(recurringOrder);
         }
 
+        public void UpdateWaresIn(WaresIn waresIn)
+        {
+            var existingWaresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.OrderId == waresIn.OrderId);
+            if (existingWaresIn == null) throw new InvalidOperationException("WaresIn not found.");
+            _scheduledWaresIns.Remove(existingWaresIn);
+            _scheduledWaresIns.Add(waresIn);
+        }
+
+        public WaresIn GetWaresIn(int orderId)
+        {
+            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.OrderId == orderId);
+            if (waresIn == null) throw new InvalidOperationException("WaresIn not found.");
+            return waresIn;
+        }
+
+        public void DeleteWaresIn(int orderId)
+        {
+            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.OrderId == orderId);
+            if (waresIn == null) throw new InvalidOperationException("WaresIn not found.");
+            _scheduledWaresIns.Remove(waresIn);
+        }
+
+        public IEnumerable<WaresIn> GetAllScheduledWaresIn()
+        {
+            return _scheduledWaresIns.AsReadOnly();
+        }
     }
 }

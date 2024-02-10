@@ -22,43 +22,53 @@ namespace jechFramework.Services
         // 
         // }
 
-        public List<Item> itemList;
+        private static readonly List<Item> _itemList = new List<Item>();
 
-        public void AddItem(int internalId)
+        public void AddItem(Item item)
         {
-            var item = itemList.FirstOrDefault(item => item.internalId == internalId);
-            itemList.Add(item);
-         
-        }
-
-
-          public void RemoveItem(int internalId) 
-        {
-            var item = itemList.FirstOrDefault(item => item.internalId == internalId);
-            itemList.Remove(item);
-
-        }
-
-
-        public void MoveItemToLocation(int internalId, string newLocation) 
-        {
-            var item = itemList.FirstOrDefault(item => item.internalId == internalId);
-
-            if (internalId != null)
+            if (item == null)
             {
-                item.location = newLocation;
-                
+                throw new ArgumentNullException(nameof(item), "Item cannot be null");
             }
-
+            if (!_itemList.Any(i => i.InternalId == item.InternalId))
+            {
+                _itemList.Add(item);
+            }
+            else
+            {
+                throw new InvalidOperationException("Item with the same internal ID already exists.");
+            }
         }
 
-
-        public int FindHowManyItemsInItemList(int internalId) 
+        public void RemoveItem(int internalId)
         {
-            itemList.Count(item => item.internalId == internalId);
+            var item = _itemList.FirstOrDefault(i => i.InternalId == internalId);
+            if (item != null)
+            {
+                _itemList.Remove(item);
+            }
+            else
+            {
+                throw new InvalidOperationException("Item not found.");
+            }
+        }
 
-            return itemList.Count;
+        public void MoveItemToLocation(int internalId, string newLocation)
+        {
+            var item = _itemList.FirstOrDefault(i => i.InternalId == internalId);
+            if (item != null)
+            {
+                item.Location = newLocation;
+            }
+            else
+            {
+                throw new InvalidOperationException("Item not found.");
+            }
+        }
 
+        public int FindHowManyItems(int internalId)
+        {
+            return _itemList.Count(i => i.InternalId == internalId);
         }
 
     }
