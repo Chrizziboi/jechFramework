@@ -30,7 +30,7 @@ namespace jechFramework.Services
             {
                 throw new ArgumentNullException(nameof(item), "Item cannot be null");
             }
-            if (!_itemList.Any(i => i.InternalId == item.InternalId))
+            if (!_itemList.Any(i => i.internalId == item.internalId))
             {
                 _itemList.Add(item);
             }
@@ -42,7 +42,7 @@ namespace jechFramework.Services
 
         public void RemoveItem(int internalId)
         {
-            var item = _itemList.FirstOrDefault(i => i.InternalId == internalId);
+            var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
                 _itemList.Remove(item);
@@ -55,20 +55,15 @@ namespace jechFramework.Services
 
         public void MoveItemToLocation(int internalId, string newLocation)
         {
-            var item = _itemList.FirstOrDefault(i => i.InternalId == internalId);
+            var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
-                item.Location = newLocation;
+                item.location = newLocation;
             }
             else
             {
                 throw new InvalidOperationException("Item not found.");
             }
-        }
-
-        public int FindHowManyItems(int internalId)
-        {
-            return _itemList.Count(i => i.InternalId == internalId);
         }
 
     }

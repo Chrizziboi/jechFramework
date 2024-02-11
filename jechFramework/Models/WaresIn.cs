@@ -8,15 +8,16 @@ using jechFramework.Services;
 
 namespace jechFramework.Models
 {
-    public class WaresIn
+    public class WaresIn 
+
     {
-        public int OrderId { get; set; } 
+        public int orderId { get; set; } 
         // Unik ordre-ID
-        public DateTime ScheduledTime { get; set; } 
+        public DateTime scheduledTime { get; set; } 
         // Planlagt tidspunkt for mottak
-        public Zone StorageZone { get; set; } 
+        public Zone storageZone { get; set; } 
         // Referanse til lagerets sone
-        public TimeSpan ProcessingTime { get; set; } 
+        public TimeSpan processingTime { get; set; } 
         // Tidsforbruk fra mottak til plassering
 
         private readonly ItemService _itemService;

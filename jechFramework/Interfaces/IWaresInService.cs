@@ -1,4 +1,6 @@
-﻿namespace jechFramework.Interfaces
+﻿using jechFramework.Models;
+
+namespace jechFramework.Interfaces
 {
     public interface IWaresInService
     {

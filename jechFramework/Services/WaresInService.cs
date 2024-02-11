@@ -14,8 +14,8 @@ namespace jechFramework.Services
         public void ScheduleWaresIn(WaresIn waresIn)
         {
             if (waresIn == null) throw new ArgumentNullException(nameof(waresIn));
-            if (_scheduledWaresIns.Any(wi => wi.OrderId == waresIn.OrderId))
-                throw new InvalidOperationException($"A WaresIn with OrderId {waresIn.OrderId} is already scheduled.");
+            if (_scheduledWaresIns.Any(wi => wi.orderId == waresIn.orderId))
+                throw new InvalidOperationException($"A WaresIn with OrderId {waresIn.orderId} is already scheduled.");
             _scheduledWaresIns.Add(waresIn);
         }
 
@@ -27,7 +27,7 @@ namespace jechFramework.Services
 
         public void UpdateWaresIn(WaresIn waresIn)
         {
-            var existingWaresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.OrderId == waresIn.OrderId);
+            var existingWaresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == waresIn.orderId);
             if (existingWaresIn == null) throw new InvalidOperationException("WaresIn not found.");
             _scheduledWaresIns.Remove(existingWaresIn);
             _scheduledWaresIns.Add(waresIn);
@@ -35,14 +35,14 @@ namespace jechFramework.Services
 
         public WaresIn GetWaresIn(int orderId)
         {
-            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.OrderId == orderId);
+            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
             if (waresIn == null) throw new InvalidOperationException("WaresIn not found.");
             return waresIn;
         }
 
         public void DeleteWaresIn(int orderId)
         {
-            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.OrderId == orderId);
+            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
             if (waresIn == null) throw new InvalidOperationException("WaresIn not found.");
             _scheduledWaresIns.Remove(waresIn);
         }

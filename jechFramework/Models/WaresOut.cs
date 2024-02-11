@@ -8,13 +8,13 @@ namespace jechFramework.Models
 {
     public class WaresOut
     {
-        public int DeliveryId { get; set; } 
+        public int deliveryId { get; set; } 
         // Unik utlevering-ID
-        public DateTime ScheduledTime { get; set; } 
+        public DateTime scheduledTime { get; set; } 
         // Planlagt tid for utlevering
-        public Zone StorageZone { get; set; } 
+        public Zone storageZone { get; set; } 
         // Referanse til lagerets sone
-        public TimeSpan ProcessingTime { get; set; } 
+        public TimeSpan processingTime { get; set; } 
         // Tidsforbruk fra plassering til utlevering
         private ItemService _itemService; 
         // Tjeneste for håndtering av varer
@@ -34,9 +34,9 @@ namespace jechFramework.Models
 
     public class WareItem
     {
-        public int ExternalId { get; set; }
+        public int externalId { get; set; }
         // Ekstern ID fra 'Item'-klassen
-        public int InternalId { get; set; }
+        public int internalId { get; set; }
         // Intern ID fra 'Item'-klassen
     }
 
@@ -48,10 +48,10 @@ namespace jechFramework.Models
     /// </summary>
     public class RecurringWaresOut
     {
-        public int DeliveryId { get; set; }
-        public int InternalId { get; set; }
-        public DateTime StartTime { get; set; }
-        public RecurrencePattern RecurrencePattern { get; set; }
+        public int deliveryId { get; set; }
+        public int internalId { get; set; }
+        public DateTime startTime { get; set; }
+        public RecurrencePattern recurrencePattern { get; set; }
     }
 
     /// <summary>
