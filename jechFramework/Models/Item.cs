@@ -30,18 +30,24 @@ namespace jechFramework.Models
 
         public int quantity { get; set; }
 
+        public DateTime dateTime { get; set; }
+       
+
+
+
 
         /// <summary>
         /// det er laget konstruktører for å kunne opprette objekter av klassen item.
         /// </summary>
         /// 
-        public Item(int internalId, string name, int weight, string type, string storageType)
+        public Item(int internalId, string name, int weight, string type, string storageType, DateTime dateTime)
         {
             this.internalId = internalId;
             this.name = name;
             this.weight = weight;
             this.type = type;
             this.storageType = storageType;
+            this.dateTime = dateTime;
 
         }
         public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType)
@@ -66,8 +72,9 @@ namespace jechFramework.Models
         /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param> 
         /// <param name="storageType">storageType er for informasjon om hvilket type lager det burde/må stå på.</param> 
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param> 
-        /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param> 
-        public Item(int internalId, int externalId, string name, string description, string type, string storageType, string location, int quantity)
+        /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param>
+        /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
+        public Item(int internalId, int externalId, string name, string description, string type, string storageType, string location, int quantity, DateTime dateTime)
         {
             this.internalId = internalId;
             this.externalId = externalId;
@@ -77,6 +84,7 @@ namespace jechFramework.Models
             this.storageType = storageType;
             this.location = location;
             this.quantity = quantity;
+            this.dateTime = DateTime.Now;
 
         }
         

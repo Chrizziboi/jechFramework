@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Models\NewFile1.txt" />
+  </ItemGroup>
+
 </Project>

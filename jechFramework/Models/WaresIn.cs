@@ -3,58 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using jechFramework.Interfaces;
 using jechFramework.Models;
 using jechFramework.Services;
 
+
 namespace jechFramework.Models
 {
-    public class WaresIn 
-
+    internal class WaresIn
     {
-        public int orderId { get; set; } 
-        // Unik ordre-ID
-        public DateTime scheduledTime { get; set; } 
-        // Planlagt tidspunkt for mottak
-        public Zone storageZone { get; set; } 
-        // Referanse til lagerets sone
-        public TimeSpan processingTime { get; set; } 
-        // Tidsforbruk fra mottak til plassering
+        public int orderId { get; set; } // Unik ordre-ID
+        public DateTime scheduledTime { get; set; } // Planlagt tidspunkt for mottak
+        public Zone storageZone { get; set; } // Referanse til lagerets sone
+        public TimeSpan processingTime { get; set; } // Tidsforbruk fra mottak til plassering
+        public List<Item> Items { get; set; } // Liste over varer i innkomsten
 
-        private readonly ItemService _itemService;
-
-        public WaresIn(ItemService itemService)
+        // Enkel konstruktør
+        public WaresIn()
         {
-            _itemService = itemService ?? throw new ArgumentNullException(nameof(itemService), "ItemService cannot be null");
+            Items = new List<Item>();
         }
 
-        // Metode for å legge til en vare i ItemService sin liste
-        public void AddItem(Item item)
+        // Konstruktør med parameter
+        public WaresIn(int orderId, DateTime scheduledTime, Zone storageZone, TimeSpan processingTime)
         {
-            _itemService.AddItem(item);
-        }
-    }
-
-    public class RecurringOrder
-    {
-        public int OrderId { get; set; } 
-        // Unik ordre-ID
-        public List<Item> Items { get; set; } 
-        // Liste over varer i den gjentagende ordren
-        public DateTime StartTime { get; set; } 
-        // Starttidspunkt for den første gjentagelsen
-        public RecurrencePattern RecurrencePattern { get; set; } 
-        // Mønster for gjentakelse
-
-        public RecurringOrder()
-        {
-            Items = new List<Item>(); // Initialiser listen for å unngå NullReferenceException
+            orderId = orderId;
+            scheduledTime = scheduledTime;
+            storageZone = storageZone;
+            processingTime = processingTime;
+            Items = new List<Item>();
         }
 
-    }
-
-    public enum RecurrencePattern
-    {
-        Daily,   // Mottak skjer hver dag.
-        Weekly   // Mottak skjer ukentlig.
+        // Eventuelt andre konstruktører som initialiserer forskjellige kombinasjoner av datafeltene
     }
 }
