@@ -14,26 +14,22 @@ namespace jechFramework.Models
     {
         public int orderId { get; set; } // Unik ordre-ID
         public DateTime scheduledTime { get; set; } // Planlagt tidspunkt for mottak
-        public Zone storageZone { get; set; } // Referanse til lagerets sone
+        public string location { get; set; } // Plassering av de innkommende varene
         public TimeSpan processingTime { get; set; } // Tidsforbruk fra mottak til plassering
-        public List<Item> Items { get; set; } // Liste over varer i innkomsten
+        public List<Item> incomingItems { get; set; } // Liste over innkommende varer
 
-        // Enkel konstruktør
         public WaresIn()
         {
-            Items = new List<Item>();
+            incomingItems = new List<Item>();
         }
 
-        // Konstruktør med parameter
-        public WaresIn(int orderId, DateTime scheduledTime, Zone storageZone, TimeSpan processingTime)
+        public WaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
         {
-            orderId = orderId;
-            scheduledTime = scheduledTime;
-            storageZone = storageZone;
-            processingTime = processingTime;
-            Items = new List<Item>();
+            this.orderId = orderId;
+            this.scheduledTime = scheduledTime;
+            this.location = location;
+            this.processingTime = processingTime;
+            this.incomingItems = incomingItems ?? new List<Item>(); // Sikre at incomingItems ikke er null
         }
-
-        // Eventuelt andre konstruktører som initialiserer forskjellige kombinasjoner av datafeltene
     }
 }

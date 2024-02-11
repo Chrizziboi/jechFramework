@@ -6,44 +6,62 @@ using System.Linq;
 
 namespace jechFramework.Services
 {
-    public class WaresInService : IWaresInService
+    internal class WaresInService : IWaresInService
     {
         private readonly List<WaresIn> _scheduledWaresIns = new List<WaresIn>();
-        private readonly List<RecurringOrder> _scheduledRecurringOrders = new List<RecurringOrder>();
 
-        public void ScheduleWaresIn(WaresIn waresIn)
+        public void ScheduleWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
         {
-            if (waresIn == null) throw new ArgumentNullException(nameof(waresIn));
-            if (_scheduledWaresIns.Any(wi => wi.orderId == waresIn.orderId))
-                throw new InvalidOperationException($"A WaresIn with OrderId {waresIn.orderId} is already scheduled.");
-            _scheduledWaresIns.Add(waresIn);
+            if (_scheduledWaresIns.Any(wi => wi.orderId == orderId))
+            {
+                throw new InvalidOperationException($"A WaresIn with OrderId {orderId} is already scheduled.");
+            }
+
+            var newWaresIn = new WaresIn
+            {
+                orderId = orderId,
+                scheduledTime = scheduledTime,
+                location = location,
+                processingTime = processingTime,
+                incomingItems = incomingItems
+            };
+
+            _scheduledWaresIns.Add(newWaresIn);
         }
 
-        public void ScheduleRecurringOrder(RecurringOrder recurringOrder)
+        public void UpdateWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
         {
-            if (recurringOrder == null) throw new ArgumentNullException(nameof(recurringOrder));
-            _scheduledRecurringOrders.Add(recurringOrder);
-        }
+            var existingWaresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
+            if (existingWaresIn == null)
+            {
+                throw new InvalidOperationException("WaresIn not found.");
+            }
 
-        public void UpdateWaresIn(WaresIn waresIn)
-        {
-            var existingWaresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == waresIn.orderId);
-            if (existingWaresIn == null) throw new InvalidOperationException("WaresIn not found.");
-            _scheduledWaresIns.Remove(existingWaresIn);
-            _scheduledWaresIns.Add(waresIn);
+            existingWaresIn.scheduledTime = scheduledTime;
+            existingWaresIn.location = location;
+            existingWaresIn.processingTime = processingTime;
+            existingWaresIn.incomingItems = incomingItems;
         }
 
         public WaresIn GetWaresIn(int orderId)
         {
             var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
-            if (waresIn == null) throw new InvalidOperationException("WaresIn not found.");
+            if (waresIn == null)
+            {
+                throw new InvalidOperationException("WaresIn not found.");
+            }
+
             return waresIn;
         }
 
         public void DeleteWaresIn(int orderId)
         {
             var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
-            if (waresIn == null) throw new InvalidOperationException("WaresIn not found.");
+            if (waresIn == null)
+            {
+                throw new InvalidOperationException("WaresIn not found.");
+            }
+
             _scheduledWaresIns.Remove(waresIn);
         }
 

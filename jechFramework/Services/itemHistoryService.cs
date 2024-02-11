@@ -9,10 +9,39 @@ namespace jechFramework.Services
 {
     internal class itemHistoryService
     {
-        public itemHistoryService() 
+
+        private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
+
+        itemHistoryService newItemHistoryService = new itemHistoryService();
+
+        public itemHistoryService()
         {
-            private static readonly List<ItemHistory> _itemList = new List<ItemHistory>();
 
         }
+
+        
+            
+
+        public static List<ItemHistory> GetAll()
+        {  
+            return itemHistoryList; 
+
+        }
+                
+        
+        public void GetItemHistoryById(int internalId)
+        {
+            List<ItemHistory> singleItemHistory = new List<ItemHistory> ();
+
+            foreach (ItemHistory itemHistory in itemHistoryList)
+                singleItemHistory.Add(itemHistory);
+            Console.WriteLine($"History of all Items with internalId:\n" +
+                              $" - {internalId}. \n" +
+                              $" - {singleItemHistory}. \n");
+
+        }
+
+    
+
     }
 }

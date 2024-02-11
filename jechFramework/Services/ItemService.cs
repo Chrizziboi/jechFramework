@@ -22,18 +22,18 @@ namespace jechFramework.Services
         // 
         // }
 
-        private static List<Item> _itemList = new List<Item>();
+        private static List<Item> warehouseItemList = new List<Item>();
             
         public void AddItem(int internalId)
         {
-            var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
+            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(internalId), "Item cannot be null");
             }
-            if (!_itemList.Any(i => i.internalId == internalId))
+            if (!warehouseItemList.Any(i => i.internalId == internalId))
             {
-                _itemList.Add(item);
+                warehouseItemList.Add(item);
             }
             else
             {
@@ -43,10 +43,10 @@ namespace jechFramework.Services
 
         public void RemoveItem(int internalId)
         {
-            var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
+            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
-                _itemList.Remove(item);
+                warehouseItemList.Remove(item);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace jechFramework.Services
 
         public void MoveItemToLocation(int internalId, string newLocation)
         {
-            var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
+            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
                 //string oldLocation = item.location
@@ -76,14 +76,14 @@ namespace jechFramework.Services
 
         public int FindHowManyItemsInItemList(int internalId)
         {
-            _itemList.Count(item => item.internalId == internalId);
-            return _itemList.Count;
+            warehouseItemList.Count(item => item.internalId == internalId);
+            return warehouseItemList.Count;
 
         }
         // Inne i ItemService-klassen
         public Item FindItemByInternalId(int internalId)
         {
-            return _itemList.FirstOrDefault(i => i.internalId == internalId);
+            return warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
         }
 
         //public UpdateItemMovement(int internalId, string n)
