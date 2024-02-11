@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    
+
     internal class ItemService : IItemService
     //implementerer itemservice på interfacet IItemService
     {
@@ -22,15 +22,16 @@ namespace jechFramework.Services
         // 
         // }
 
-        private static readonly List<Item> _itemList = new List<Item>();
-
-        public void AddItem(Item item)
+        private static List<Item> _itemList = new List<Item>();
+            
+        public void AddItem(int internalId)
         {
+            var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
             if (item == null)
             {
-                throw new ArgumentNullException(nameof(item), "Item cannot be null");
+                throw new ArgumentNullException(nameof(internalId), "Item cannot be null");
             }
-            if (!_itemList.Any(i => i.internalId == item.internalId))
+            if (!_itemList.Any(i => i.internalId == internalId))
             {
                 _itemList.Add(item);
             }
@@ -58,13 +59,37 @@ namespace jechFramework.Services
             var item = _itemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
+                //string oldLocation = item.location
                 item.location = newLocation;
+                item.dateTime = DateTime.Now;
+
+                var itemHistory = new ItemHistory(internalId, newLocation, item.dateTime);
+                //Lager historikk for items ved å opprette et objekt i ItemHistory ved endring av lokasjon.
+                Console.WriteLine($"Item has been successfully updated to: {item.location} at: {item.dateTime}");
+
             }
             else
             {
                 throw new InvalidOperationException("Item not found.");
             }
         }
+
+        public int FindHowManyItemsInItemList(int internalId)
+        {
+            _itemList.Count(item => item.internalId == internalId);
+            return _itemList.Count;
+
+        }
+        // Inne i ItemService-klassen
+        public Item FindItemByInternalId(int internalId)
+        {
+            return _itemList.FirstOrDefault(i => i.internalId == internalId);
+        }
+
+        //public UpdateItemMovement(int internalId, string n)
+        //{
+        //    
+        //}
 
     }
 }

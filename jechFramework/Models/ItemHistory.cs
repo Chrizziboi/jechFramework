@@ -6,8 +6,21 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
-    internal class ItemHistory
+    public class ItemHistory
     {
+
+       public int internalId { get; }
+       public string location { get; }
+       public  DateTime dateTime { get; }
+
+
+        public ItemHistory(int internalId, string location, DateTime dateTime) 
+        { 
+            this.internalId = internalId;
+            this.location = location;
+            this.dateTime = dateTime;
+        }
+
 
 
     }
