@@ -16,7 +16,7 @@ namespace jechFramework.Interfaces
         void UpdateWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<int> itemInternalIds);
 
         // Henter en spesifikk ordre basert på dens ID.
-        WaresIn GetWaresIn(int orderId);
+        void GetWaresIn(int orderId);
 
         // Sletter en spesifikk ordre basert på dens ID.
         void DeleteWaresIn(int orderId);

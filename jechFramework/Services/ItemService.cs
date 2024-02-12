@@ -83,7 +83,9 @@ namespace jechFramework.Services
         // Inne i ItemService-klassen
         public Item FindItemByInternalId(int internalId)
         {
+
             return warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+        
         }
 
         //public UpdateItemMovement(int internalId, string n)

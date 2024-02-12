@@ -31,10 +31,7 @@ namespace jechFramework.Models
         public int quantity { get; set; }
 
         public DateTime dateTime { get; set; }
-       
-
-
-
+            
 
         /// <summary>
         /// det er laget konstruktører for å kunne opprette objekter av klassen item.
@@ -50,6 +47,8 @@ namespace jechFramework.Models
             this.dateTime = dateTime;
 
         }
+
+
         public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType)
         {
             this.internalId = internalId;
@@ -61,6 +60,7 @@ namespace jechFramework.Models
             this.storageType = storageType;
 
         }
+
 
         /// <summary>
         /// 
@@ -88,5 +88,6 @@ namespace jechFramework.Models
 
         }
         
+
     }
 }

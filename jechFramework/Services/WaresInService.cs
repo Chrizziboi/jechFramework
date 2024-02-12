@@ -43,15 +43,13 @@ namespace jechFramework.Services
             existingWaresIn.incomingItems = incomingItems;
         }
 
-        public WaresIn GetWaresIn(int orderId)
+        public void GetWaresIn(int orderId)
         {
             var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
             if (waresIn == null)
             {
                 throw new InvalidOperationException("WaresIn not found.");
             }
-
-            return waresIn;
         }
 
         public void DeleteWaresIn(int orderId)

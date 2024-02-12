@@ -17,9 +17,7 @@ namespace jechFramework.Services
         public itemHistoryService()
         {
 
-        }
-
-        
+        }     
             
 
         public static List<ItemHistory> GetAll()
@@ -40,8 +38,7 @@ namespace jechFramework.Services
                               $" - {singleItemHistory}. \n");
 
         }
-
-    
+            
 
     }
 }

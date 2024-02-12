@@ -30,6 +30,8 @@
             this.palletName = palletName;
 
         }
+
+
         private Pallet(int internalPalletId, string palletName, string palletDescription, string palletLocation, List<Item> itemList) 
         {
             this.internalPalletId = internalPalletId;
@@ -39,6 +41,7 @@
             this.itemList = itemList;
 
         }
+
 
         /// <summary>
         /// Kontruktør for pallet.
@@ -66,6 +69,6 @@
 
         }
 
-     
+           
     }
 }

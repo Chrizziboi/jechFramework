@@ -12,5 +12,6 @@ namespace jechFramework.Interfaces
     {
         void ScheduleWaresOut(WaresOut waresOut);
         void ScheduleRecurringWaresOut(RecurringWaresOut recurringWaresOut);
+
     }
 }
