@@ -37,6 +37,10 @@ namespace jechFramework.Models
 
         }
 
+        public Item(int internalId)
+        {
+            this.internalId = internalId;
+        }
         public Item(int internalId, string location, DateTime dateTime)
         { 
             this.internalId = internalId;

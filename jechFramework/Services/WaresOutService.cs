@@ -17,12 +17,11 @@ namespace jechFramework.Services
             this.itemService = itemService;
         }
 
-        public WaresOutService()
-        {
-        }
 
         public void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
         {
+            if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
+
             // Check if a wares out with this orderId is already scheduled
             if (scheduledWaresOuts.Any(wo => wo.OrderId == orderId))
             {
@@ -45,6 +44,7 @@ namespace jechFramework.Services
                 itemService.RemoveItem(item.internalId); // Assuming there is a method to remove an item
             }
         }
+
     }
 }
 

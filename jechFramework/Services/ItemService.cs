@@ -45,18 +45,19 @@ namespace jechFramework.Services
 
         public void AddItem(int internalId)
         {
-            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
-            if (item == null)
+            // Sjekker om elementet allerede eksisterer i listen
+            var existingItem = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+
+            if (existingItem != null)
             {
-                throw new ArgumentNullException(nameof(internalId), "Item cannot be null");
-            }
-            if (!warehouseItemList.Any(i => i.internalId == internalId))
-            {
-                warehouseItemList.Add(item);
+                // Hvis elementet finnes, kast en feil
+                throw new InvalidOperationException("Item with the same internal ID already exists.");
             }
             else
             {
-                throw new InvalidOperationException("Item with the same internal ID already exists.");
+                // Hvis elementet ikke finnes, opprett et nytt Item objekt og legg det til i listen
+                var newItem = new Item { internalId = internalId };
+                warehouseItemList.Add(newItem);
             }
         }
 
