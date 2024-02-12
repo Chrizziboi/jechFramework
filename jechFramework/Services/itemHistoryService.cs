@@ -12,7 +12,7 @@ namespace jechFramework.Services
 
         private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
 
-        ItemHistoryService newItemHistoryService = new ItemHistoryService();
+        //ItemHistoryService newItemHistoryService = new ItemHistoryService();
 
         public ItemHistoryService()
         {

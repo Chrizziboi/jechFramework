@@ -17,6 +17,10 @@ namespace jechFramework.Services
             this.itemService = itemService;
         }
 
+        public WaresOutService()
+        {
+        }
+
         public void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
         {
             // Check if a wares out with this orderId is already scheduled

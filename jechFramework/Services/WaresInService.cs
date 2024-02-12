@@ -16,6 +16,10 @@ namespace jechFramework.Services
         {
             this.itemService = itemService;
         }
+        public WaresInService()
+        {
+            this.itemService = itemService;
+        }
 
         public void ScheduleWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
         {
