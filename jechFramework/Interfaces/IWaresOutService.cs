@@ -1,17 +1,12 @@
-﻿using System;
+﻿using jechFramework.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using jechFramework.Models;
 
 namespace jechFramework.Interfaces
 {
     public interface IWaresOutService
     {
-        void ScheduleWaresOut(WaresOut waresOut);
-        void ScheduleRecurringWaresOut(RecurringWaresOut recurringWaresOut);
-
+        // Methods expected to be implemented by the service for outgoing wares
+        void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems);
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    internal class WarehouseService
+    public class WarehouseService
     {
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.

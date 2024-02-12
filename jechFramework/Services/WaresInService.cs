@@ -1,71 +1,45 @@
-﻿using jechFramework.Interfaces;
-using jechFramework.Models;
+﻿using jechFramework.Models;
+using jechFramework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace jechFramework.Services
 {
-    internal class WaresInService : IWaresInService
+    public class WaresInService : IWaresInService
     {
-        private readonly List<WaresIn> _scheduledWaresIns = new List<WaresIn>();
+        private readonly List<WaresIn> scheduledWaresIns = new List<WaresIn>();
+        private readonly ItemService itemService; // Legger til en referanse til ItemService
+
+        // Konstruktør for å injisere ItemService
+        public WaresInService(ItemService itemService)
+        {
+            this.itemService = itemService;
+        }
 
         public void ScheduleWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
         {
-            if (_scheduledWaresIns.Any(wi => wi.orderId == orderId))
+            // Sjekker om det allerede finnes en planlagt vares inn med samme orderId
+            if (scheduledWaresIns.Any(wi => wi.orderId == orderId))
             {
-                throw new InvalidOperationException($"A WaresIn with OrderId {orderId} is already scheduled.");
+                throw new InvalidOperationException("A wares in with this orderId is already scheduled.");
             }
 
-            var newWaresIn = new WaresIn
+            var waresIn = new WaresIn
             {
                 orderId = orderId,
                 scheduledTime = scheduledTime,
                 location = location,
-                processingTime = processingTime,
-                incomingItems = incomingItems
+                Items = incomingItems // Setter inngående varer til WaresIn-objektet
             };
 
-            _scheduledWaresIns.Add(newWaresIn);
-        }
+            scheduledWaresIns.Add(waresIn);
 
-        public void UpdateWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
-        {
-            var existingWaresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
-            if (existingWaresIn == null)
+            // Legger til de nye varene i varehuset
+            foreach (var item in incomingItems)
             {
-                throw new InvalidOperationException("WaresIn not found.");
+                itemService.AddItem(item.internalId); // Antatt metode for å legge til en vare
             }
-
-            existingWaresIn.scheduledTime = scheduledTime;
-            existingWaresIn.location = location;
-            existingWaresIn.processingTime = processingTime;
-            existingWaresIn.incomingItems = incomingItems;
-        }
-
-        public void GetWaresIn(int orderId)
-        {
-            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
-            if (waresIn == null)
-            {
-                throw new InvalidOperationException("WaresIn not found.");
-            }
-        }
-
-        public void DeleteWaresIn(int orderId)
-        {
-            var waresIn = _scheduledWaresIns.FirstOrDefault(wi => wi.orderId == orderId);
-            if (waresIn == null)
-            {
-                throw new InvalidOperationException("WaresIn not found.");
-            }
-
-            _scheduledWaresIns.Remove(waresIn);
-        }
-
-        public IEnumerable<WaresIn> GetAllScheduledWaresIn()
-        {
-            return _scheduledWaresIns.AsReadOnly();
         }
     }
 }

@@ -18,10 +18,10 @@ namespace jechFramework.Models
         // ... eventuelle ekstra konstruktører og metoder ...
     }
 
-    internal enum RecurrencePattern
-    {
-        Daily,
-        Weekly,
-        // ... andre gjentakelsesmønstre om nødvendig ...
-    }
+   // internal enum RecurrencePattern
+   // {
+   //     Daily,
+   //     Weekly,
+   //     // ... andre gjentakelsesmønstre om nødvendig ...
+   // }
 }

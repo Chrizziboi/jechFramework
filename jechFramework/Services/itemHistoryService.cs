@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    internal class itemHistoryService
+    public class ItemHistoryService
     {
 
         private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
 
-        itemHistoryService newItemHistoryService = new itemHistoryService();
+        ItemHistoryService newItemHistoryService = new ItemHistoryService();
 
-        public itemHistoryService()
+        public ItemHistoryService()
         {
 
         }     

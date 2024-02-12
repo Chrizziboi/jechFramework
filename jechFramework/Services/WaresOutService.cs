@@ -1,24 +1,46 @@
 ﻿using jechFramework.Models;
 using jechFramework.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace jechFramework.Services
 {
     public class WaresOutService : IWaresOutService
     {
-        private readonly List<WaresOut> _scheduledWaresOuts = new List<WaresOut>();
-        private readonly List<RecurringWaresOut> _scheduledRecurringWaresOuts = new List<RecurringWaresOut>();
+        private readonly List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
+        private readonly ItemService itemService; // Assuming there is an ItemService to handle items in the warehouse
 
-        public void ScheduleWaresOut(WaresOut waresOut)
+        // Constructor to inject ItemService
+        public WaresOutService(ItemService itemService)
         {
-            _scheduledWaresOuts.Add(waresOut);
-            // Ytterligere logikk for planlegging av vareuttak
+            this.itemService = itemService;
         }
 
-        public void ScheduleRecurringWaresOut(RecurringWaresOut recurringWaresOut)
+        public void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
         {
-            _scheduledRecurringWaresOuts.Add(recurringWaresOut);
-            // Ytterligere logikk for planlegging av gjentagende vareuttak
+            // Check if a wares out with this orderId is already scheduled
+            if (scheduledWaresOuts.Any(wo => wo.OrderId == orderId))
+            {
+                throw new InvalidOperationException("A wares out with this orderId is already scheduled.");
+            }
+
+            var waresOut = new WaresOut
+            {
+                OrderId = orderId,
+                ScheduledTime = scheduledTime,
+                Destination = destination,
+                Items = outgoingItems // Set outgoing items to the WaresOut object
+            };
+
+            scheduledWaresOuts.Add(waresOut);
+
+            // Remove the outgoing items from the warehouse
+            foreach (var item in outgoingItems)
+            {
+                itemService.RemoveItem(item.internalId); // Assuming there is a method to remove an item
+            }
         }
     }
 }
+

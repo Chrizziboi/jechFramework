@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace jechFramework.Services
 {
 
-    internal class ItemService : IItemService
+    public class ItemService : IItemService
     //implementerer itemservice på interfacet IItemService
     {
         /// <summary>
@@ -23,7 +23,26 @@ namespace jechFramework.Services
         // }
 
         private static List<Item> warehouseItemList = new List<Item>();
-            
+
+        public void CreateItem(int internalId, string location, DateTime dateTime)
+        {
+            if (warehouseItemList.Any(i => i.internalId == internalId))
+            {
+                throw new InvalidOperationException("Item already exists.");
+            }
+
+            var newItem = new Item()
+            {   internalId = internalId,
+                location = location,
+                dateTime = DateTime.Now
+            };
+
+
+            warehouseItemList.Add(newItem);
+
+        }
+
+
         public void AddItem(int internalId)
         {
             var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
@@ -81,10 +100,10 @@ namespace jechFramework.Services
 
         }
         // Inne i ItemService-klassen
-        public Item FindItemByInternalId(int internalId)
+        public void FindItemByInternalId(int internalId)
         {
 
-            return warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
         
         }
 
