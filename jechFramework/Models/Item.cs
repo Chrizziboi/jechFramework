@@ -26,7 +26,7 @@ namespace jechFramework.Models
 
         public string storageType { get; set; }
 
-        public string? location { get; set; }
+        public string? location { get; set; } = "Unallocated";
 
         public int quantity { get; set; }
 

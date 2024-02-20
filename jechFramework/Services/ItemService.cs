@@ -21,6 +21,7 @@ namespace jechFramework.Services
         private static List<Item> warehouseItemList = new List<Item>();
         private static List<Item> itemList = new List<Item>();
 
+
         public void CreateItem(int internalId, int? externalId, string name, string type)
         {
             if (itemList.Any(i => i.internalId == internalId))
@@ -39,7 +40,7 @@ namespace jechFramework.Services
             itemList.Add(newItem);
         }
 
-        public void AddItem(int internalId)
+        public void AddItem(int internalId, string location, DateTime dateTime)
         {
             var itemToAdd = itemList.FirstOrDefault(i => i.internalId == internalId);
             if (itemToAdd == null)
@@ -52,8 +53,18 @@ namespace jechFramework.Services
                 throw new InvalidOperationException("Item with this internal ID already exists in the warehouse.");
             }
 
+            // Setter lokasjon og dato før du legger til i warehouseItemList
+            itemToAdd.location = location;
+            itemToAdd.dateTime = dateTime;
+
             warehouseItemList.Add(itemToAdd);
+
+            // Logger denne første plasseringen av varen
+            LogItemMovement(new ItemHistory(internalId, null, location, dateTime));
+
+            Console.WriteLine($"Item {internalId} has been added to the warehouse at location {location}.");
         }
+
 
         public void RemoveItem(int internalId)
         {
@@ -117,6 +128,12 @@ namespace jechFramework.Services
             warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
 
         }
+        public void ClearWarehouseData()
+        {
+            warehouseItemList.Clear(); // Tømmer listen over varer i varehuset
+            itemList.Clear();          // Eventuelt tøm andre lister eller ressurser om nødvendig
+        }
+
 
         public void AddItem(Item item)
         {

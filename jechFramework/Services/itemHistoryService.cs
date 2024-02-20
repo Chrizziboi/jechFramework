@@ -64,4 +64,13 @@ public class ItemHistoryService
 
         }
     }
+    public void ClearHistoryLog()
+    {
+        // Slett loggfilen hvis den eksisterer
+        if (File.Exists(logFilePath))
+        {
+            File.Delete(logFilePath);
+        }
+    }
+
 }
