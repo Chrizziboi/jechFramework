@@ -1,15 +1,10 @@
 ﻿using jechFramework.Interfaces;
 using jechFramework.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
 
-    internal class ItemService : IItemService
+    public class ItemService : IItemService
     //implementerer itemservice på interfacet IItemService
     {
         /// <summary>
@@ -23,21 +18,42 @@ namespace jechFramework.Services
         // }
 
         private static List<Item> warehouseItemList = new List<Item>();
-            
+
+        public void CreateItem(int internalId, string location, DateTime dateTime)
+        {
+            if (warehouseItemList.Any(i => i.internalId == internalId))
+            {
+                throw new InvalidOperationException("Item already exists.");
+            }
+
+            var newItem = new Item()
+            {
+                internalId = internalId,
+                location = location,
+                dateTime = DateTime.Now
+            };
+
+
+            warehouseItemList.Add(newItem);
+
+        }
+
+
         public void AddItem(int internalId)
         {
-            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
-            if (item == null)
+            // Sjekker om elementet allerede eksisterer i listen
+            var existingItem = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+
+            if (existingItem != null)
             {
-                throw new ArgumentNullException(nameof(internalId), "Item cannot be null");
-            }
-            if (!warehouseItemList.Any(i => i.internalId == internalId))
-            {
-                warehouseItemList.Add(item);
+                // Hvis elementet finnes, kast en feil
+                throw new InvalidOperationException("Item with the same internal ID already exists.");
             }
             else
             {
-                throw new InvalidOperationException("Item with the same internal ID already exists.");
+                // Hvis elementet ikke finnes, opprett et nytt Item objekt og legg det til i listen
+                var newItem = new Item { internalId = internalId };
+                warehouseItemList.Add(newItem);
             }
         }
 
@@ -81,9 +97,11 @@ namespace jechFramework.Services
 
         }
         // Inne i ItemService-klassen
-        public Item FindItemByInternalId(int internalId)
+        public void FindItemByInternalId(int internalId)
         {
-            return warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+
+            warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+
         }
 
         //public UpdateItemMovement(int internalId, string n)

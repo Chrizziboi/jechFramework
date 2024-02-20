@@ -13,7 +13,7 @@ namespace jechFramework.Interfaces
         /// Her er det interface for ItemService.cs
         /// </summary>
 
-        void AddItem(int internalId);
+        void AddItem(Item item);
 
         void RemoveItem(int internalId);
 

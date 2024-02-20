@@ -7,19 +7,17 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    internal class itemHistoryService
+    public class ItemHistoryService
     {
 
         private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
 
-        itemHistoryService newItemHistoryService = new itemHistoryService();
+        //ItemHistoryService newItemHistoryService = new ItemHistoryService();
 
-        public itemHistoryService()
+        public ItemHistoryService()
         {
 
-        }
-
-        
+        }     
             
 
         public static List<ItemHistory> GetAll()
@@ -31,17 +29,31 @@ namespace jechFramework.Services
         
         public void GetItemHistoryById(int internalId)
         {
-            List<ItemHistory> singleItemHistory = new List<ItemHistory> ();
+            List<ItemHistory> singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
 
-            foreach (ItemHistory itemHistory in itemHistoryList)
-                singleItemHistory.Add(itemHistory);
-            Console.WriteLine($"History of all Items with internalId:\n" +
-                              $" - {internalId}. \n" +
-                              $" - {singleItemHistory}. \n");
+            if (!singleItemHistory.Any())
+            {
+                Console.WriteLine("No history was found for the internalId you were looking for.");
+                return;
+            }
+
+            Console.WriteLine($"History for item with internalId: {internalId}");
+            foreach (ItemHistory itemHistory in singleItemHistory)
+            {
+                Console.WriteLine($"--------------\n" +
+                             $" - Location: {itemHistory.location}. \n" +
+                             $" - DateTime: {itemHistory.dateTime}. \n");
+
+            }
+
 
         }
 
-    
+       //public string PrintHistory(int internalId)
+       //{
+       //
+       //    Console.WriteLine($"");
+       //}
 
     }
 }

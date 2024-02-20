@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
-    internal class Item
+    public class Item
     {
         /// <summary>
         /// Item klassen er laget for å kunne opprette gjenstander på lageret.
@@ -31,9 +31,23 @@ namespace jechFramework.Models
         public int quantity { get; set; }
 
         public DateTime dateTime { get; set; }
-       
 
+        public Item()
+        {
 
+        }
+
+        public Item(int internalId)
+        {
+            this.internalId = internalId;
+        }
+        public Item(int internalId, string location, DateTime dateTime)
+        { 
+            this.internalId = internalId;
+            this.location = location;
+            this.dateTime = dateTime;
+
+        }
 
 
         /// <summary>
@@ -50,6 +64,8 @@ namespace jechFramework.Models
             this.dateTime = dateTime;
 
         }
+
+
         public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType)
         {
             this.internalId = internalId;
@@ -61,6 +77,7 @@ namespace jechFramework.Models
             this.storageType = storageType;
 
         }
+
 
         /// <summary>
         /// 
@@ -87,6 +104,7 @@ namespace jechFramework.Models
             this.dateTime = DateTime.Now;
 
         }
-        
+
+      
     }
 }

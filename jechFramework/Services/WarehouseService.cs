@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    internal class WarehouseService
+    public class WarehouseService
     {
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.
@@ -25,10 +25,10 @@ namespace jechFramework.Services
         /// <param name="zoneId">Dette er en Id for hver sone for å lett kunne holde orden på soner</param>
         /// <param name="listToRemove">Dette er listen over alle sonene i et varehus
         /// </param>
-        public void removeZone(int zoneId, List<Zone> listToRemove) 
-        {
-            listToRemove.RemoveAt(zoneId);
-        }
+        //public void removeZone(int zoneId, List<Zone> listToRemove) 
+        //{
+        //    listToRemove.RemoveAt(zoneId);
+        //}
         
         //Zone sone1 = new Zone(1, "Sone 1 - Tørrvare", 15);
         //Zone sone2 = new Zone(2, "Sone 2 - Tørrvare", 15);

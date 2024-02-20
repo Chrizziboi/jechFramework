@@ -8,15 +8,15 @@ using jechFramework.Models;
 
 namespace jechFramework.Services
 {
-    internal class PalletService : IPalletService
+    public class PalletService : IPalletService
     {
 
         public PalletService()
         {
-            List<Pallet> palletList = new List<Pallet>();
+            //List<Pallet> palletList = new List<Pallet>();
         }
 
-        public List<Pallet> palletList;
+        private static List<Pallet> palletList = new List<Pallet>();
 
         /// <summary>
         ///  en funksjon for å kunne kalkulere hvor mye en pall vil veie uten at man skulle trenge å veie hver pall.
@@ -28,7 +28,7 @@ namespace jechFramework.Services
         {
             int totalWeight = 25;
 
-            Pallet pallet = palletList.FirstOrDefault(pallet => pallet.internalPalletId == internalPalletId);
+            var pallet = palletList.FirstOrDefault(pallet => pallet.internalPalletId == internalPalletId);
 
             if (pallet != null)
             {
@@ -46,7 +46,7 @@ namespace jechFramework.Services
 
         public void MovePalletToLocation(int internalPalletId, string newLocation)
         {
-            Pallet pallet = palletList.FirstOrDefault(pallet => pallet.internalPalletId == internalPalletId);
+            var pallet = palletList.FirstOrDefault(pallet => pallet.internalPalletId == internalPalletId);
 
             if (internalPalletId != null)
             {

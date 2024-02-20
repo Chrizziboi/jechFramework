@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp2\ConsoleApp1.csproj", "{AE1B2999-B13A-4937-89BC-C65C576AF64E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation", "ConsoleApp2\Simulation.csproj", "{AE1B2999-B13A-4937-89BC-C65C576AF64E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jechFramework", "jechFramework\jechFramework.csproj", "{5C3427A6-B309-47F9-B3E6-49A200444B1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "jechFramework", "jechFramework\jechFramework.csproj", "{5C3427A6-B309-47F9-B3E6-49A200444B1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
