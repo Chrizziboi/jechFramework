@@ -1,26 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
     public class ItemHistory
     {
+        public int internalId { get; private set; }
+        public string oldLocation { get; private set; }
+        public string newLocation { get; private set; }
+        public DateTime dateTime { get; private set; }
 
-       public int internalId { get; }
-       public string location { get; }
-       public  DateTime dateTime { get; }
-
-
-        public ItemHistory(int internalId, string location, DateTime dateTime) 
-        { 
-            this.internalId = internalId;
-            this.location = location;
-            this.dateTime = dateTime;
+        // Beholder kun denne konstruktøren for å inkludere både gamle og nye lokasjoner
+        public ItemHistory(int internalId, string oldLocation, string newLocation, DateTime dateTime)
+        {
+            internalId = internalId;
+            oldLocation = oldLocation;
+            newLocation = newLocation;
+            dateTime = dateTime;
         }
-
-
     }
 }

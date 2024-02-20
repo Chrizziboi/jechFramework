@@ -38,6 +38,8 @@ namespace MyConsoleApp
 
             itemService.MoveItemToLocation(6, "H4");
             itemHistoryService.GetItemHistoryById(6);
+
+            Console.WriteLine("Welcome to JECH Warehouse Simulation");
         }
     }
 }

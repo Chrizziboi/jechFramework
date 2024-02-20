@@ -1,5 +1,6 @@
 ﻿using jechFramework.Interfaces;
 using jechFramework.Models;
+using System.IO;
 
 namespace jechFramework.Services
 {
@@ -75,19 +76,35 @@ namespace jechFramework.Services
             var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
-                //string oldLocation = item.location
-                item.location = newLocation;
-                item.dateTime = DateTime.Now;
+                var oldLocation = item.location; // Lagrer den gamle lokasjonen før oppdatering
+                item.location = newLocation; // Oppdaterer lokasjonen
+                item.dateTime = DateTime.Now; // Oppdaterer tidsstempel
 
-                var itemHistory = new ItemHistory(internalId, newLocation, item.dateTime);
-                //Lager historikk for items ved å opprette et objekt i ItemHistory ved endring av lokasjon.
-                Console.WriteLine($"Item has been successfully updated to: {item.location} at: {item.dateTime}");
+                // Oppretter en ny ItemHistory oppføring
+                var itemHistory = new ItemHistory(internalId, oldLocation, newLocation, item.dateTime);
 
+                // Anta at vi har en metode for å logge denne historikken til en fil
+                LogItemMovement(itemHistory);
+
+                Console.WriteLine($"Item {internalId} has been moved from {oldLocation} to {newLocation} at {item.dateTime}");
             }
             else
             {
                 throw new InvalidOperationException("Item not found.");
             }
+        }
+
+        // En hjelpemetode for å logge bevegelsen til en fil
+        private void LogItemMovement(ItemHistory itemHistory)
+        {
+            // Format for logginnlegget
+            var logEntry = $"{itemHistory.internalId},{itemHistory.oldLocation},{itemHistory.newLocation},{itemHistory.dateTime}\n";
+
+            // Spesifiser stien til loggfilen
+            var logFilePath = "ItemMovements.log";
+
+            // Skriver logginnlegget til filen
+            File.AppendAllText(logFilePath, logEntry);
         }
 
         public int FindHowManyItemsInItemList(int internalId)
@@ -102,6 +119,11 @@ namespace jechFramework.Services
 
             warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
 
+        }
+
+        public void AddItem(Item item)
+        {
+            throw new NotImplementedException();
         }
 
         //public UpdateItemMovement(int internalId, string n)
