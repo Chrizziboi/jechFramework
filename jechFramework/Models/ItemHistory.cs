@@ -12,10 +12,10 @@ namespace jechFramework.Models
         // Beholder kun denne konstruktøren for å inkludere både gamle og nye lokasjoner
         public ItemHistory(int internalId, string oldLocation, string newLocation, DateTime dateTime)
         {
-            internalId = internalId;
-            oldLocation = oldLocation;
-            newLocation = newLocation;
-            dateTime = dateTime;
+            this.internalId = internalId;
+            this.oldLocation = oldLocation;
+            this.newLocation = newLocation;
+            this.dateTime = dateTime;
         }
     }
 }

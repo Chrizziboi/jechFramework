@@ -54,12 +54,14 @@ public class ItemHistoryService
         }
 
         Console.WriteLine($"History for item with internalId: {internalId}");
+        
         foreach (ItemHistory itemHistory in singleItemHistory)
         {
             Console.WriteLine($"--------------\n" +
-                         $" - Old Location: {itemHistory.oldLocation}.\n" +
-                         $" - New Location: {itemHistory.newLocation}.\n" +
-                         $" - DateTime: {itemHistory.dateTime}.\n");
+                              $" - DateTime: {itemHistory.dateTime}.\n" +
+                              $" - Old Location: {itemHistory.oldLocation}.\n" +
+                              $" - New Location: {itemHistory.newLocation}.\n");
+
         }
     }
 }

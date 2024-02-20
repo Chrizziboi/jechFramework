@@ -19,43 +19,40 @@ namespace jechFramework.Services
         // }
 
         private static List<Item> warehouseItemList = new List<Item>();
+        private static List<Item> itemList = new List<Item>();
 
-        public void CreateItem(int internalId, string location, DateTime dateTime)
+        public void CreateItem(int internalId, int? externalId, string name, string type)
         {
-            if (warehouseItemList.Any(i => i.internalId == internalId))
+            if (itemList.Any(i => i.internalId == internalId))
             {
-                throw new InvalidOperationException("Item already exists.");
+                throw new InvalidOperationException("Item with this internal ID already exists in the creation list.");
             }
 
-            var newItem = new Item()
+            var newItem = new Item
             {
                 internalId = internalId,
-                location = location,
-                dateTime = DateTime.Now
+                externalId = externalId,
+                name = name,
+                type = type
             };
 
-
-            warehouseItemList.Add(newItem);
-
+            itemList.Add(newItem);
         }
-
 
         public void AddItem(int internalId)
         {
-            // Sjekker om elementet allerede eksisterer i listen
-            var existingItem = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            var itemToAdd = itemList.FirstOrDefault(i => i.internalId == internalId);
+            if (itemToAdd == null)
+            {
+                throw new InvalidOperationException("No item with this internal ID exists in the creation list.");
+            }
 
-            if (existingItem != null)
+            if (warehouseItemList.Any(i => i.internalId == internalId))
             {
-                // Hvis elementet finnes, kast en feil
-                throw new InvalidOperationException("Item with the same internal ID already exists.");
+                throw new InvalidOperationException("Item with this internal ID already exists in the warehouse.");
             }
-            else
-            {
-                // Hvis elementet ikke finnes, opprett et nytt Item objekt og legg det til i listen
-                var newItem = new Item { internalId = internalId };
-                warehouseItemList.Add(newItem);
-            }
+
+            warehouseItemList.Add(itemToAdd);
         }
 
         public void RemoveItem(int internalId)

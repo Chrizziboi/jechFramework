@@ -41,11 +41,19 @@ namespace jechFramework.Models
         {
             this.internalId = internalId;
         }
-        public Item(int internalId, string location, DateTime dateTime)
+        public Item(int internalId, string location)
         { 
             this.internalId = internalId;
             this.location = location;
-            this.dateTime = dateTime;
+            // this.dateTime = dateTime;
+        }
+
+        public Item(int internalId, int externalId, string name, string type)
+        { 
+            this.internalId = internalId;
+            this.externalId = externalId;
+            this.name = name;
+            this.type = type;
 
         }
 

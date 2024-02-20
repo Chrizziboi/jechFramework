@@ -41,6 +41,7 @@ namespace jechFramework.Services
             foreach (var item in incomingItems)
             {
                 itemService.AddItem(item); // Antatt metode for å legge til en vare
+                
             }
         }
     }
