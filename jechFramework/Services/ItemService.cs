@@ -1,10 +1,5 @@
 ﻿using jechFramework.Interfaces;
 using jechFramework.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
@@ -32,7 +27,8 @@ namespace jechFramework.Services
             }
 
             var newItem = new Item()
-            {   internalId = internalId,
+            {
+                internalId = internalId,
                 location = location,
                 dateTime = DateTime.Now
             };
@@ -105,7 +101,7 @@ namespace jechFramework.Services
         {
 
             warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
-        
+
         }
 
         //public UpdateItemMovement(int internalId, string n)
