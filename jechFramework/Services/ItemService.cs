@@ -86,18 +86,29 @@ namespace jechFramework.Services
         }
 
         public void RemoveItem(int internalId)
+        {
+            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            if (item != null)
             {
-                var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
-
-                if (item != null)
+                if (item.quantity > 1)
                 {
-                    warehouseItemList.Remove(item);
+                    // Reduserer antallet med én hvis det er mer enn én på lager.
+                    item.quantity -= 1;
                 }
                 else
                 {
-                    throw new InvalidOperationException("Item not found.");
+                    // Fjerner varen helt hvis dette var den siste.
+                    warehouseItemList.Remove(item);
+                    Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from the warehouse list.");
+                    // Her kan du implementere ytterligere logikk for varsling eller håndtering av utsolgte varer.
                 }
             }
+            else
+            {
+                throw new InvalidOperationException("Item not found.");
+            }
+        }
+
 
         public void MoveItemToLocation(int internalId, string newLocation)
             {
@@ -177,4 +188,3 @@ namespace jechFramework.Services
     }
        
 }
-

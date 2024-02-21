@@ -22,10 +22,18 @@ namespace jechFramework.Services
         {
             if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
 
-            // Check if a wares out with this orderId is already scheduled
             if (scheduledWaresOuts.Any(wo => wo.OrderId == orderId))
             {
                 throw new InvalidOperationException("A wares out with this orderId is already scheduled.");
+            }
+
+            // Sjekker lagerbeholdningen for hvert utgående vareelement
+            foreach (var item in outgoingItems)
+            {
+                if (itemService.FindHowManyItemsInItemList(item.internalId) <= 0)
+                {
+                    throw new InvalidOperationException($"Item with internal ID {item.internalId} is unavailable.");
+                }
             }
 
             var waresOut = new WaresOut
@@ -33,15 +41,15 @@ namespace jechFramework.Services
                 OrderId = orderId,
                 ScheduledTime = scheduledTime,
                 Destination = destination,
-                Items = outgoingItems // Set outgoing items to the WaresOut object
+                Items = outgoingItems
             };
 
             scheduledWaresOuts.Add(waresOut);
 
-            // Remove the outgoing items from the warehouse
+            // Fjerner de utgående varene fra lageret
             foreach (var item in outgoingItems)
             {
-                itemService.RemoveItem(item.internalId); // Assuming there is a method to remove an item
+                itemService.RemoveItem(item.internalId); // Antatt at dette reduserer antallet korrekt
             }
         }
 

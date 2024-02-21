@@ -29,6 +29,9 @@ namespace MyConsoleApp
             // Legger til nye varer i warehouseItemList
             itemService.AddItem(4, "H0", DateTime.Now);
             itemService.AddItem(6, "H0", DateTime.Now);
+            itemService.AddItem(5, "H0", DateTime.Now);
+            // itemService.AddItem(5, "H0", DateTime.Now);
+            // itemService.AddItem(4, "H0", DateTime.Now);
 
 
             List<Item> incomingItems = new List<Item>() {
@@ -58,8 +61,28 @@ namespace MyConsoleApp
             itemHistoryService.GetItemHistoryById(6);
             itemHistoryService.GetItemHistoryById(2);
             itemHistoryService.GetItemHistoryById(3);
-            itemHistoryService.GetItemHistoryById(4);
-            itemHistoryService.GetItemHistoryById(5);
+            // itemHistoryService.GetItemHistoryById(4);
+            // itemHistoryService.GetItemHistoryById(5);
+
+            // Planlegging av varer som skal sendes ut
+            List<Item> outgoingItems = new List<Item>() {
+            new Item() { internalId = 4, name = "Pizza", type = "Food" },
+            new Item() { internalId = 5, name = "Cola", type = "Soda" }
+            };
+
+            // Simulerer en ordre som behandles og varer som sendes ut
+            waresOutService.ScheduleWaresOut(2, DateTime.Now.AddHours(1), "Customer Location", outgoingItems);
+            try
+            {
+                List<Item> nonExistingItems = new List<Item>() {
+            new Item() { internalId = 999, name = "Non-Existing Item", type = "Ghost" }
+            };
+                waresOutService.ScheduleWaresOut(3, DateTime.Now.AddHours(2), "Ghost Location", nonExistingItems);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("Failed to schedule wares out for non-existing items: " + ex.Message);
+            }
 
             itemService.ClearWarehouseData();
             itemHistoryService.ClearHistoryLog(); // Dette vil slette loggfilen
