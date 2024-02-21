@@ -9,7 +9,7 @@ namespace jechFramework.Models
         public int orderId { get; set; }
         public DateTime scheduledTime { get; set; }
         public string location { get; set; }
-        public List<Item> Items { get; set; }
+        public List<Item> incomingItems { get; set; }
 
         // Konstruktør for WaresIn
         public WaresIn(int orderId, DateTime scheduledTime, string location, List<Item> items)
@@ -17,7 +17,7 @@ namespace jechFramework.Models
             this.orderId = orderId;
             this.scheduledTime = scheduledTime;
             this.location = location;
-            this.Items = items;
+            this.incomingItems = incomingItems;
         }
         public WaresIn()
         {

@@ -12,8 +12,10 @@ namespace jechFramework.Interfaces
         /// <summary>
         /// Her er det interface for ItemService.cs
         /// </summary>
+        /// 
+        void CreateItem(int internalId, int? externalId, string name, string type);
 
-        void AddItem(Item item);
+        void AddItem(int internalId, string location, DateTime dateTime);
 
         void RemoveItem(int internalId);
 
@@ -21,5 +23,8 @@ namespace jechFramework.Interfaces
 
         int FindHowManyItemsInItemList(int internalId);
 
+        void FindItemByInternalId(int internalId);
+
+ 
     }
 }

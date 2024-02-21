@@ -49,7 +49,7 @@ public class ItemHistoryService
 
         if (!singleItemHistory.Any())
         {
-            Console.WriteLine("No history was found for the internalId you were looking for.");
+            Console.WriteLine($"No history was found for the internalId that you were looking for.");
             return;
         }
 
