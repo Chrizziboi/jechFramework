@@ -17,15 +17,33 @@ namespace jechFramework.Services
             this.itemService = itemService;
         }
 
-
+        /// <summary>
+        /// Metoden ScheduleWaresOut er designet for å håndtere planlegging av varer som skal sendes ut fra en lokasjon til 
+        /// en bestemt destinasjon på et gitt tidspunkt. Den tar i bruk flere inputparametere for å utføre denne oppgaven og 
+        /// utfører flere sjekker for å sikre at prosessen kan utføres korrekt. 
+        /// </summary>
+        /// <param name="orderId">En unik identifikator for ordren som skal sendes ut.</param>
+        /// <param name="scheduledTime">Det spesifikke tidspunktet varene er planlagt å sendes ut på.</param>
+        /// <param name="destination">Destinasjonen hvor varene skal sendes.</param>
+        /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
         {
             if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
 
-            // Check if a wares out with this orderId is already scheduled
             if (scheduledWaresOuts.Any(wo => wo.OrderId == orderId))
             {
                 throw new InvalidOperationException("A wares out with this orderId is already scheduled.");
+            }
+
+            // Sjekker lagerbeholdningen for hvert utgående vareelement
+            foreach (var item in outgoingItems)
+            {
+                if (itemService.FindHowManyItemQuantityByInternalId(item.internalId) <= 0)
+                {
+                    throw new InvalidOperationException($"Item with internal ID {item.internalId} is unavailable.");
+                }
             }
 
             var waresOut = new WaresOut
@@ -33,15 +51,15 @@ namespace jechFramework.Services
                 OrderId = orderId,
                 ScheduledTime = scheduledTime,
                 Destination = destination,
-                Items = outgoingItems // Set outgoing items to the WaresOut object
+                Items = outgoingItems
             };
 
             scheduledWaresOuts.Add(waresOut);
 
-            // Remove the outgoing items from the warehouse
+            // Fjerner de utgående varene fra lageret
             foreach (var item in outgoingItems)
             {
-                itemService.RemoveItem(item.internalId); // Assuming there is a method to remove an item
+                itemService.RemoveItem(item.internalId); // Antatt at dette reduserer antallet korrekt
             }
         }
 

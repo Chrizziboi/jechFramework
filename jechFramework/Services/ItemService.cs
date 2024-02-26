@@ -4,27 +4,29 @@ using System.IO;
 
 namespace jechFramework.Services
 {
-
-    public class ItemService : IItemService
+    /// <summary>
+    /// Funksjoner for Item.cs
+    /// </summary>
+    public class ItemService
     //implementerer itemservice på interfacet IItemService
     {
-        /// <summary>
-        /// Funksjoner for Item.cs
-        /// </summary>
-        /// 
-        // public ItemService()
-        // {
-        //     itemList = new List<Item>();
-        // 
-        // }
 
         private static List<Item> warehouseItemList = new List<Item>();
-        private static List<Item> itemList = new List<Item>();
+        private static List<Item> createdItemsList = new List<Item>();
 
 
+        /// <summary>
+        ///  Funksjon for å opprette og legge til nye varer i createdItems listen, altså en liste over Items-gjenstander 
+        ///  som er opprettet i varehuset.
+        /// </summary>
+        /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <param name="externalId">externalId for tilfellene man skulle trenge leverandør sin produkt id.</param>
+        /// <param name="name">navn er for å kunne gi navn til en gitt vare.</param>
+        /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
+        /// <exception cref="InvalidOperationException">En exception for et tilfelle der en Item med samme internalId blir opprettet.</exception>
         public void CreateItem(int internalId, int? externalId, string name, string type)
         {
-            if (itemList.Any(i => i.internalId == internalId))
+            if (createdItemsList.Any(i => i.internalId == internalId))
             {
                 throw new InvalidOperationException("Item with this internal ID already exists in the creation list.");
             }
@@ -37,43 +39,84 @@ namespace jechFramework.Services
                 type = type
             };
 
-            itemList.Add(newItem);
+            createdItemsList.Add(newItem);
         }
 
+
+        /// <summary>
+        /// Funksjon for å legge en Item-gjenstand inn i lageret(wareHouseItemList), altså som legges inn i lageret sin liste.
+        /// </summary>
+        /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param>
+        /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
+        /// <exception cref="InvalidOperationException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
         public void AddItem(int internalId, string location, DateTime dateTime)
         {
-            var itemToAdd = itemList.FirstOrDefault(i => i.internalId == internalId);
-            if (itemToAdd == null)
+            var itemToAdd = createdItemsList.FirstOrDefault(i => i.internalId == internalId);
+           
+            try
             {
-                throw new InvalidOperationException("No item with this internal ID exists in the creation list.");
+                if (itemToAdd == null)
+                {
+                    throw new InvalidOperationException("No item with this internal ID exists in the creation list.");
+                }
+
             }
 
-            if (warehouseItemList.Any(i => i.internalId == internalId))
+            finally
             {
+                if (itemToAdd != null)
+                {
 
-                throw new InvalidOperationException("Item with this internal ID already exists in the warehouse.");
+                    if (warehouseItemList.Any(i => i.internalId == internalId))
+                    {
+                        //legger til 1 i kvantitet for item når når det kommer inn nye varer som allerede eksisterer
+                        itemToAdd.quantity += 1;
+                        Console.WriteLine($"Item with this internal ID already exists in the warehouse, " +
+                                          $"updated the {internalId} with a new quantity: {itemToAdd.quantity}");
+
+                    }
+
+
+                    // Setter lokasjon og dato før du legger til i warehouseItemList
+                    itemToAdd.location = location;
+                    itemToAdd.dateTime = dateTime;
+
+                    warehouseItemList.Add(itemToAdd);
+
+                    // Logger denne første plasseringen av varen
+                    LogItemMovement(new ItemHistory(internalId, null, location, dateTime));
+
+                    Console.WriteLine($"Item {internalId} has been added to the warehouse at location {location}.");
+
+                }
+
             }
-
-            // Setter lokasjon og dato før du legger til i warehouseItemList
-            
-            itemToAdd.location = location;
-            itemToAdd.dateTime = dateTime;
-
-            warehouseItemList.Add(itemToAdd);
-
-            // Logger denne første plasseringen av varen
-            LogItemMovement(new ItemHistory(internalId, null, location, dateTime));
-
-            Console.WriteLine($"Item {internalId} has been added to the warehouse at location {location}.");
         }
 
 
+        /// <summary>
+        /// Funksjon for å fjerne en Item-gjenstand ut fra lageret.
+        /// </summary>
+        /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void RemoveItem(int internalId)
         {
             var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
-                warehouseItemList.Remove(item);
+                if (item.quantity > 1)
+                {
+                    // Reduserer antallet med én hvis det er mer enn én på lager.
+                    item.quantity -= 1;
+                }
+                else
+                {
+                    // Fjerner varen helt hvis dette var den siste.
+                    warehouseItemList.Remove(item);
+                    Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from the warehouse list.");
+                    // Her kan du implementere ytterligere logikk for varsling eller håndtering av utsolgte varer.
+                }
             }
             else
             {
@@ -81,11 +124,17 @@ namespace jechFramework.Services
             }
         }
 
+
+        /// <summary>
+        /// Funksjon for å kunne flytte en Item-gjenstand til en ny lokasjon i lageret.
+        /// </summary>
+        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <param name="newLocation">newLocation er for å sette en ny lokasjon på en Item gjenstand.</param>
         public void MoveItemToLocation(int internalId, string newLocation)
-        {
-            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
-            if (item != null)
             {
+             var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+             if (item != null)
+             {
                 var oldLocation = item.location; // Lagrer den gamle lokasjonen før oppdatering
                 item.location = newLocation; // Oppdaterer lokasjonen
                 item.dateTime = DateTime.Now; // Oppdaterer tidsstempel
@@ -97,14 +146,18 @@ namespace jechFramework.Services
                 LogItemMovement(itemHistory);
 
                 Console.WriteLine($"Item {internalId} has been moved from {oldLocation} to {newLocation} at {item.dateTime}");
+                }
+                else
+                {
+                    Console.WriteLine($"Item with internal ID {internalId} not found. No action taken.");
+                }
             }
-            else
-            {
-                throw new InvalidOperationException("Item not found.");
-            }
-        }
 
-        // En hjelpemetode for å logge bevegelsen til en fil
+
+        /// <summary>
+        /// En hjelpefunksjon for å logge bevegelsen til en fil.
+        /// </summary>
+        /// <param name="itemHistory">En klasse for å registrere historikk for Item-gjenstander.</param>
         private void LogItemMovement(ItemHistory itemHistory)
         {
             // Format for logginnlegget
@@ -116,36 +169,74 @@ namespace jechFramework.Services
             // Skriver logginnlegget til filen
             File.AppendAllText(logFilePath, logEntry);
         }
-
-        public int FindHowManyItemsInItemList(int internalId)
+        /// <summary>
+        /// Funksjon for å telle antall Item-gjenstander med gitt internalId.
+        /// </summary>
+        /// <param name="internalId">navn er for å kunne gi navn til en gitt vare.</param>
+        /// <returns>Returnerer en Int for alle registrerte Item-gjenstander med gitt internalId.</returns>
+        public int FindHowManyItemsInItemList()
         {
-            warehouseItemList.Count(item => item.internalId == internalId);
-            return warehouseItemList.Count;
+
+            int countedItems = warehouseItemList.Count();
+
+            // var returnedCountedItems = $"The counted items for item: {internalId} is: {countedItems}.";
+
+            return countedItems;
 
         }
-        // Inne i ItemService-klassen
+
+
+        /// <summary>
+        /// Funksjon for å telle kvantiteten for et gitt Item-gjenstand.
+        /// </summary>
+        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <returns>Returnerer en Int med totalt antall Kvantitet.</returns>
+        public int FindHowManyItemQuantityByInternalId(int internalId)
+        {
+            // Summerer 'quantity' for alle varer som matcher den gitte 'internalId'
+            int totalQuantity = warehouseItemList.Where(item => item.internalId == internalId)
+                                                 .Sum(item => item.quantity);
+            return totalQuantity;
+        }
+
+
+
+        /// <summary>
+        /// Inne i ItemService-klassen
+        /// </summary>
+        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
         public void FindItemByInternalId(int internalId)
         {
 
             warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
 
         }
+
+
         public void ClearWarehouseData()
         {
             warehouseItemList.Clear(); // Tømmer listen over varer i varehuset
-            itemList.Clear();          // Eventuelt tøm andre lister eller ressurser om nødvendig
+            createdItemsList.Clear();          // Eventuelt tøm andre lister eller ressurser om nødvendig
         }
 
 
-        public void AddItem(Item item)
+        public string GetLocationByInternalId(int internalId)
         {
-            throw new NotImplementedException();
+            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            return item?.location ?? "Unallocated"; // Returnerer "Unallocated" hvis varen ikke finnes
         }
+
 
         //public UpdateItemMovement(int internalId, string n)
         //{
         //    
         //}
+        public bool ItemExists(int internalId)
+        {
+            return createdItemsList.Any(i => i.internalId == internalId);
+        }
 
+   
     }
+       
 }

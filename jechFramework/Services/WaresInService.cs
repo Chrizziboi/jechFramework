@@ -6,12 +6,20 @@ using System.Linq;
 
 namespace jechFramework.Services
 {
+    /// <summary>
+    /// Funksjoner for WaresIn.cs
+    /// </summary>
     public class WaresInService : IWaresInService
     {
         private readonly List<WaresIn> scheduledWaresIns = new List<WaresIn>();
         private readonly ItemService itemService; // Beholder referansen til ItemService
 
         // Konstruktør for å injisere ItemService
+        /// <summary>
+        /// Tar imot et objekt av typen "ItemService" som parameter. Om den er null kaster den en "ArgumentNullException", hvis "ikke null", tilordnes den til "this.itemService"
+        /// </summary>
+        /// <param name="itemService"> Objektet som gir tjenester knyttet til elementer (varer).</param>
+        /// <exception cref="ArgumentNullException"> Kastes hvis 'itemService' er null. </exception>
         public WaresInService(ItemService itemService)
         {
             this.itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
@@ -32,28 +40,43 @@ namespace jechFramework.Services
         public void ScheduleWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
         {
             if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
-
-            // Sjekker om det allerede finnes en planlagt vares inn med samme orderId
             if (scheduledWaresIns.Any(wi => wi.orderId == orderId))
             {
                 throw new InvalidOperationException("A wares in with this orderId is already scheduled.");
             }
-
+        
             var waresIn = new WaresIn
             {
                 orderId = orderId,
                 scheduledTime = scheduledTime,
                 location = location,
-                Items = incomingItems // Setter inngående varer til WaresIn-objektet
+                incomingItems = incomingItems
             };
 
             scheduledWaresIns.Add(waresIn);
 
-            // Legger til de nye varene i varehuset
             foreach (var item in incomingItems)
             {
-                itemService.AddItem(item); // Antatt metode for å legge til en vare
-                
+                // Sjekker om item allerede eksisterer i itemList
+                if (!itemService.ItemExists(item.internalId))
+                {
+                    // Oppretter ny item kun hvis den ikke allerede eksisterer
+                    itemService.CreateItem(item.internalId, item.externalId, item.name, item.type);
+                }
+
+                // Hent eksisterende lokasjon fra ItemService
+                var existingLocation = itemService.GetLocationByInternalId(item.internalId);
+                var itemLocation = !string.IsNullOrWhiteSpace(existingLocation) ? existingLocation : item.location;
+
+                try
+                {
+                    itemService.AddItem(item.internalId, itemLocation, DateTime.Now);
+                    Console.WriteLine($"Item {item.internalId} added with location {itemLocation}.");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.WriteLine($"Could not add item with internal ID {item.internalId}: {ex.Message}");
+                }
             }
         }
     }
