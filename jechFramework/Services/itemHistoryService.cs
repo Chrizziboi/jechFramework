@@ -8,14 +8,23 @@ using System.IO;
 
 public class ItemHistoryService
 {
+    /// <summary>
+    /// Funksjoner for itemHistoryService.cs
+    /// </summary>
     private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
     private static string logFilePath = "ItemMovements.log"; // Stien til loggfilen
 
+    /// <summary>
+    /// Tom konstruktør for å gjøre kobling mellom klasser enklere.
+    /// </summary>
     public ItemHistoryService()
     {
     }
 
     // Oppdaterer for å lese loggfilen med den nye strukturen
+    /// <summary>
+    /// Oppdaterer historikken ved å lese loggfilen med den nye strukturen.
+    /// </summary>
     public static void UpdateHistoryFromLog()
     {
         itemHistoryList.Clear(); // Tømmer listen for å unngå duplikater
@@ -36,6 +45,10 @@ public class ItemHistoryService
         }
     }
 
+    /// <summary>
+    /// Returnerer en liste over alle elementhistorier.
+    /// </summary>
+    /// <returns> En liste over alle elementhistorier. </returns>
     public static List<ItemHistory> GetAll()
     {
         UpdateHistoryFromLog(); // Oppdaterer listen hver gang denne metoden kalles
@@ -64,6 +77,10 @@ public class ItemHistoryService
 
         }
     }
+
+    /// <summary>
+    /// Tømmer historikkloggen ved å slette loggfilen hvis den eksisterer.
+    /// </summary>
     public void ClearHistoryLog()
     {
         // Slett loggfilen hvis den eksisterer

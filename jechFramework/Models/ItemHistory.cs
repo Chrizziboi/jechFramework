@@ -17,10 +17,10 @@ namespace jechFramework.Models
         /// <summary>
         /// Konstruktør for å opprette et nytt objekt av typen ItemHistory.
         /// </summary>
-        /// <param name="internalId"></param>
-        /// <param name="oldLocation"></param>
-        /// <param name="newLocation"></param>
-        /// <param name="dateTime"></param>
+        /// <param name="internalId">Intern ID som identifiserer elementet.</param>
+        /// <param name="oldLocation">Gammel plassering av elementet.</param>
+        /// <param name="newLocation">Ny plassering av elementet.</param>
+        /// <param name="dateTime">Tidspunktet for endringen.</param>
         public ItemHistory(int internalId, string oldLocation, string newLocation, DateTime dateTime)
         {
             this.internalId = internalId;
