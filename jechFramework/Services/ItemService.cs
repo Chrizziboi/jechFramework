@@ -50,10 +50,12 @@ namespace jechFramework.Services
 
             if (warehouseItemList.Any(i => i.internalId == internalId))
             {
+
                 throw new InvalidOperationException("Item with this internal ID already exists in the warehouse.");
             }
 
             // Setter lokasjon og dato før du legger til i warehouseItemList
+            
             itemToAdd.location = location;
             itemToAdd.dateTime = dateTime;
 
