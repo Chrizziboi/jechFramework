@@ -24,6 +24,8 @@ namespace MyConsoleApp
             itemService.CreateItem(2,2,"Ananas", "Fruit");
             itemService.CreateItem(3, 03, "T-sjorte", "Klær");
 
+            //waresInService.ScheduleWaresIn(1, DateTime.Now, "H0", (hour:1,minutes:00,seconds:00), new Item(1,"Hairspray", "Hair products") ;
+
             // Legger til nye varer i warehouseItemList
             itemService.AddItem(2, "H0", DateTime.Now);
             itemService.AddItem(6, "H0", DateTime.Now);
@@ -41,6 +43,8 @@ namespace MyConsoleApp
 
             itemService.MoveItemToLocation(6, "H4");
             itemHistoryService.GetItemHistoryById(6);
+
+            //waresOutService.ScheduleWaresOut(1,);
 
             itemService.ClearWarehouseData();
             itemHistoryService.ClearHistoryLog(); // Dette vil slette loggfilen
