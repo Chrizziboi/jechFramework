@@ -11,7 +11,7 @@ namespace jechFramework.Services
     //implementerer itemservice på interfacet IItemService
     {
 
-        private static List<Item> warehouseItemList = new List<Item>();
+        private static List<Item> ItemsInWarehouseList = new List<Item>();
         private static List<Item> createdItemsList = new List<Item>();
 
 
@@ -33,7 +33,7 @@ namespace jechFramework.Services
 
             var newItem = new Item
             {
-                internalId = internalId,
+                internalId = internalId++,
                 externalId = externalId,
                 name = name,
                 type = type
@@ -68,7 +68,7 @@ namespace jechFramework.Services
                 if (itemToAdd != null)
                 {
 
-                    if (warehouseItemList.Any(i => i.internalId == internalId))
+                    if (ItemsInWarehouseList.Any(i => i.internalId == internalId))
                     {
                         //legger til 1 i kvantitet for item når når det kommer inn nye varer som allerede eksisterer
                         itemToAdd.quantity += 1;
@@ -82,7 +82,7 @@ namespace jechFramework.Services
                     itemToAdd.location = location;
                     itemToAdd.dateTime = dateTime;
 
-                    warehouseItemList.Add(itemToAdd);
+                    ItemsInWarehouseList.Add(itemToAdd);
 
                     // Logger denne første plasseringen av varen
                     LogItemMovement(new ItemHistory(internalId, null, location, dateTime));
@@ -102,7 +102,7 @@ namespace jechFramework.Services
         /// <exception cref="InvalidOperationException"></exception>
         public void RemoveItem(int internalId)
         {
-            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
             if (item != null)
             {
                 if (item.quantity > 1)
@@ -113,7 +113,7 @@ namespace jechFramework.Services
                 else
                 {
                     // Fjerner varen helt hvis dette var den siste.
-                    warehouseItemList.Remove(item);
+                    ItemsInWarehouseList.Remove(item);
                     Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from the warehouse list.");
                     // Her kan du implementere ytterligere logikk for varsling eller håndtering av utsolgte varer.
                 }
@@ -132,7 +132,7 @@ namespace jechFramework.Services
         /// <param name="newLocation">newLocation er for å sette en ny lokasjon på en Item gjenstand.</param>
         public void MoveItemToLocation(int internalId, string newLocation)
             {
-             var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+             var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
              if (item != null)
              {
                 var oldLocation = item.location; // Lagrer den gamle lokasjonen før oppdatering
@@ -177,7 +177,7 @@ namespace jechFramework.Services
         public int FindHowManyItemsInItemList()
         {
 
-            int countedItems = warehouseItemList.Count();
+            int countedItems = ItemsInWarehouseList.Count();
 
             // var returnedCountedItems = $"The counted items for item: {internalId} is: {countedItems}.";
 
@@ -194,7 +194,7 @@ namespace jechFramework.Services
         public int FindHowManyItemQuantityByInternalId(int internalId)
         {
             // Summerer 'quantity' for alle varer som matcher den gitte 'internalId'
-            int totalQuantity = warehouseItemList.Where(item => item.internalId == internalId)
+            int totalQuantity = ItemsInWarehouseList.Where(item => item.internalId == internalId)
                                                  .Sum(item => item.quantity);
             return totalQuantity;
         }
@@ -208,21 +208,21 @@ namespace jechFramework.Services
         public void FindItemByInternalId(int internalId)
         {
 
-            warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
 
         }
 
 
         public void ClearWarehouseData()
         {
-            warehouseItemList.Clear(); // Tømmer listen over varer i varehuset
+            ItemsInWarehouseList.Clear(); // Tømmer listen over varer i varehuset
             createdItemsList.Clear();          // Eventuelt tøm andre lister eller ressurser om nødvendig
         }
 
 
         public string GetLocationByInternalId(int internalId)
         {
-            var item = warehouseItemList.FirstOrDefault(i => i.internalId == internalId);
+            var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
             return item?.location ?? "Unallocated"; // Returnerer "Unallocated" hvis varen ikke finnes
         }
 

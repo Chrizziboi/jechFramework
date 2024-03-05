@@ -9,11 +9,31 @@ namespace jechFramework.Services
 {
     public class WarehouseService
     {
+
+
+        private List<Warehouse> warehouseList = new List<Warehouse>();
+
+        /// <summary>
+        /// Funksjon for å opprette et varehus.
+        /// </summary>
+        public void CreateWarehouse()
+        { 
+        
+        }
+
+        /// <summary>
+        /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.
+        /// </summary>
+        /// <param name="warehouseId"></param>
+        public void RemoveWarehouse(string warehouseId)
+        { 
+        
+        }
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.
         /// </summary>
         int zoneId = 0;
-        public void creatingZones(string zoneName, int zoneCapacity) 
+        public void CreateZones(string zoneName, int zoneCapacity) 
         {
             zoneId += 1;
             Zone _ = new Zone (zoneId, zoneName, zoneCapacity);
@@ -33,5 +53,7 @@ namespace jechFramework.Services
         //Zone sone1 = new Zone(1, "Sone 1 - Tørrvare", 15);
         //Zone sone2 = new Zone(2, "Sone 2 - Tørrvare", 15);
         
+
+
     }
 }

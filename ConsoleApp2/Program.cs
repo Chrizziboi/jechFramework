@@ -9,6 +9,21 @@ namespace MyConsoleApp
         {
             Console.WriteLine("Welcome to JECH Warehouse Simulation");
 
+            //warehouseService
+            var warehouse = new Warehouse(1, "Hovedvarehus", 10000);
+            var zoneA = new Zone(1, "Sone A", "Beskrivelse for Sone A", 500);
+            var item1 = new Item { internalId = 1, name = "Vare 1", type = "Type A" };
+            var item2 = new Item { internalId = 2, name = "Vare 2", type = "Type B" };
+
+            // Legger til soner i varehuset
+           //warehouse.zones.Add(zoneA);
+           //
+           //warehouse.zones.Add(zoneA);
+            //
+            //// Legger til varer i en sone
+            //zoneA.Items.Add(item1);
+            //zoneA.Items.Add(item2);
+            //
 
             // Opprettelse av tjenesteinstanser
             ItemService itemService = new ItemService();
