@@ -9,7 +9,7 @@ namespace jechFramework.Models
     /// <summary>
     /// Dette er en klasse for alle ansatte.
     /// </summary>
-    internal class Employee
+    public class Employee
     {
         public int employeeId 
         { get; set; }

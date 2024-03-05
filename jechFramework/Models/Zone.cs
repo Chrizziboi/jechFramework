@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
-    internal class Zone : Warehouse
+    public class Zone
     {
         ///<summary>
         /// Initialiserer variabler med get og set metoder
@@ -15,6 +15,8 @@ namespace jechFramework.Models
         public string zoneName { get; set; }
         public string zoneDescription { get; set; }
         public int zoneCapacity { get; set; }
+
+        public List<Item> Items { get; set; } = new List<Item>();
 
         /// <summary>
         /// Konstruktører (med og uten zoneDescription)
