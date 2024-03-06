@@ -17,7 +17,7 @@ namespace jechFramework.Models
         public string warehouseAddress { get; set; }
         public string warehouseCity { get; set; }
         public string warehouseCountry { get; set; }
-        public int warehouseCapacity { get; set; }
+        public int warehouseCapacity { get; set; } = 5;
         // maks antall soner  per varehus.
         public int warehousePalletShelfWidth { get; set; } = 80;
 

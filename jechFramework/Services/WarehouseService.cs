@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Services
 {
-    public class WarehouseService
+    public class WarehouseService //Service klasse for Warehouse.cs, Employee.cs og Zone.cs
     {
 
 
@@ -16,18 +16,46 @@ namespace jechFramework.Services
         /// <summary>
         /// Funksjon for å opprette et varehus.
         /// </summary>
-        public void CreateWarehouse()
-        { 
-        
+        public void CreateWarehouse(int warehouseId, string warehouseName, int warehouseCapacity)
+        {
+            var newWarehouse = new Warehouse(warehouseId, warehouseName, warehouseCapacity);
+
+            warehouseList.Add(newWarehouse);
+
+
+        }
+
+        public void FindWareHouseInWarehouseList(int warehouseId)
+        {
+            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+
+            if (warehouse == null)
+            {
+                throw new InvalidOperationException($"A warehouse with id{warehouseId} could not be found.");
+            }
+
+            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}" +
+                              $"warehouse Name: {warehouse.warehouseName}" +
+                              $"warehouse Capasity: {warehouse.warehouseCapacity}");
+
+            
         }
 
         /// <summary>
         /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.
         /// </summary>
         /// <param name="warehouseId"></param>
-        public void RemoveWarehouse(string warehouseId)
-        { 
-        
+        public void RemoveWarehouse(int warehouseId)
+        {
+            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+
+            if (warehouse == null)
+            {
+                throw new InvalidOperationException($"A warehouse with id{warehouseId} could not be found.");
+            }
+
+            warehouseList.Remove(warehouse);
+
         }
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.

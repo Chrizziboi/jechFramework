@@ -14,9 +14,19 @@ namespace jechFramework.Models
         public int zoneId { get; set; }
         public string zoneName { get; set; }
         public string zoneDescription { get; set; }
-        public int zoneCapacity { get; set; }
-
+        public int zoneCapacity { get; set; } = 40;
+        //antall item objekter per soner.
         public List<Item> Items { get; set; } = new List<Item>();
+
+       
+
+        public Zone(int zoneId, string zoneName, int zoneCapacity)
+        {
+            this.zoneId = zoneId;
+            this.zoneName = zoneName;
+            this.zoneCapacity = zoneCapacity;
+        }
+
 
         /// <summary>
         /// Konstruktører (med og uten zoneDescription)
@@ -32,11 +42,6 @@ namespace jechFramework.Models
             this.zoneDescription = zoneDescription;
             this.zoneCapacity = zoneCapacity;
         }
-        public Zone(int zoneId, string zoneName, int zoneCapacity) 
-        {
-            this.zoneId = zoneId;
-            this.zoneName = zoneName;
-            this.zoneCapacity = zoneCapacity;
-        }
+       
     }
 } // 
