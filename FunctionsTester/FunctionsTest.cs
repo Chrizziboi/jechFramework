@@ -16,7 +16,7 @@ namespace FunctionsTester
             Console.WriteLine("\nWarehouseService Functions" +
                               "\n--------------------------\n");
 
-            WarehouseService service = new WarehouseService();
+            WarehouseService service = new();
             service.CreateWarehouse(1, "Godeste Varehus", 5);
             service.FindWareHouseInWarehouseList(1);
 
@@ -25,13 +25,21 @@ namespace FunctionsTester
             service.CreateZone(1, 3, "Joakim P-Plass", 3);
             service.CreateZone(1, 4, "Hannan P-Plass", 2);
             service.CreateZone(1, 5, "Edgar P-Plass", 2);
-            service.CreateZone(1, 6, "Jesus P-Plass", 2);
+            //service.CreateZone(1, 6, "Jesus P-Plass", 2);
+            
+            service.CreateZone(2, 7, "Jesus P-Plass", 2);
+            service.CreateZone(1, 1, "Jesus P-Plass", 2);
+            service.CreateZone(1, 7, "Jesus P-Plass", 2);
+
+
 
             service.GetAllZonesInWarehouse(1);
 
-            service.RemoveZoneInWarehouse(1, 5);
+            service.RemoveZoneInWarehouse(1, 6);
 
-            service.GetAllZonesInWarehouse(1);
+            service.GetAllZonesInWarehouse(2);
+
+
 
             Console.WriteLine("\nItemsService Functions" +
                               "\n--------------------------\n");

@@ -76,62 +76,91 @@ namespace jechFramework.Services
         /// </summary>
         int zoneId = 0;
         //public void CreateZone(int warehouseId, Zone zone) 
-        public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity)
+        public void CreateZone(int warehouseId, int zoneId, string zoneName, int? zoneCapacity)
         {
-            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
-            if (warehouse == null)
+            
+
+            try
             {
-                throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
-            }
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
+                var existingZone = warehouse.zoneList.FirstOrDefault(existingZone => existingZone.zoneId == zoneId);
+                if (existingZone != null)
+                {
+                    throw new InvalidOperationException($"Zone with id: {zoneId} already exists in Warehouse id {warehouseId}.");
+                }
 
-            var existingZone = warehouse.zoneList.FirstOrDefault(existingZone => existingZone.zoneId == zoneId);
-            if (existingZone != null)
+                // Check if adding this zone would exceed warehouse capacity
+                int totalZoneCapacity = warehouse.zoneList.Count() + 1;
+                
+                if (totalZoneCapacity > warehouse.warehouseCapacity)
+                {
+                    throw new InvalidOperationException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
+                }
+
+                Zone zone = new Zone(zoneId, zoneName, zoneCapacity);
+                warehouse.zoneList.Add(zone);
+                Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
+            }
+            catch (InvalidOperationException ex)
             {
-                throw new InvalidOperationException($"Zone with id: {zoneId} already exists in Warehouse id {warehouseId}.");
+                Console.WriteLine(ex.Message);
+                // Optionally handle the exception here if needed
             }
-
-
-            Zone zone = new Zone(zoneId, zoneName, zoneCapacity);
-
-            warehouse.zoneList.Add(zone);
-            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
-                              $"Zone Id: {zone.zoneId}\n" +
-                              $"Zone Name: {zone.zoneName}\n");
         }
+
 
 
         public void RemoveZoneInWarehouse(int warehouseId, int zoneId)
         {
-            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
-            if (warehouse == null)
+            try
             {
-                throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
-            }
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
 
-            var zoneToRemove = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
-            if (zoneToRemove == null)
+                var zoneToRemove = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
+                if (zoneToRemove == null)
+                {
+                    throw new InvalidOperationException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}. Therefore zone could not be removed.");
+                }
+
+                warehouse.zoneList.Remove(zoneToRemove);
+            }
+            catch (InvalidOperationException ex)
             {
-                throw new InvalidOperationException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}.");
+                Console.WriteLine(ex.Message);
+                // Optionally handle the exception here if needed
             }
-
-            warehouse.zoneList.Remove(zoneToRemove);
         }
 
         public void GetAllZonesInWarehouse(int warehouseId) 
         {
-            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
-            if (warehouse == null)
+            try
             {
-                throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
+
+                Console.WriteLine($"Zones in Warehouse '{warehouse.warehouseName}':");
+
+                foreach (var zone in warehouse.zoneList)
+                {
+                    Console.WriteLine($"Zone ID: {zone.zoneId}, Name: {zone.zoneName}, Capacity: {zone.zoneCapacity}");
+                }
             }
-
-            Console.WriteLine($"Zones in Warehouse '{warehouse.warehouseName}':");
-
-            foreach (var zone in warehouse.zoneList)
+            catch (InvalidOperationException ex)
             {
-                Console.WriteLine($"Zone ID: {zone.zoneId}, Name: {zone.zoneName}, Capacity: {zone.zoneCapacity}");
+                Console.WriteLine(ex.Message);
+                // Optionally handle the exception here if needed
             }
-
         }
 
 
