@@ -205,10 +205,24 @@ namespace jechFramework.Services
         /// Inne i ItemService-klassen
         /// </summary>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        public void FindItemByInternalId(int internalId)
+        public void FindItemByInternalIdInWarehouse(int internalId)
         {
 
-            ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
+            var item = ItemsInWarehouseList.FirstOrDefault(item => item.internalId == internalId);
+
+            if (item == null)
+            {
+                throw new InvalidOperationException($"An Item with id{item} could not be found.");
+            }
+
+            else if (ItemsInWarehouseList == null)
+            {
+                throw new InvalidOperationException($"");
+            }
+
+            Console.WriteLine($"item Id: {item.internalId}\n" +
+                              $"item Name: {item.name}\n" +
+                              $"item : {item.type}\n");
 
         }
 
