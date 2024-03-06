@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,13 +22,19 @@ namespace jechFramework.Models
         // maks antall soner  per varehus.
         public int warehousePalletShelfWidth { get; set; } = 80;
 
-        public List<Zone> zones;
-
-        public List<Employee> employeeList;
-
+        public List<Zone> zoneList { get; set; } = new List<Zone>();
+        /// <param name="zoneList">Dette er en liste for de forskjellige sonene i et varehus</param>
+        /// 
+        public List<Employee> employeeList { get; set; } = new List<Employee>();
+        /// <param name="employeeList">Listen over alle ansatte i et varehus.</param>
+        /// 
+        public List<Item> ItemsInWarehouseList { get; set; } = new List<Item>();
+        /// <param name="WarehouseItemList">Listen over alle Item-objekter i et varehus.</param>
+        /// 
 
         public Warehouse()
         {
+
         }
 
         public Warehouse(int warehouseId, string warehouseName, int warehouseCapacity)
@@ -39,7 +46,7 @@ namespace jechFramework.Models
 
        
         public Warehouse(int warehouseId, string warehouseName, string warehouseDescription, string warehouseAddress, 
-            string warehouseCity, string warehouseCountry, int warehouseCapacity, List<Zone> zones)
+            string warehouseCity, string warehouseCountry, int warehouseCapacity)
         {
             this.warehouseId = warehouseId;
             this.warehouseName = warehouseName;
@@ -48,7 +55,7 @@ namespace jechFramework.Models
             this.warehouseCity = warehouseCity;
             this.warehouseCountry = warehouseCountry;
             this.warehouseCapacity = warehouseCapacity;
-            this.zones = zones;
+
         }
         
 
@@ -75,18 +82,6 @@ namespace jechFramework.Models
         }      
         
 
-        public Warehouse(string warehouseName, string warehouseAddress, string warehouseCity, 
-            string warehouseCountry, int warehouseCapacity, List<Zone> zones)
-        { 
-            this.warehouseName = warehouseName;
-            this.warehouseAddress = warehouseAddress;
-            this.warehouseCity = warehouseCity;
-            this.warehouseCountry = warehouseCountry;
-            this.warehouseCapacity = warehouseCapacity;
-            this.zones = zones;
-        }
-
-
         /// <summary>
         /// Konstruktør for varehus.
         /// </summary>
@@ -97,9 +92,8 @@ namespace jechFramework.Models
         /// <param name="warehouseCity">Dette brukes for å vise hvilken by varehuset ligger i</param>
         /// <param name="warehouseCountry">Dette viser hvilken land et varehus ligger i</param>
         /// <param name="warehouseCapacity">Dette er den totale kapasiteten til et varehus</param>
-        /// <param name="zones">Dette er en liste for de forskjellige sonene i et varehus</param>
-        /// <param name="employeeList">Listen over alle ansatte ved et varehus.</param>
-        public Warehouse(int warehouseId, string warehouseName, string warehouseDescription, string warehouseAddress, string warehouseCity, string warehouseCountry, int warehouseCapacity, int warehousePalletShelfWidth, List<Zone> zones, List<Employee> employeeList)
+
+        public Warehouse(int warehouseId, string warehouseName, string warehouseDescription, string warehouseAddress, string warehouseCity, string warehouseCountry, int warehouseCapacity, int warehousePalletShelfWidth)
         {
             this.warehouseId = warehouseId;
             this.warehouseName = warehouseName;
@@ -109,8 +103,11 @@ namespace jechFramework.Models
             this.warehouseCountry = warehouseCountry;
             this.warehouseCapacity = warehouseCapacity;
             this.warehousePalletShelfWidth = warehousePalletShelfWidth;
-            this.zones = zones;
-            this.employeeList = employeeList;
+
         }
+
+
+
+
     }
 }

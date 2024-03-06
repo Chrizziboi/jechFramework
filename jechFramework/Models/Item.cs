@@ -29,8 +29,8 @@ namespace jechFramework.Models
         public string? location { get; set; } = "Unallocated";
 
         public int quantity { get; set; } = 1;
-     
-        public DateTime dateTime { get; set; }
+
+        public DateTime dateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen uten parametere.
