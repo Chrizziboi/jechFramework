@@ -33,7 +33,7 @@ namespace jechFramework.Services
 
             var newItem = new Item
             {
-                internalId = internalId++,
+                internalId = internalId,
                 externalId = externalId,
                 name = name,
                 type = type
