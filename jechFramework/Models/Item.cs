@@ -52,7 +52,7 @@ namespace jechFramework.Models
 
 
         /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 3 parameter.
+        /// Initialiserer en ny instans av Item-klassen med 2 parameter.
         /// </summary>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
         /// <param name="location">Location er for å vise hvor i lageret det ligger.</param>
