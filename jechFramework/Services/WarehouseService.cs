@@ -34,9 +34,9 @@ namespace jechFramework.Services
                 throw new InvalidOperationException($"A warehouse with id{warehouseId} could not be found.");
             }
 
-            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}" +
-                              $"warehouse Name: {warehouse.warehouseName}" +
-                              $"warehouse Capasity: {warehouse.warehouseCapacity}");
+            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
+                              $"warehouse Name: {warehouse.warehouseName}\n" +
+                              $"warehouse Capasity: {warehouse.warehouseCapacity}\n");
 
             
         }
