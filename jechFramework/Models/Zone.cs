@@ -11,7 +11,7 @@ namespace jechFramework.Models
         ///<summary>
         /// Initialiserer variabler med get og set metoder
         ///</summary>
-        public int zoneId { get; set; }
+        public int zoneId { get; set; } = 0;
         public string zoneName { get; set; }
         public string zoneDescription { get; set; }
         public int zoneCapacity { get; set; } = 40;
