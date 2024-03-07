@@ -16,9 +16,10 @@ namespace jechFramework.Services
         // Liste med varehus
 
 
+        ///                                        ///
+        ///   Service funksjoner for Warehouse.cs  ///
+        ///                                        ///
 
-        /// 
-        ///Service funksjoner for Warehouse.cs
 
         /// <summary>
         /// Funksjon for å opprette et varehus.
@@ -73,7 +74,9 @@ namespace jechFramework.Services
 
         }
 
-        ///Service funksjoner for Zone.cs
+        ///                                        ///
+        ///   Service funksjoner for Employee.cs   ///
+        ///                                        ///
 
 
         /// <summary>
@@ -147,6 +150,12 @@ namespace jechFramework.Services
         }
 
 
+        public int GetZoneInWarehouse(int warehouseId, int zoneId)
+        {
+
+        }
+
+
         /// <summary>
         /// Funksjon for å skrive ut alle soner for et varehus.
         /// </summary>
@@ -177,21 +186,61 @@ namespace jechFramework.Services
 
 
         /// <summary>
-        /// Her er det en funksjon som gir en mulighet til å kunne fjerne en sone hvis man har gjort feil eller ikke vil ha en sone lenger
+        /// 
         /// </summary>
-        /// <param name="zoneId">Dette er en Id for hver sone for å lett kunne holde orden på soner</param>
-        /// <param name="listToRemove">Dette er listen over alle sonene i et varehus
-        /// </param>
-        //public void removeZone(int zoneId, List<Zone> listToRemove) 
-        //{
-        //    listToRemove.RemoveAt(zoneId);
-        //}
+        /// <param name="warehouseId"></param>
+        /// <param name="zoneId"></param>
+        /// <returns></returns>
+        public Zone FindZoneById(int warehouseId, int zoneId)
+        {
+            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse != null)
+            {
+                return warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
+            }
+            return null; // Returnerer null hvis varehuset eller sonen ikke ble funnet
+        }
 
-        //Zone sone1 = new Zone(1, "Sone 1 - Tørrvare", 15);
-        //Zone sone2 = new Zone(2, "Sone 2 - Tørrvare", 15);
+        /// <summary>
+        /// Funksjon for å skrive ut alle varer i en spesifisert sone.
+        /// </summary>
+        /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
+        /// <param name="zoneId">Dette er en Id for hver sone for å lett kunne holde orden på soner.</param>
+        public void GetAllItemsInZone(int warehouseId, int zoneId)
+        {
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
 
+                var zone = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
+                if (zone == null)
+                {
+                    throw new InvalidOperationException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}.");
+                }
 
-        ///Service funksjoner for Employee.cs
+                Console.WriteLine($"Items in Zone '{zone.zoneName}' in Warehouse '{warehouse.warehouseName}':");
+
+                foreach (var item in zone.itemList)
+                {
+                    Console.WriteLine($"Item ID: {item.itemId}, Name: {item.itemName}, Quantity: {item.quantity}");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+        }
+
+        ///                                              ///
+             ///   Service funksjoner for Zone.cs   ///
+        ///                                              ///
+
+        
         /// <summary>
         /// Funksjon for å oprette ansatte for et gitt varehus.
         /// </summary>
@@ -222,11 +271,64 @@ namespace jechFramework.Services
             }
         }
 
-        public void RemoveEmployee()
-        {
 
+        /// <summary>
+        /// Funksjon for å ta vekk en ansatt fra et gitt varehus.
+        /// </summary>
+        /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
+        /// <param name="employeeId">Ansatt id.</param>
+        public void RemoveEmployee(int warehouseId, int employeeId)
+        {
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
+
+                var employee = warehouse.employeeList.FirstOrDefault(Employee => Employee.employeeId == employeeId);
+                if (employee == null)
+                {
+                    throw new InvalidOperationException($"Employee with id: {employeeId} does not exists.");
+                }
+
+                warehouse.employeeList.Remove(employee);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine(ex.Message);
+
+            }
         }
 
+        /// <summary>
+        /// Funksjon for å vise frem alle ansatte for et varehus.
+        /// </summary>
+        /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
+        public void GetAllEmployeesInWarehouse(int warehouseId)
+        {
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
+
+                Console.WriteLine($"Employees in Warehouse '{warehouse.warehouseName}':");
+
+                foreach (var employee in warehouse.employeeList)
+                {
+                    Console.WriteLine($"Employee ID: {employee.employeeId}, Name: {employee.employeeName}");
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
 
     }
 }

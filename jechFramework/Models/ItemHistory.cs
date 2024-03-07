@@ -9,8 +9,8 @@ namespace jechFramework.Models
     {
 
         public int internalId { get; private set; }
-        public string oldLocation { get; private set; }
-        public string newLocation { get; private set; }
+        public int? oldZone { get; private set; }
+        public int newZone { get; private set; }
         public DateTime dateTime { get; private set; }
 
         // Beholder kun denne konstruktøren for å inkludere både gamle og nye lokasjoner
@@ -21,11 +21,11 @@ namespace jechFramework.Models
         /// <param name="oldLocation">Gammel plassering av elementet.</param>
         /// <param name="newLocation">Ny plassering av elementet.</param>
         /// <param name="dateTime">Tidspunktet for endringen.</param>
-        public ItemHistory(int internalId, string oldLocation, string newLocation, DateTime dateTime)
+        public ItemHistory(int internalId, int? oldLocation, int newLocation, DateTime dateTime)
         {
             this.internalId = internalId;
-            this.oldLocation = oldLocation;
-            this.newLocation = newLocation;
+            this.oldZone = oldZone;
+            this.newZone = newZone;
             this.dateTime = dateTime;
         }
     }

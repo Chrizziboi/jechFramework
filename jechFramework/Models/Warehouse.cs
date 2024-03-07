@@ -92,7 +92,6 @@ namespace jechFramework.Models
         /// <param name="warehouseCity">Dette brukes for å vise hvilken by varehuset ligger i</param>
         /// <param name="warehouseCountry">Dette viser hvilken land et varehus ligger i</param>
         /// <param name="warehouseCapacity">Dette er den totale kapasiteten til et varehus</param>
-
         public Warehouse(int warehouseId, string warehouseName, string warehouseDescription, string warehouseAddress, string warehouseCity, string warehouseCountry, int warehouseCapacity, int warehousePalletShelfWidth)
         {
             this.warehouseId = warehouseId;
