@@ -33,6 +33,11 @@ namespace jechFramework.Services
         }
 
 
+        /// <summary>
+        /// Funksjon for å finne et varehus i varehus-listen
+        /// </summary>
+        /// <param name="warehouseId"></param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void FindWareHouseInWarehouseList(int warehouseId)
         {
             var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
@@ -54,7 +59,7 @@ namespace jechFramework.Services
         /// <summary>
         /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.
         /// </summary>
-        /// <param name="warehouseId"></param>
+        /// <param name="warehouseId">Int tall for å gi en identifikator for et gitt varehus.</param>
         public void RemoveWarehouse(int warehouseId)
         {
             var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
@@ -74,8 +79,6 @@ namespace jechFramework.Services
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.
         /// </summary>
-        int zoneId = 0;
-        //public void CreateZone(int warehouseId, Zone zone) 
         public void CreateZone(int warehouseId, int zoneId, string zoneName, int? zoneCapacity)
         {
             
@@ -101,7 +104,7 @@ namespace jechFramework.Services
                     throw new InvalidOperationException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
                 }
 
-                Zone zone = new Zone(zoneId, zoneName, zoneCapacity);
+                Zone zone = new(zoneId, zoneName, ?zoneCapacity);
                 warehouse.zoneList.Add(zone);
                 Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
             }
@@ -113,7 +116,11 @@ namespace jechFramework.Services
         }
 
 
-
+        /// <summary>
+        /// Funksjon for å ta vekk en sone fra et varehus.
+        /// </summary>
+        /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
+        /// <param name="zoneId">Dette er en Id for hver sone for å lett kunne holde orden på soner.</param>
         public void RemoveZoneInWarehouse(int warehouseId, int zoneId)
         {
             try
@@ -139,6 +146,11 @@ namespace jechFramework.Services
             }
         }
 
+
+        /// <summary>
+        /// Funksjon for å skrive ut alle soner for et varehus.
+        /// </summary>
+        /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
         public void GetAllZonesInWarehouse(int warehouseId) 
         {
             try
@@ -159,7 +171,7 @@ namespace jechFramework.Services
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine(ex.Message);
-                // Optionally handle the exception here if needed
+              
             }
         }
 
@@ -181,15 +193,33 @@ namespace jechFramework.Services
 
         ///Service funksjoner for Employee.cs
         /// <summary>
-        /// Funksjon for å se alle ansatte for et gitt varehus
+        /// Funksjon for å oprette ansatte for et gitt varehus.
         /// </summary>
-        public void CreateEmployee()
+        public void CreateEmployee(int warehouseId, int employeeId, string employeeName)
         {
 
-            // var findEmployee = Warehouse.EmployeeList.FirstOrDefault(i => i.warehouseId == warehouseId);
-            // 
-            // for each(  );
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                }
 
+                if (employeeId != null) 
+                {
+                    throw new InvalidOperationException($"Employee with id: {employeeId} Already exists.");
+                }
+
+                Employee employee = new(employeeId, employeeName);
+                warehouse.employeeList.Add(employee);
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine(ex.Message);
+               
+            }
         }
 
         public void RemoveEmployee()

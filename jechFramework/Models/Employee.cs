@@ -28,6 +28,12 @@ namespace jechFramework.Models
         public string employeeTelephoneNumber 
         { get; set; }
 
+        public Employee(int employeeId, string employeeName)
+        {
+            this.employeeId = employeeId;
+            this.employeeName = employeeName;
+            
+        }
         /// <summary>
         /// her har man bare en konstruktør fordi når man skal legge til en ny ansatt så må man legge til all informasjon.
         /// </summary>
