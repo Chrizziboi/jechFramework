@@ -39,20 +39,31 @@ namespace FunctionsTester
 
             service.GetAllZonesInWarehouse(2);
 
+            service.CreateEmployee(1, 1, "Emir");
+            service.CreateEmployee(1, 2, "Joakim");
+            service.CreateEmployee(1, 3, "Chris");
+            service.CreateEmployee(1, 4, "Hannan");
+
+            service.GetAllEmployeesInWarehouse(1);
+            service.RemoveEmployee(1, 1);
+
+            service.GetAllEmployeesInWarehouse(1);
+
+            service.GetZoneInWarehouse(1, 1);
+
+            service.GetAllItemsInZone(1,1);
+
+            
 
 
-            Console.WriteLine("\nItemsService Functions" +
-                              "\n--------------------------\n");
 
+            Console.WriteLine($"\n  ItemsService Functions" +
+                              $"\n--------------------------\n");
 
-
-
-
-
-
+            Item item = new(1, 1, "itemdummy", "dummytest");
 
             Console.WriteLine("To finish testing, press the any key.");
-            Console.ReadLine();
+            Console.ReadKey();
 
         }
     }

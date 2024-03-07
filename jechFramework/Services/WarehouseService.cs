@@ -186,7 +186,7 @@ namespace jechFramework.Services
 
 
         /// <summary>
-        /// 
+        /// Funksjon for å finne en sone ved hjelp av Id.
         /// </summary>
         /// <param name="warehouseId"></param>
         /// <param name="zoneId"></param>
@@ -224,17 +224,27 @@ namespace jechFramework.Services
 
                 Console.WriteLine($"Items in Zone '{zone.zoneName}' in Warehouse '{warehouse.warehouseName}':");
 
-                foreach (var item in zone.itemList)
+                if (zone.ItemsInZoneList.Count == 0)
                 {
-                    Console.WriteLine($"Item ID: {item.itemId}, Name: {item.itemName}, Quantity: {item.quantity}");
+                    Console.WriteLine("There are no items in this zone.");
+                }
+                else
+                {
+                    foreach (var item in zone.ItemsInZoneList)
+                    {
+                        Console.WriteLine($"Item ID: {item.internalId}, Name: {item.name}, Quantity: {item.quantity}");
+                    }
+
                 }
             }
+
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
         }
+
 
         ///                                              ///
         ///   Service funksjoner for Zone.cs   ///
@@ -255,10 +265,10 @@ namespace jechFramework.Services
                     throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
-                if (employeeId != null)
-                {
-                    throw new InvalidOperationException($"Employee with id: {employeeId} Already exists.");
-                }
+                //if (employeeId == null)
+                //{
+                //    throw new InvalidOperationException($"Employee with id: {employeeId} Already exists.");
+                //}
 
                 Employee employee = new(employeeId, employeeName);
                 warehouse.employeeList.Add(employee);
