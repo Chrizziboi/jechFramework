@@ -79,7 +79,7 @@ namespace jechFramework.Services
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.
         /// </summary>
-        public void CreateZone(int warehouseId, int zoneId, string zoneName, int? zoneCapacity)
+        public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity)
         {
             
 
@@ -104,7 +104,7 @@ namespace jechFramework.Services
                     throw new InvalidOperationException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
                 }
 
-                Zone zone = new(zoneId, zoneName, ?zoneCapacity);
+                Zone zone = new(zoneId, zoneName, zoneCapacity);
                 warehouse.zoneList.Add(zone);
                 Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
             }
