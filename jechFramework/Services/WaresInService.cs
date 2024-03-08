@@ -20,10 +20,10 @@ namespace jechFramework.Services
         /// Tar imot et objekt av typen "ItemService" som parameter. Om den er null kaster den en "ArgumentNullException", hvis "ikke null", tilordnes den til "this.itemService"
         /// </summary>
         /// <param name="itemService"> Objektet som gir tjenester knyttet til elementer (varer).</param>
-        /// <exception cref="ArgumentNullException"> Kastes hvis 'itemService' er null. </exception>
+        /// <exception cref="ServiceException"> Kastes hvis 'itemService' er null. </exception> //ArgnullException
         public WaresInService(ItemService itemService)
         {
-            this.itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
+            this.itemService = itemService ?? throw new ServiceException(nameof(itemService)); //ArgNullException
         }
         /// <summary>
         /// Metoden ScheduleWaresIn planlegger ankomst av varer ved å ta inn ordre-ID, tidspunkt, lokasjon, behandlingstid, 
@@ -36,14 +36,14 @@ namespace jechFramework.Services
         /// <param name="location">Stedet hvor varene skal ankomme.</param>
         /// <param name="processingTime">Tiden det tar å behandle varene.</param>
         /// <param name="incomingItems">En liste over Item-objekter som representerer de inngående varene.</param>
-        /// <exception cref="ArgumentNullException">-</exception>
-        /// <exception cref="InvalidOperationException">Forteller at en ordre med samme nummer er allerede laget.</exception>
+        /// <exception cref="ServiceException">-</exception> //ArgnullException
+        /// <exception cref="ServiceException">Forteller at en ordre med samme nummer er allerede laget.</exception>
         public void ScheduleWaresIn(int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Item> incomingItems)
         {
-            if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
+            if (incomingItems == null) throw new ServiceException(nameof(incomingItems)); //ArgnullExceptions
             if (scheduledWaresIns.Any(wi => wi.orderId == orderId))
             {
-                throw new InvalidOperationException("A wares in with this orderId is already scheduled.");
+                throw new ServiceException("A wares in with this orderId is already scheduled.");
             }
         
             var waresIn = new WaresIn
@@ -76,7 +76,7 @@ namespace jechFramework.Services
                     itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouse.warehouseId);
                     Console.WriteLine($"Item {item.internalId} added to zone {itemZoneId} in warehouse {warehouse.warehouseId}.");
                 }
-                catch (InvalidOperationException ex)
+                catch (ServiceException ex)
                 {
                     Console.WriteLine($"Could not add item with internal ID {item.internalId}: {ex.Message}");
                 }

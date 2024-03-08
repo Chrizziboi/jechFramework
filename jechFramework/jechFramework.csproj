@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\ExceptionService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Models\NewFile1.txt" />
+    <None Remove="Services\NewFile1.txt" />
   </ItemGroup>
 
 </Project>

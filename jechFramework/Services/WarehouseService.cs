@@ -11,10 +11,20 @@ namespace jechFramework.Services
     public class WarehouseService //Service klasse for Warehouse.cs, Employee.cs og Zone.cs
     {
 
-
         private List<Warehouse> warehouseList = new List<Warehouse>();
         // Liste med varehus
 
+
+        ///                                       ///
+        /// Event handler for WarehouseService.cs ///
+        ///                                       ///
+
+
+        public delegate void WarehouseCreatedEventHandler(object source, WarehouseEventHandler args);
+
+        public event WarehouseCreatedEventHandler WarehouseCreated;
+
+        
 
         ///                                        ///
         ///   Service funksjoner for Warehouse.cs  ///
@@ -29,6 +39,8 @@ namespace jechFramework.Services
             var newWarehouse = new Warehouse(warehouseId, warehouseName, warehouseCapacity);
 
             warehouseList.Add(newWarehouse);
+
+          // OnWarehouseCreated(newWarehouse);
 
 
         }
@@ -46,7 +58,7 @@ namespace jechFramework.Services
             if (warehouse == null)
             {
                 Console.WriteLine($"A warehouse with id: {warehouseId} could not be found.");
-                throw new InvalidOperationException($"A warehouse with id{warehouseId} could not be found.");
+                throw new ServiceException($"A warehouse with id{warehouseId} could not be found.");
 
             }
 
@@ -67,7 +79,7 @@ namespace jechFramework.Services
 
             if (warehouse == null)
             {
-                throw new InvalidOperationException($"A warehouse with id: {warehouseId} could not be found.");
+                throw new ServiceException($"A warehouse with id: {warehouseId} could not be found.");
             }
 
             warehouseList.Remove(warehouse);
@@ -90,12 +102,12 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
                 var existingZone = warehouse.zoneList.FirstOrDefault(existingZone => existingZone.zoneId == zoneId);
                 if (existingZone != null)
                 {
-                    throw new InvalidOperationException($"Zone with id: {zoneId} already exists in Warehouse id {warehouseId}.");
+                    throw new ServiceException($"Zone with id: {zoneId} already exists in Warehouse id {warehouseId}.");
                 }
 
                 // Check if adding this zone would exceed warehouse capacity
@@ -103,14 +115,14 @@ namespace jechFramework.Services
 
                 if (totalZoneCapacity > warehouse.warehouseCapacity)
                 {
-                    throw new InvalidOperationException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
+                    throw new ServiceException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
                 }
 
                 Zone zone = new(zoneId, zoneName, zoneCapacity);
                 warehouse.zoneList.Add(zone);
                 Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
             }
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
                 // Optionally handle the exception here if needed
@@ -130,18 +142,18 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
                 var zoneToRemove = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
                 if (zoneToRemove == null)
                 {
-                    throw new InvalidOperationException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}. Therefore zone could not be removed.");
+                    throw new ServiceException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}. Therefore zone could not be removed.");
                 }
 
                 warehouse.zoneList.Remove(zoneToRemove);
             }
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
                 // Optionally handle the exception here if needed
@@ -160,7 +172,7 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
                 Console.WriteLine($"Zones in Warehouse '{warehouse.warehouseName}':");
@@ -170,7 +182,7 @@ namespace jechFramework.Services
                     Console.WriteLine($"Zone ID: {zone.zoneId}, Name: {zone.zoneName}, Capacity: {zone.zoneCapacity}");
                 }
             }
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
 
@@ -207,13 +219,13 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
                 var zone = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
                 if (zone == null)
                 {
-                    throw new InvalidOperationException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}.");
+                    throw new ServiceException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}.");
                 }
 
                 Console.WriteLine($"Items in Zone '{zone.zoneName}' in Warehouse '{warehouse.warehouseName}':");
@@ -232,7 +244,7 @@ namespace jechFramework.Services
                 }
             }
 
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -256,7 +268,7 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
                 //if (employeeId == null)
@@ -268,7 +280,7 @@ namespace jechFramework.Services
                 warehouse.employeeList.Add(employee);
 
             }
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
 
@@ -288,19 +300,19 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
+                    
                 }
-
                 var employee = warehouse.employeeList.FirstOrDefault(Employee => Employee.employeeId == employeeId);
                 if (employee == null)
                 {
-                    throw new InvalidOperationException($"Employee with id: {employeeId} does not exists.");
+                    throw new ServiceException($"Employee with id: {employeeId} does not exists.");
                 }
 
                 warehouse.employeeList.Remove(employee);
 
             }
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
 
@@ -318,7 +330,7 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
                 Console.WriteLine($"Employees in Warehouse '{warehouse.warehouseName}':");
@@ -328,7 +340,7 @@ namespace jechFramework.Services
                     Console.WriteLine($"Employee ID: {employee.employeeId}, Name: {employee.employeeName}");
                 }
             }
-            catch (InvalidOperationException ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
             }
