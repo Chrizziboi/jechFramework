@@ -27,20 +27,20 @@ public class ItemHistoryService
     /// </summary>
     public static void UpdateHistoryFromLog()
     {
-        itemHistoryList.Clear(); // Tømmer listen for å unngå duplikater
+        itemHistoryList.Clear();
         var logEntries = File.ReadAllLines(logFilePath);
 
         foreach (var entry in logEntries)
         {
             var fields = entry.Split(',');
-            if (fields.Length == 4) // Antar format: internalId,oldLocation,newLocation,dateTime
+            if (fields.Length == 4)
             {
                 var internalId = int.Parse(fields[0]);
-                var oldLocation = fields[1];
-                var newLocation = fields[2];
+                var oldZone = int.Parse(fields[1]); // Endret til int.Parse
+                var newZone = int.Parse(fields[2]); // Endret til int.Parse
                 var dateTime = DateTime.Parse(fields[3]);
 
-                itemHistoryList.Add(new ItemHistory(internalId, oldLocation, newLocation, dateTime));
+                itemHistoryList.Add(new ItemHistory(internalId, oldZone, newZone, dateTime));
             }
         }
     }
@@ -72,8 +72,8 @@ public class ItemHistoryService
         {
             Console.WriteLine($"--------------\n" +
                               $" - DateTime: {itemHistory.dateTime}.\n" +
-                              $" - Old Location: {itemHistory.oldLocation}.\n" +
-                              $" - New Location: {itemHistory.newLocation}.\n");
+                              $" - Old Location: {itemHistory.oldZone}.\n" +
+                              $" - New Location: {itemHistory.newZone}.\n");
 
         }
     }

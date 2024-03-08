@@ -8,11 +8,14 @@ namespace jechFramework.Services
     /// Funksjoner for Item.cs
     /// </summary>
     public class ItemService
-    //implementerer itemservice på interfacet IItemService
     {
-
+        private WarehouseService warehouseService;
         private static List<Item> ItemsInWarehouseList = new List<Item>();
         private static List<Item> createdItemsList = new List<Item>();
+        public ItemService(WarehouseService warehouseService)
+        {
+            this.warehouseService = warehouseService;
+        }
 
 
         /// <summary>
@@ -50,48 +53,25 @@ namespace jechFramework.Services
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
         /// <exception cref="InvalidOperationException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
-        public void AddItem(int internalId, string location, DateTime dateTime)
+        public void AddItem(int internalId, int zoneId, DateTime dateTime, int warehouseId)
         {
             var itemToAdd = createdItemsList.FirstOrDefault(i => i.internalId == internalId);
-           
-            try
+            if (itemToAdd == null)
             {
-                if (itemToAdd == null)
-                {
-                    throw new InvalidOperationException("No item with this internal ID exists in the creation list.");
-                }
-
+                throw new InvalidOperationException("No item with this internal ID exists in the creation list.");
             }
 
-            finally
+            var zone = warehouseService.FindZoneById(warehouseId, zoneId); // Bruker instansen 'warehouseService'
+            if (zone == null)
             {
-                if (itemToAdd != null)
-                {
-
-                    if (ItemsInWarehouseList.Any(i => i.internalId == internalId))
-                    {
-                        //legger til 1 i kvantitet for item når når det kommer inn nye varer som allerede eksisterer
-                        itemToAdd.quantity += 1;
-                        Console.WriteLine($"Item with this internal ID already exists in the warehouse, " +
-                                          $"updated the {internalId} with a new quantity: {itemToAdd.quantity}");
-
-                    }
-
-
-                    // Setter lokasjon og dato før du legger til i warehouseItemList
-                    itemToAdd.location = location;
-                    itemToAdd.dateTime = dateTime;
-
-                    ItemsInWarehouseList.Add(itemToAdd);
-
-                    // Logger denne første plasseringen av varen
-                    LogItemMovement(new ItemHistory(internalId, null, location, dateTime));
-
-                    Console.WriteLine($"Item {internalId} has been added to the warehouse at location {location}.");
-
-                }
-
+                throw new InvalidOperationException($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
             }
+
+            itemToAdd.zoneId = zoneId;
+            itemToAdd.dateTime = dateTime;
+            ItemsInWarehouseList.Add(itemToAdd);
+
+            LogItemMovement(new ItemHistory(internalId, null, zoneId, dateTime)); // Juster denne linjen basert på faktiske parametere forventet av ItemHistory
         }
 
 
@@ -130,13 +110,13 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
         /// <param name="newLocation">newLocation er for å sette en ny lokasjon på en Item gjenstand.</param>
-        public void MoveItemToLocation(int internalId, string newLocation)
+        public void MoveItemToLocation(int internalId, int newLocation)
             {
              var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
              if (item != null)
              {
-                var oldLocation = item.location; // Lagrer den gamle lokasjonen før oppdatering
-                item.location = newLocation; // Oppdaterer lokasjonen
+                var oldLocation = item.zoneId; // Lagrer den gamle lokasjonen før oppdatering
+                item.zoneId = newLocation; // Oppdaterer lokasjonen
                 item.dateTime = DateTime.Now; // Oppdaterer tidsstempel
 
                 // Oppretter en ny ItemHistory oppføring
@@ -151,7 +131,7 @@ namespace jechFramework.Services
                 {
                     Console.WriteLine($"Item with internal ID {internalId} not found. No action taken.");
                 }
-            }
+        }
 
 
         /// <summary>
@@ -161,7 +141,7 @@ namespace jechFramework.Services
         private void LogItemMovement(ItemHistory itemHistory)
         {
             // Format for logginnlegget
-            var logEntry = $"{itemHistory.internalId},{itemHistory.oldLocation},{itemHistory.newLocation},{itemHistory.dateTime}\n";
+            var logEntry = $"{itemHistory.internalId},{itemHistory.oldZone},{itemHistory.newZone},{itemHistory.dateTime}\n";
 
             // Spesifiser stien til loggfilen
             var logFilePath = "ItemMovements.log";
@@ -234,11 +214,13 @@ namespace jechFramework.Services
         }
 
 
-        public string GetLocationByInternalId(int internalId)
+        public int? GetLocationByInternalId(int internalId)
         {
             var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
-            return item?.location ?? "Unallocated"; // Returnerer "Unallocated" hvis varen ikke finnes
+            // Returnerer zoneId som int?. Hvis ingen zoneId, returnerer null.
+            return item?.zoneId;
         }
+
 
 
         //public UpdateItemMovement(int internalId, string n)
@@ -249,8 +231,6 @@ namespace jechFramework.Services
         {
             return createdItemsList.Any(i => i.internalId == internalId);
         }
-
-   
     }
        
 }

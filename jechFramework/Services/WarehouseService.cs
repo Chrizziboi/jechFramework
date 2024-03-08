@@ -194,6 +194,7 @@ namespace jechFramework.Services
             return null; // Returnerer null hvis varehuset eller sonen ikke ble funnet
         }
 
+
         /// <summary>
         /// Funksjon for å skrive ut alle varer i en spesifisert sone.
         /// </summary>
