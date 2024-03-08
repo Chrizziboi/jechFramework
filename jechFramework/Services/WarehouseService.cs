@@ -85,7 +85,6 @@ namespace jechFramework.Services
         public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity)
         {
 
-
             try
             {
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
@@ -147,12 +146,6 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
                 // Optionally handle the exception here if needed
             }
-        }
-
-
-        public void GetZoneInWarehouse(int warehouseId, int zoneId)
-        {
-
         }
 
 
@@ -247,7 +240,7 @@ namespace jechFramework.Services
 
 
         ///                                              ///
-        ///   Service funksjoner for Zone.cs   ///
+        ///   Service funksjoner for Employee.cs         ///
         ///                                              ///
 
 
@@ -339,6 +332,5 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
-
     }
 }

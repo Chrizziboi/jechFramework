@@ -49,7 +49,7 @@ namespace FunctionsTester
 
             service.GetAllEmployeesInWarehouse(1);
 
-            service.GetZoneInWarehouse(1, 1);
+            service.FindZoneById(1, 1);
 
             service.GetAllItemsInZone(1,1);
 
