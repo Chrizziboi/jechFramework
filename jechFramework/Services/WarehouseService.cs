@@ -33,7 +33,6 @@ namespace jechFramework.Services
 
         }
 
-
         /// <summary>
         /// Funksjon for å finne et varehus i varehus-listen
         /// </summary>

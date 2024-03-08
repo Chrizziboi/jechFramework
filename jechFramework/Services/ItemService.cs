@@ -110,28 +110,31 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
         /// <param name="newLocation">newLocation er for å sette en ny lokasjon på en Item gjenstand.</param>
-        public void MoveItemToLocation(int internalId, int newLocation)
+        public void MoveItemToLocation(int internalId, int newZone)
+        {
+            var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
+            if (item != null)
             {
-             var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
-             if (item != null)
-             {
-                var oldLocation = item.zoneId; // Lagrer den gamle lokasjonen før oppdatering
-                item.zoneId = newLocation; // Oppdaterer lokasjonen
+                var oldZone = item.zoneId; // Lagrer den gamle lokasjonen før oppdatering
+                Console.WriteLine($"Moving Item {internalId} from Zone {(oldZone.HasValue ? oldZone.ToString() : "None")} to Zone {newZone}"); // Oppdatert for feilsøking
+                item.zoneId = newZone; // Oppdaterer lokasjonen
                 item.dateTime = DateTime.Now; // Oppdaterer tidsstempel
 
                 // Oppretter en ny ItemHistory oppføring
-                var itemHistory = new ItemHistory(internalId, oldLocation, newLocation, item.dateTime);
+                var itemHistory = new ItemHistory(internalId, oldZone, newZone, item.dateTime);
 
-                // Anta at vi har en metode for å logge denne historikken til en fil
+                // Logger denne historikken til en fil
                 LogItemMovement(itemHistory);
 
-                Console.WriteLine($"Item {internalId} has been moved from {oldLocation} to {newLocation} at {item.dateTime}");
-                }
-                else
-                {
-                    Console.WriteLine($"Item with internal ID {internalId} not found. No action taken.");
-                }
+                Console.WriteLine($"Item {internalId} has been moved from {oldZone} to {newZone} at {item.dateTime}");
+            }
+            else
+            {
+                Console.WriteLine($"Item with internal ID {internalId} not found. No action taken.");
+            }
         }
+
+
 
 
         /// <summary>
@@ -140,8 +143,11 @@ namespace jechFramework.Services
         /// <param name="itemHistory">En klasse for å registrere historikk for Item-gjenstander.</param>
         private void LogItemMovement(ItemHistory itemHistory)
         {
+            // Konverterer oldZone til en streng, bruker tom streng hvis null
+            var oldZoneString = itemHistory.oldZone.HasValue ? itemHistory.oldZone.Value.ToString() : "NULL";
+
             // Format for logginnlegget
-            var logEntry = $"{itemHistory.internalId},{itemHistory.oldZone},{itemHistory.newZone},{itemHistory.dateTime}\n";
+            var logEntry = $"{itemHistory.internalId},{oldZoneString},{itemHistory.newZone},{itemHistory.dateTime}\n";
 
             // Spesifiser stien til loggfilen
             var logFilePath = "ItemMovements.log";
@@ -149,6 +155,7 @@ namespace jechFramework.Services
             // Skriver logginnlegget til filen
             File.AppendAllText(logFilePath, logEntry);
         }
+
         /// <summary>
         /// Funksjon for å telle antall Item-gjenstander med gitt internalId.
         /// </summary>

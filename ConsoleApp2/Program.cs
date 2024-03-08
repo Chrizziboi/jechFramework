@@ -10,58 +10,39 @@ namespace MyConsoleApp
             Console.WriteLine("Welcome to JECH Warehouse Simulation");
 
             // Opprettelse av tjenesteinstanser
-            ItemService itemService = new ItemService();
-            ItemHistoryService itemHistoryService = new ItemHistoryService();
-            WaresInService waresInService = new WaresInService(itemService);
-            WaresOutService waresOutService = new WaresOutService(itemService);
             WarehouseService warehouseService = new WarehouseService();
+            ItemService itemService = new ItemService(warehouseService);
+            ItemHistoryService itemHistoryService = new ItemHistoryService();
+            WaresInService waresInService = new WaresInService(itemService, warehouseService);
+            WaresOutService waresOutService = new WaresOutService(itemService);
 
             warehouseService.CreateWarehouse(1, "Warehouse 1", 5);
             warehouseService.FindWareHouseInWarehouseList(1);
 
-            //var warehouse = new Warehouse(1, "Hovedvarehus", 10000);
-            //var zoneA = new Zone(1, "Sone A", "Beskrivelse for Sone A", 500);
-            //var item1 = new Item { internalId = 1, name = "Vare 1", type = "Type A" };
-            //var item2 = new Item { internalId = 2, name = "Vare 2", type = "Type B" };
+            warehouseService.CreateZone(1, 1, "Emirs P-Plass", 5);
+            warehouseService.CreateZone(1, 2, "Chris P-Plass", 4);
+            warehouseService.CreateZone(1, 3, "Joakim P-Plass", 3);
+            warehouseService.CreateZone(1, 4, "Hannan P-Plass", 2);
+            warehouseService.CreateZone(1, 5, "Edgar P-Plass", 2);
+            warehouseService.CreateZone(1, 6, "Jesus P-Plass", 2);
 
-            // Legger til soner i varehuset
-            //warehouse.zones.Add(zoneA);
-            //
-            //warehouse.zones.Add(zoneA);
-            //
-            //// Legger til varer i en sone
-            //zoneA.Items.Add(item1);
-            //zoneA.Items.Add(item2);
-            //
-
-
-
-            // Opprettelse av nye varer
-            // Item newItem = new Item { internalId = 6, location = "H0", dateTime = DateTime.Now };
-            // Item newItem2 = new Item { internalId = 1, location = "H0", dateTime = DateTime.Now };
+            // Opprettelse og legging til varer
             itemService.CreateItem(6, 6, "Kebab", "Food");
-            // itemService.CreateItem(2, 2, "Ananas", "Fruit");
             itemService.CreateItem(3, 3, "T-Shirt", "Clothes");
             itemService.CreateItem(4, null, "Pizza", "Food");
             itemService.CreateItem(5, null, "Cola", "Soda");
 
-            //waresInService.ScheduleWaresIn(1, DateTime.Now, "H0", (hour:1,minutes:00,seconds:00), new Item(1,"Hairspray", "Hair products") ;
-
-            // Legger til nye varer i warehouseItemList
-            itemService.AddItem(4, "H0", DateTime.Now);
-            itemService.AddItem(6, "H0", DateTime.Now);
-            itemService.AddItem(5, "H0", DateTime.Now);
-            // itemService.AddItem(5, "H0", DateTime.Now);
-            // itemService.AddItem(4, "H0", DateTime.Now);
-
+            // Legger til varer med riktig zoneId og warehouseId
+            itemService.AddItem(4, 1, DateTime.Now, 1);
+            itemService.AddItem(6, 1, DateTime.Now, 1);
+            itemService.AddItem(5, 1, DateTime.Now, 1);
 
             List<Item> incomingItems = new List<Item>() {
                 new Item() { internalId = 6, name = "Kebab", type = "Food" },
-                // new Item() { internalId = 6, name = "Kebab", type = "Food" },
                 new Item() { internalId = 2, name = "Ananas", type = "Fruit" }
             };
 
-            waresInService.ScheduleWaresIn(1, DateTime.Now, "H0", TimeSpan.FromMinutes(30), incomingItems);
+            waresInService.ScheduleWaresIn(1,1, DateTime.Now, 1, TimeSpan.FromMinutes(30), incomingItems);
 
             itemService.FindHowManyItemsInItemList();
 
@@ -69,16 +50,16 @@ namespace MyConsoleApp
          
 
             // Flytting av varen til ulike lokasjoner og sporing av varehistorikk
-            itemService.MoveItemToLocation(6, "H2");
-            itemService.MoveItemToLocation(2, "H2");
+            itemService.MoveItemToLocation(6, 2);
+            itemService.MoveItemToLocation(2, 2);
             //itemHistoryService.GetItemHistoryById(6);
 
 
-            itemService.MoveItemToLocation(6, "H3");
+            itemService.MoveItemToLocation(6, 3);
             //itemHistoryService.GetItemHistoryById(6);
 
 
-            itemService.MoveItemToLocation(6, "H4");
+            itemService.MoveItemToLocation(6, 4);
             itemHistoryService.GetItemHistoryById(6);
             itemHistoryService.GetItemHistoryById(2);
             itemHistoryService.GetItemHistoryById(3);
@@ -113,8 +94,6 @@ namespace MyConsoleApp
             Console.WriteLine("Simulation complete. Data has been cleared.");
             Console.WriteLine("Press any key to close this window...");
             Console.ReadKey();
-
-
         }
     }
 }

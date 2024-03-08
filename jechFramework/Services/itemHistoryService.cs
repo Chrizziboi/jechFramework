@@ -35,15 +35,20 @@ public class ItemHistoryService
             var fields = entry.Split(',');
             if (fields.Length == 4)
             {
-                var internalId = int.Parse(fields[0]);
-                var oldZone = int.Parse(fields[1]); // Endret til int.Parse
-                var newZone = int.Parse(fields[2]); // Endret til int.Parse
-                var dateTime = DateTime.Parse(fields[3]);
+                int internalId = int.Parse(fields[0]);
+                int? oldZone = null;
+                if (!string.IsNullOrWhiteSpace(fields[1]) && fields[1] != "NULL")
+                {
+                    oldZone = int.Parse(fields[1]);
+                }
+                int newZone = int.Parse(fields[2]);
+                DateTime dateTime = DateTime.Parse(fields[3]);
 
                 itemHistoryList.Add(new ItemHistory(internalId, oldZone, newZone, dateTime));
             }
         }
     }
+
 
     /// <summary>
     /// Returnerer en liste over alle elementhistorier.
@@ -58,7 +63,7 @@ public class ItemHistoryService
     public void GetItemHistoryById(int internalId)
     {
         UpdateHistoryFromLog(); // Sørg for at listen er oppdatert basert på loggfilen
-        List<ItemHistory> singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
+        var singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
 
         if (!singleItemHistory.Any())
         {
@@ -67,14 +72,14 @@ public class ItemHistoryService
         }
 
         Console.WriteLine($"History for item with internalId: {internalId}");
-        
-        foreach (ItemHistory itemHistory in singleItemHistory)
+
+        foreach (var itemHistory in singleItemHistory)
         {
+            var oldZoneDisplay = itemHistory.oldZone.HasValue ? itemHistory.oldZone.ToString() : "None"; // Forbedret visning for oldZone
             Console.WriteLine($"--------------\n" +
                               $" - DateTime: {itemHistory.dateTime}.\n" +
-                              $" - Old Location: {itemHistory.oldZone}.\n" +
+                              $" - Old Location: {oldZoneDisplay}.\n" + // Endret fra direkte bruk av itemHistory.oldZone
                               $" - New Location: {itemHistory.newZone}.\n");
-
         }
     }
 

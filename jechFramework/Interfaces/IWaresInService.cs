@@ -7,6 +7,6 @@ namespace jechFramework.Interfaces
     public interface IWaresInService  // Endrer grensesnittet til public
     {
         // Metoder som forventes å bli implementert av tjenesten for inngående varer
-        void ScheduleWaresIn(int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Item> incomingItems);
+        void ScheduleWaresIn(int warehouseId, int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Item> incomingItems);
     }
 }
