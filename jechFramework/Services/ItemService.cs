@@ -110,7 +110,7 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
         /// <param name="newLocation">newLocation er for å sette en ny lokasjon på en Item gjenstand.</param>
-        public void MoveItemToLocation(int internalId, string newLocation)
+        public void MoveItemToLocation(int internalId, int newLocation)
             {
              var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
              if (item != null)
@@ -214,11 +214,13 @@ namespace jechFramework.Services
         }
 
 
-        public string GetLocationByInternalId(int internalId)
+        public int? GetLocationByInternalId(int internalId)
         {
             var item = ItemsInWarehouseList.FirstOrDefault(i => i.internalId == internalId);
-            return item?.zoneId ?? 0; // Returnerer "Unallocated" hvis varen ikke finnes
+            // Returnerer zoneId som int?. Hvis ingen zoneId, returnerer null.
+            return item?.zoneId;
         }
+
 
 
         //public UpdateItemMovement(int internalId, string n)
@@ -229,8 +231,6 @@ namespace jechFramework.Services
         {
             return createdItemsList.Any(i => i.internalId == internalId);
         }
-
-   
     }
        
 }

@@ -84,7 +84,7 @@ namespace jechFramework.Services
         /// </summary>
         public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity)
         {
-            
+
 
             try
             {
@@ -101,7 +101,7 @@ namespace jechFramework.Services
 
                 // Check if adding this zone would exceed warehouse capacity
                 int totalZoneCapacity = warehouse.zoneList.Count() + 1;
-                
+
                 if (totalZoneCapacity > warehouse.warehouseCapacity)
                 {
                     throw new InvalidOperationException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
@@ -150,17 +150,11 @@ namespace jechFramework.Services
         }
 
 
-        public int GetZoneInWarehouse(int warehouseId, int zoneId)
-        {
-
-        }
-
-
         /// <summary>
         /// Funksjon for å skrive ut alle soner for et varehus.
         /// </summary>
         /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
-        public void GetAllZonesInWarehouse(int warehouseId) 
+        public void GetAllZonesInWarehouse(int warehouseId)
         {
             try
             {
@@ -180,13 +174,13 @@ namespace jechFramework.Services
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine(ex.Message);
-              
+
             }
         }
 
 
         /// <summary>
-        /// 
+        /// Funksjon for å finne en sone ved hjelp av Id.
         /// </summary>
         /// <param name="warehouseId"></param>
         /// <param name="zoneId"></param>
@@ -224,11 +218,20 @@ namespace jechFramework.Services
 
                 Console.WriteLine($"Items in Zone '{zone.zoneName}' in Warehouse '{warehouse.warehouseName}':");
 
-                foreach (var item in zone.itemList)
+                if (zone.ItemsInZoneList.Count == 0)
                 {
-                    Console.WriteLine($"Item ID: {item.itemId}, Name: {item.itemName}, Quantity: {item.quantity}");
+                    Console.WriteLine("There are no items in this zone.");
+                }
+                else
+                {
+                    foreach (var item in zone.ItemsInZoneList)
+                    {
+                        Console.WriteLine($"Item ID: {item.internalId}, Name: {item.name}, Quantity: {item.quantity}");
+                    }
+
                 }
             }
+
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine(ex.Message);
@@ -236,11 +239,12 @@ namespace jechFramework.Services
 
         }
 
+
         ///                                              ///
-             ///   Service funksjoner for Zone.cs   ///
+        ///   Service funksjoner for Employee.cs         ///
         ///                                              ///
 
-        
+
         /// <summary>
         /// Funksjon for å oprette ansatte for et gitt varehus.
         /// </summary>
@@ -255,10 +259,10 @@ namespace jechFramework.Services
                     throw new InvalidOperationException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
-                if (employeeId != null) 
-                {
-                    throw new InvalidOperationException($"Employee with id: {employeeId} Already exists.");
-                }
+                //if (employeeId == null)
+                //{
+                //    throw new InvalidOperationException($"Employee with id: {employeeId} Already exists.");
+                //}
 
                 Employee employee = new(employeeId, employeeName);
                 warehouse.employeeList.Add(employee);
@@ -267,7 +271,7 @@ namespace jechFramework.Services
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine(ex.Message);
-               
+
             }
         }
 
