@@ -17,7 +17,7 @@ namespace jechFramework.Services
 
         // Konstruktør for å injisere ItemService
         /// <summary>
-        /// Tar imot et objekt av typen "ItemService" som parameter. Om den er null kaster den en "ArgumentNullException", hvis "ikke null", tilordnes den til "this.itemService"
+        /// Tar imot et objekt av typen "ItemService" som parameter. Om den er null kaster den en "ServiceException", hvis "ikke null", tilordnes den til "this.itemService"
         /// </summary>
         /// <param name="itemService"> Objektet som gir tjenester knyttet til elementer (varer).</param>
         /// <exception cref="ServiceException"> Kastes hvis 'itemService' er null. </exception> //ArgnullException

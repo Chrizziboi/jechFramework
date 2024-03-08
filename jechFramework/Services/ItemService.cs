@@ -29,7 +29,7 @@ namespace jechFramework.Services
         /// <param name="externalId">externalId for tilfellene man skulle trenge leverandør sin produkt id.</param>
         /// <param name="name">navn er for å kunne gi navn til en gitt vare.</param>
         /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
-        /// <exception cref="InvalidOperationException">En exception for et tilfelle der en Item med samme internalId blir opprettet.</exception>
+        /// <exception cref="ServiceException">En exception for et tilfelle der en Item med samme internalId blir opprettet.</exception>
         public void CreateItem(int internalId, int? externalId, string name, string type)
         {
             if (createdItemsList.Any(i => i.internalId == internalId))

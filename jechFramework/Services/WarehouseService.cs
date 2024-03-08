@@ -20,11 +20,57 @@ namespace jechFramework.Services
         ///                                       ///
 
 
-        public delegate void WarehouseCreatedEventHandler(object source, WarehouseEventHandler args);
+       
 
-        public event WarehouseCreatedEventHandler WarehouseCreated;
+        public delegate void WarehouseCreatedEventHandler(object source, WarehouseEventArgs args);
 
-        
+        public event EventHandler<WarehouseEventArgs> WarehouseCreated;
+        public event EventHandler<WarehouseEventArgs> WarehouseRemoved;
+        public event EventHandler<ZoneEventArgs> ZoneCreated;
+        public event EventHandler<ZoneEventArgs> ZoneRemoved;
+        public event EventHandler<EmployeeEventArgs> EmployeeCreated;
+        public event EventHandler<EmployeeEventArgs> EmployeeRemoved;
+
+        public void OnWarehouseCreated(Warehouse warehouse)
+        {
+            WarehouseCreated?.Invoke(this, new WarehouseEventArgs(warehouse));
+        }
+
+        public void OnWarehouseRemoved(Warehouse warehouse)
+        {
+            WarehouseRemoved?.Invoke(this, new WarehouseEventArgs(warehouse));
+        }
+
+        public void OnZoneCreated(Warehouse warehouse, Zone zone)
+        {
+            ZoneCreated?.Invoke(this, new ZoneEventArgs(warehouse, zone));
+        }
+
+        public void OnZoneRemoved(Warehouse warehouse, Zone zone)
+        {
+            ZoneRemoved?.Invoke(this, new ZoneEventArgs(warehouse, zone));
+        }
+
+        public void OnEmployeeCreated(Warehouse warehouse, Employee employee)
+        {
+            EmployeeCreated?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
+        }
+
+        public void OnEmployeeRemoved(Warehouse warehouse, Employee employee)
+        {
+            EmployeeRemoved?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
+        }
+
+        //protected virtual void OnWarehouseCreated(Warehouse warehouse)
+        //{
+        //    WarehouseCreated?.Invoke(this, new WarehouseEventArgs(warehouse));
+        //}
+
+
+        private static void Service_WarehouseCreated(object source, WarehouseEventArgs args)
+        {
+            Console.WriteLine($"Warehouse Created: {args.Warehouse.warehouseName}");
+        }
 
         ///                                        ///
         ///   Service funksjoner for Warehouse.cs  ///
@@ -40,7 +86,7 @@ namespace jechFramework.Services
 
             warehouseList.Add(newWarehouse);
 
-          // OnWarehouseCreated(newWarehouse);
+            OnWarehouseCreated(newWarehouse);
 
 
         }
@@ -50,7 +96,7 @@ namespace jechFramework.Services
         /// Funksjon for å finne et varehus i varehus-listen
         /// </summary>
         /// <param name="warehouseId"></param>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ServiceException"></exception>
         public void FindWareHouseInWarehouseList(int warehouseId)
         {
             var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
@@ -65,7 +111,6 @@ namespace jechFramework.Services
             Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
                               $"warehouse Name: {warehouse.warehouseName}\n" +
                               $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
-
 
         }
 
@@ -273,7 +318,7 @@ namespace jechFramework.Services
 
                 //if (employeeId == null)
                 //{
-                //    throw new InvalidOperationException($"Employee with id: {employeeId} Already exists.");
+                //    throw new ServiceException($"Employee with id: {employeeId} Already exists.");
                 //}
 
                 Employee employee = new(employeeId, employeeName);

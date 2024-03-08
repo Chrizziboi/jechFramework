@@ -17,10 +17,21 @@ namespace FunctionsTester
                               "\n--------------------------\n");
 
             WarehouseService WService = new();
-            WService.WarehouseCreated += WService_WarehouseCreated;
+            //WService.WarehouseCreated += Service_WarehouseCreated;
 
-            WService.CreateWarehouse(1, "Varehus", 5);
-            WService.RemoveEmployee(1, 1);
+            WService.CreateWarehouse(1, "Varehus 1", 5);
+            WService.CreateWarehouse(2, "Varehus 2", 5);
+            WService.CreateWarehouse(3, "Varehus 3", 5);
+            WService.CreateWarehouse(4, "Varehus 4", 5);
+
+            WService.FindWareHouseInWarehouseList(1);
+            WService.FindWareHouseInWarehouseList(2);
+            WService.FindWareHouseInWarehouseList(3);
+            WService.FindWareHouseInWarehouseList(4);
+
+
+            
+            //WService.RemoveEmployee(1, 1);
             //service.CreateWarehouse(1, "Godeste Varehus", 5);
             //service.FindWareHouseInWarehouseList(1);
             //
@@ -57,27 +68,24 @@ namespace FunctionsTester
             //
             //service.GetAllItemsInZone(1,1);
 
-            
+
 
 
 
             Console.WriteLine($"\nItemService Functions" +
                               $"\n--------------------------\n");
-            ItemService IService = new(WService);
-            IService.CreateItem(1, 1, "FLAKSELOGG", "lodd");
-            IService.AddItem(1, 1, DateTime.Now, 1);
-           
-            
-            Item item = new(1, 1, "itemdummy", "dummytest");
+            //ItemService IService = new(WService);
+            //IService.CreateItem(1, 1, "FLAKSELOGG", "lodd");
+            //IService.AddItem(1, 1, DateTime.Now, 1);
+            //
+            //
+            //Item item = new(1, 1, "itemdummy", "dummytest");
+            //
+
 
             Console.WriteLine("To finish testing, press the any key.");
             Console.ReadKey();
 
-        }
-
-        private static void WService_WarehouseCreated(object source, WarehouseEventHandler args)
-        {
-            throw new NotImplementedException();
         }
     }
 }
