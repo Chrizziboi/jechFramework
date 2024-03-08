@@ -13,6 +13,7 @@ namespace jechFramework.Services
     {
         private readonly List<WaresIn> scheduledWaresIns = new List<WaresIn>();
         private readonly ItemService itemService; // Beholder referansen til ItemService
+        private readonly Warehouse warehouse;
 
         // Konstruktør for å injisere ItemService
         /// <summary>
@@ -37,7 +38,7 @@ namespace jechFramework.Services
         /// <param name="incomingItems">En liste over Item-objekter som representerer de inngående varene.</param>
         /// <exception cref="ArgumentNullException">-</exception>
         /// <exception cref="InvalidOperationException">Forteller at en ordre med samme nummer er allerede laget.</exception>
-        public void ScheduleWaresIn(int orderId, DateTime scheduledTime, string location, TimeSpan processingTime, List<Item> incomingItems)
+        public void ScheduleWaresIn(int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Item> incomingItems)
         {
             if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
             if (scheduledWaresIns.Any(wi => wi.orderId == orderId))
@@ -49,7 +50,7 @@ namespace jechFramework.Services
             {
                 orderId = orderId,
                 scheduledTime = scheduledTime,
-                location = location,
+                zoneId = zoneId,
                 incomingItems = incomingItems
             };
 
@@ -57,21 +58,23 @@ namespace jechFramework.Services
 
             foreach (var item in incomingItems)
             {
-                // Sjekker om item allerede eksisterer i itemList
                 if (!itemService.ItemExists(item.internalId))
                 {
-                    // Oppretter ny item kun hvis den ikke allerede eksisterer
                     itemService.CreateItem(item.internalId, item.externalId, item.name, item.type);
                 }
 
-                // Hent eksisterende lokasjon fra ItemService
-                var existingLocation = itemService.GetLocationByInternalId(item.internalId);
-                var itemLocation = !string.IsNullOrWhiteSpace(existingLocation) ? existingLocation : item.location;
+                // Henter eksisterende zoneId for varen. Returnerer null hvis ingen sone er tildelt
+                var existingZoneId = itemService.GetLocationByInternalId(item.internalId);
+
+                // Bruker eksisterende zoneId hvis den ikke er null, ellers bruker den medfølgende zoneId
+                var itemZoneId = existingZoneId ?? zoneId;
 
                 try
                 {
-                    itemService.AddItem(item.internalId, itemLocation, DateTime.Now);
-                    Console.WriteLine($"Item {item.internalId} added with location {itemLocation}.");
+                    // Antar at du har tilgang til en gyldig warehouseId her
+                    
+                    itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouse.warehouseId);
+                    Console.WriteLine($"Item {item.internalId} added to zone {itemZoneId} in warehouse {warehouse.warehouseId}.");
                 }
                 catch (InvalidOperationException ex)
                 {

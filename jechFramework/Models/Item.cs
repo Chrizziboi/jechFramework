@@ -26,7 +26,7 @@ namespace jechFramework.Models
 
         public string storageType { get; set; }
 
-        public string? location { get; set; } = "Unallocated";
+        public int? zoneId { get; set; } = 0;
 
         public int quantity { get; set; } = 1;
 
@@ -56,10 +56,10 @@ namespace jechFramework.Models
         /// </summary>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
         /// <param name="location">Location er for å vise hvor i lageret det ligger.</param>
-        public Item(int internalId, string location)
+        public Item(int internalId, int zoneId)
         {
             this.internalId = internalId;
-            this.location = location;
+            this.zoneId = zoneId;
 
         }
 
@@ -152,7 +152,7 @@ namespace jechFramework.Models
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param> 
         /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
-        public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType, string location, int quantity, DateTime dateTime)
+        public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType, int zoneId, int quantity, DateTime dateTime)
         {
             this.internalId = internalId;
             this.externalId = externalId;
@@ -161,7 +161,7 @@ namespace jechFramework.Models
             this.weight = weight;
             this.type = type;
             this.storageType = storageType;
-            this.location = location;
+            this.zoneId = zoneId;
             this.quantity = quantity;
             this.dateTime = DateTime.Now;
 
