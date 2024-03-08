@@ -85,7 +85,6 @@ namespace jechFramework.Services
         public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity)
         {
 
-
             try
             {
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
@@ -194,6 +193,7 @@ namespace jechFramework.Services
             }
             return null; // Returnerer null hvis varehuset eller sonen ikke ble funnet
         }
+
 
         /// <summary>
         /// Funksjon for å skrive ut alle varer i en spesifisert sone.
@@ -333,6 +333,5 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
-
     }
 }
