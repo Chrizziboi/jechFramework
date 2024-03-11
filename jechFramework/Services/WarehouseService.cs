@@ -218,6 +218,36 @@ namespace jechFramework.Services
             return null; // Returnerer null hvis varehuset eller sonen ikke ble funnet
         }
 
+        public Zone FindAvailableZoneForItem(int warehouseId, int preferredZoneId, int quantity)
+        {
+            var warehouse = FindWarehouseInWarehouseList(warehouseId, false);
+            if (warehouse == null)
+            {
+                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                return null;
+            }
+
+            // Først sjekk den foretrukne sonen
+            var preferredZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == preferredZoneId);
+            if (preferredZone != null && CanAddItemsToZone(warehouseId, preferredZoneId, quantity))
+            {
+                return preferredZone;
+            }
+
+            // Hvis den foretrukne sonen ikke har plass, søk etter en annen sone
+            foreach (var zone in warehouse.zoneList)
+            {
+                if (CanAddItemsToZone(warehouseId, zone.zoneId, quantity))
+                {
+                    return zone;
+                }
+            }
+
+            // Hvis ingen soner har plass, returner null
+            Console.WriteLine($"No available zone found in warehouse {warehouseId} for quantity {quantity}.");
+            return null;
+        }
+
 
         /// <summary>
         /// Funksjon for å skrive ut alle varer i en spesifisert sone.

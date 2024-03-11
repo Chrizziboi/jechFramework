@@ -21,11 +21,11 @@ namespace MyConsoleApp
             warehouseService.FindWarehouseInWarehouseList(1);
 
             warehouseService.CreateZone(1, 1, "Emirs P-Plass", 40);
-            warehouseService.CreateZone(1, 2, "Chris P-Plass", 4);
+            warehouseService.CreateZone(1, 2, "Chris P-Plass", 40);
             warehouseService.CreateZone(1, 3, "Joakim P-Plass", 3);
             warehouseService.CreateZone(1, 4, "Hannan P-Plass", 2);
             warehouseService.CreateZone(1, 5, "Edgar P-Plass", 2);
-            warehouseService.CreateZone(1, 6, "Jesus P-Plass", 2);
+            warehouseService.CreateZone(1, 6, "Jesus P-Plass", 40);
 
             // Opprettelse og legging til varer
             itemService.CreateItem(1,6, 6, "Kebab", "Food");
@@ -34,10 +34,10 @@ namespace MyConsoleApp
             itemService.CreateItem(1,5, null, "Cola", "Soda");
 
             // Legger til varer med riktig zoneId og warehouseId
-            //itemService.AddItem(4, 1, DateTime.Now, 1, 50);
+            itemService.AddItem(4, 1, DateTime.Now, 1,35);
             itemService.AddItem(3, 1, DateTime.Now, 1, 5);
-            itemService.AddItem(6, 1, DateTime.Now, 1);
-            itemService.AddItem(5, 1, DateTime.Now, 1);
+            itemService.AddItem(6, 1, DateTime.Now, 1, 5);
+            itemService.AddItem(5, 1, DateTime.Now, 1,1);
 
             List<Item> incomingItems = new List<Item>() {
                 new Item() { internalId = 6, name = "Kebab", type = "Food" },
@@ -69,7 +69,7 @@ namespace MyConsoleApp
 
             // Planlegging av varer som skal sendes ut
             List<Item> outgoingItems = new List<Item>() {
-            new Item() { internalId = 3, name = "T-Shirt", type = "Clothes" },
+            new Item() { internalId = 4, name = "T-Shirt", type = "Clothes" },
             new Item() { internalId = 5, name = "Cola", type = "Soda" }
             };
             

@@ -26,7 +26,7 @@ namespace jechFramework.Services
             try
             {
                 // Sjekk for eksistensen av varehuset
-                warehouseService.FindWarehouseInWarehouseList(warehouseId); // Bekreft varehuset eksisterer
+                warehouseService.FindWarehouseInWarehouseList(warehouseId,false); // Bekreft varehuset eksisterer
 
                 if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
                 if (scheduledWaresIns.Any(wi => wi.orderId == orderId)) throw new InvalidOperationException("A wares in with this orderId is already scheduled.");

@@ -80,41 +80,43 @@ namespace jechFramework.Services
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
         /// <exception cref="InvalidOperationException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
-        public void AddItem(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1)
+        public void AddItem(int internalId, int initialZoneId, DateTime dateTime, int warehouseId, int quantity = 1)
         {
             try
             {
-                if (!warehouseService.CanAddItemsToZone(warehouseId, zoneId, quantity))
+                // Forsøker å finne en tilgjengelig sone som kan akseptere varen, starter med den foretrukne sonen.
+                var availableZone = warehouseService.FindAvailableZoneForItem(warehouseId, initialZoneId, quantity);
+                if (availableZone == null)
                 {
-                    Console.WriteLine($"Cannot add {quantity} of item {internalId} to zone {zoneId} in warehouse {warehouseId} as it would exceed its capacity.");
+                    Console.WriteLine($"Unable to find an available zone for item {internalId} in warehouse {warehouseId}.");
                     return;
                 }
 
-                // Resten av koden for å legge til item, som før.
-                var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
-                var zone = warehouse?.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
-
-                // Dersom item allerede eksisterer, oppdaterer kvantiteten. Hvis ikke, oppretter og legger til ny item.
-                var itemToAdd = zone?.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                // Sjekker om item allerede eksisterer i den tilgjengelige sonen
+                var itemToAdd = availableZone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
                 if (itemToAdd != null)
                 {
+                    // Øker kvantiteten for eksisterende item
                     itemToAdd.quantity += quantity;
-                    Console.WriteLine($"Quantity of item with internal ID {internalId} in zone {zoneId} increased by {quantity}.");
+                    Console.WriteLine($"Quantity of item with internal ID {internalId} in zone {availableZone.zoneId} increased by {quantity}.");
                 }
                 else
                 {
-                    itemToAdd = new Item { internalId = internalId, zoneId = zoneId, dateTime = dateTime, quantity = quantity };
-                    zone?.ItemsInZoneList.Add(itemToAdd);
-                    Console.WriteLine($"Item with internal ID {internalId} added to zone {zoneId} with quantity {quantity}.");
+                    // Oppretter og legger til en ny item hvis den ikke eksisterer
+                    itemToAdd = new Item { internalId = internalId, zoneId = availableZone.zoneId, dateTime = dateTime, quantity = quantity };
+                    availableZone.ItemsInZoneList.Add(itemToAdd);
+                    Console.WriteLine($"Item with internal ID {internalId} added to zone {availableZone.zoneId} with quantity {quantity}.");
                 }
 
-                LogItemMovement(new ItemHistory(internalId, null, zoneId, dateTime));
+                // Logger bevegelsen for den nye eller oppdaterte item
+                LogItemMovement(new ItemHistory(internalId, null, availableZone.zoneId, dateTime));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while adding item {internalId} to warehouse {warehouseId}: {ex.Message}");
+                Console.WriteLine($"An error occurred while trying to add item {internalId} to warehouse {warehouseId}: {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Funksjon for å fjerne en Item-gjenstand ut fra lageret.
