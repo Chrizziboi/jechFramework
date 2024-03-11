@@ -7,6 +7,6 @@ namespace jechFramework.Interfaces
     public interface IWaresOutService
     {
         // Methods expected to be implemented by the service for outgoing wares
-        void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems);
+        void ScheduleWaresOut(int warehouseId,int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems);
     }
 }

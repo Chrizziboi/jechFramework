@@ -18,7 +18,7 @@ namespace FunctionsTester
 
             WarehouseService service = new();
             service.CreateWarehouse(1, "Godeste Varehus", 5);
-            service.FindWareHouseInWarehouseList(1);
+            service.FindWarehouseInWarehouseList(1);
 
             service.CreateZone(1, 1, "Emirs P-Plass", 5);
             service.CreateZone(1, 2, "Chris P-Plass", 4);

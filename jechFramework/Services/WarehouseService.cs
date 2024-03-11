@@ -33,29 +33,35 @@ namespace jechFramework.Services
 
         }
 
-
         /// <summary>
         /// Funksjon for å finne et varehus i varehus-listen
         /// </summary>
         /// <param name="warehouseId"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void FindWareHouseInWarehouseList(int warehouseId)
+        public Warehouse FindWarehouseInWarehouseList(int warehouseId, bool printDetails = true)
         {
-            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+            var warehouse = warehouseList.FirstOrDefault(wh => wh.warehouseId == warehouseId);
 
             if (warehouse == null)
             {
                 Console.WriteLine($"A warehouse with id: {warehouseId} could not be found.");
-                throw new InvalidOperationException($"A warehouse with id{warehouseId} could not be found.");
-
+                throw new InvalidOperationException($"A warehouse with id {warehouseId} could not be found.");
             }
 
-            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
-                              $"warehouse Name: {warehouse.warehouseName}\n" +
-                              $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
+            if (printDetails)
+            {
+                Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
+                                  $"warehouse Name: {warehouse.warehouseName}\n" +
+                                  $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
+            }
 
-
+            return warehouse; // Returnerer Warehouse-objektet hvis funnet
         }
+        public List<Warehouse> GetAllWarehouses()
+        {
+            return warehouseList;
+        }
+
 
         /// <summary>
         /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.
@@ -147,7 +153,25 @@ namespace jechFramework.Services
                 // Optionally handle the exception here if needed
             }
         }
+        public bool CanAddItemsToZone(int warehouseId, int zoneId, int quantityToAdd)
+        {
+            var warehouse = FindWarehouseInWarehouseList(warehouseId, false);
+            if (warehouse == null)
+            {
+                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                return false;
+            }
 
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone == null)
+            {
+                Console.WriteLine($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
+                return false;
+            }
+
+            int currentItemCount = zone.ItemsInZoneList.Sum(item => item.quantity);
+            return currentItemCount + quantityToAdd <= zone.zoneCapacity;
+        }
 
         /// <summary>
         /// Funksjon for å skrive ut alle soner for et varehus.
@@ -192,6 +216,36 @@ namespace jechFramework.Services
                 return warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
             }
             return null; // Returnerer null hvis varehuset eller sonen ikke ble funnet
+        }
+
+        public Zone FindAvailableZoneForItem(int warehouseId, int preferredZoneId, int quantity)
+        {
+            var warehouse = FindWarehouseInWarehouseList(warehouseId, false);
+            if (warehouse == null)
+            {
+                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                return null;
+            }
+
+            // Først sjekk den foretrukne sonen
+            var preferredZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == preferredZoneId);
+            if (preferredZone != null && CanAddItemsToZone(warehouseId, preferredZoneId, quantity))
+            {
+                return preferredZone;
+            }
+
+            // Hvis den foretrukne sonen ikke har plass, søk etter en annen sone
+            foreach (var zone in warehouse.zoneList)
+            {
+                if (CanAddItemsToZone(warehouseId, zone.zoneId, quantity))
+                {
+                    return zone;
+                }
+            }
+
+            // Hvis ingen soner har plass, returner null
+            Console.WriteLine($"No available zone found in warehouse {warehouseId} for quantity {quantity}.");
+            return null;
         }
 
 
