@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using jechFramework.Services;
 
 public class ItemHistoryService
 {
@@ -27,25 +28,37 @@ public class ItemHistoryService
     /// </summary>
     public static void UpdateHistoryFromLog()
     {
-        itemHistoryList.Clear();
-        var logEntries = File.ReadAllLines(logFilePath);
-
-        foreach (var entry in logEntries)
+        try
         {
-            var fields = entry.Split(',');
-            if (fields.Length == 4)
-            {
-                int internalId = int.Parse(fields[0]);
-                int? oldZone = null;
-                if (!string.IsNullOrWhiteSpace(fields[1]) && fields[1] != "NULL")
-                {
-                    oldZone = int.Parse(fields[1]);
-                }
-                int newZone = int.Parse(fields[2]);
-                DateTime dateTime = DateTime.Parse(fields[3]);
+            itemHistoryList.Clear();
+            var logEntries = File.ReadAllLines(logFilePath);
 
-                itemHistoryList.Add(new ItemHistory(internalId, oldZone, newZone, dateTime));
+            foreach (var entry in logEntries)
+            {
+                var fields = entry.Split(',');
+                if (fields.Length == 4)
+                {
+                    try
+                    {
+                        int internalId = int.Parse(fields[0]);
+                        int? oldZone = fields[1] != "NULL" ? int.Parse(fields[1]) : null;
+                        int newZone = int.Parse(fields[2]);
+                        DateTime dateTime = DateTime.Parse(fields[3]);
+
+                        itemHistoryList.Add(new ItemHistory(internalId, oldZone, newZone, dateTime));
+                    }
+                    catch (ServiceException ex)
+                    {
+                        Console.WriteLine($"Unable to parse log entry: {entry}. Error: {ex.Message}");
+                        // Fortsetter til neste logginnslag
+                    }
+                }
             }
+        }
+        catch (ServiceException ex)
+        {
+            throw new ServiceException("Error reading from log file.", ex);
+            throw new ServiceException("An unexpected error occurred while updating history from log.", ex);
         }
     }
 
@@ -62,24 +75,27 @@ public class ItemHistoryService
 
     public void GetItemHistoryById(int internalId)
     {
-        UpdateHistoryFromLog(); // Sørg for at listen er oppdatert basert på loggfilen
-        var singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
-
-        if (!singleItemHistory.Any())
+        try
         {
-            Console.WriteLine($"No history was found for item with internalId: {internalId}.");
-            return;
+            UpdateHistoryFromLog(); // Ensure the list is updated based on the log file
+            var singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
+
+            if (!singleItemHistory.Any())
+            {
+                Console.WriteLine($"No history was found for item with internalId: {internalId}.");
+                return;
+            }
+
+            foreach (var itemHistory in singleItemHistory)
+            {
+                var oldZoneDisplay = itemHistory.oldZone.HasValue ? itemHistory.oldZone.Value.ToString() : "None";
+                Console.WriteLine($"--------------\n - DateTime: {itemHistory.dateTime}.\n - Old Location: {oldZoneDisplay}.\n - New Location: {itemHistory.newZone}.\n");
+            }
         }
-
-        Console.WriteLine($"History for item with internalId: {internalId}");
-
-        foreach (var itemHistory in singleItemHistory)
+        catch (ServiceException ex)
         {
-            var oldZoneDisplay = itemHistory.oldZone.HasValue ? itemHistory.oldZone.ToString() : "None"; // Forbedret visning for oldZone
-            Console.WriteLine($"--------------\n" +
-                              $" - DateTime: {itemHistory.dateTime}.\n" +
-                              $" - Old Location: {oldZoneDisplay}.\n" + // Endret fra direkte bruk av itemHistory.oldZone
-                              $" - New Location: {itemHistory.newZone}.\n");
+            Console.WriteLine($"Error retrieving item history for internalId {internalId}: {ex.Message}");
+            // Depending on your application's needs, you might want to log this error or notify someone.
         }
     }
 
@@ -94,5 +110,4 @@ public class ItemHistoryService
             File.Delete(logFilePath);
         }
     }
-
 }

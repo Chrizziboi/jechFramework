@@ -6,10 +6,10 @@ namespace jechFramework.Models
     internal class WaresOut
     {
         // Egenskaper for WaresOut modellen
-        public int OrderId { get; set; }
-        public DateTime ScheduledTime { get; set; }
-        public string Destination { get; set; }
-        public List<Item> Items { get; set; } 
+        public int orderId { get; set; }
+        public DateTime scheduledTime { get; set; }
+        public string destination { get; set; }
+        public List<Item> items { get; set; } 
 
         /// <summary>
         /// Det er en konstruktør for "WaresOut"-klassen: 
@@ -22,10 +22,10 @@ namespace jechFramework.Models
          
         public WaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> items)
         {
-            OrderId = orderId;
-            ScheduledTime = scheduledTime;
-            Destination = destination;
-            Items = items;
+            this.orderId = orderId;
+            this.scheduledTime = scheduledTime;
+            this.destination = destination;
+            this.items = items;
         }
         /// <summary>
         /// En standardkonstruktør uten parametere som ikke utfører noen spesifikk handling.

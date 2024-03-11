@@ -11,7 +11,7 @@ namespace jechFramework.Services
     /// </summary>
     public class WaresInService : IWaresInService
     {
-        private readonly List<WaresIn> scheduledWaresIns = new List<WaresIn>();
+        private readonly List<WaresIn> WaresIns = new List<WaresIn>();
         private readonly ItemService itemService;
         private readonly WarehouseService warehouseService; // Ny avhengighet
 
@@ -22,25 +22,25 @@ namespace jechFramework.Services
             this.warehouseService = warehouseService ?? throw new ArgumentNullException(nameof(warehouseService));
         }
 
-        public void ScheduleWaresIn(int warehouseId, int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Item> incomingItems)
+        public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Models.Item> incomingItems)
         {
             try
             {
                 // Sjekk for eksistensen av varehuset
-                warehouseService.FindWarehouseInWarehouseList(warehouseId,false); // Bekreft varehuset eksisterer
+                warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId,false); // Bekreft varehuset eksisterer
 
                 if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
-                if (scheduledWaresIns.Any(wi => wi.orderId == orderId)) throw new InvalidOperationException("A wares in with this orderId is already scheduled.");
+                if (WaresIns.Any(wi => wi.orderId == orderId)) throw new ServiceException("A wares in with this orderId is already scheduled.");
                 
             }
-            catch (Exception ex)
+            catch (ServiceException ex)
             {
-                Console.WriteLine($"Unable to schedule wares in: {ex.Message}");
+                Console.WriteLine(ex.Message);
                 return; // Returnerer tidlig hvis en feil oppstår
             }
 
             var waresIn = new WaresIn { orderId = orderId, scheduledTime = scheduledTime, zoneId = zoneId, incomingItems = incomingItems };
-            scheduledWaresIns.Add(waresIn);
+            WaresIns.Add(waresIn);
 
             foreach (var item in incomingItems)
             {
@@ -55,7 +55,7 @@ namespace jechFramework.Services
                     itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
                 }
 
-                catch (Exception ex)
+                catch (ServiceException ex)
 
                 {
                     Console.WriteLine($"Failed to process item {item.internalId}: {ex.Message}");

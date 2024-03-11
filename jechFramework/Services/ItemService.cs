@@ -1,5 +1,6 @@
 ﻿using jechFramework.Interfaces;
 using jechFramework.Models;
+using jechFramework.Services;
 using System.IO;
 using System.Xml.Linq;
 
@@ -17,6 +18,36 @@ namespace jechFramework.Services
         // private static List<Item> ItemsInZoneList = new List<Item>();
         // private static List<Item> ItemList = new List<Item>();
 
+        public delegate void ItemCreatedEventHandler(int warehouseId, int internalId, int? externalId, string name, string type);
+        public delegate void ItemAddedEventHandler(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1);
+        public delegate void ItemRemovedEventHandler(int warehouseId, int internalId);
+        public delegate void ItemMovedEventHandler(int warehouseId, int internalId, int newZone);
+
+        public event EventHandler<ItemEventArgs> ItemCreated;
+        public event EventHandler<ItemEventArgs> ItemAdded;
+        public event EventHandler<ItemEventArgs> ItemRemoved;
+        public event EventHandler<ItemEventArgs> ItemMoved;
+
+        public void OnItemCreated(int warehouseId, int internalId, int? externalId, string name, string type)
+        {
+            ItemCreated?.Invoke(this, new ItemEventArgs(warehouseId, internalId, externalId, name, type));
+        }
+
+        public void OnItemAdded(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1)
+        {
+            ItemAdded?.Invoke(this, new ItemEventArgs(internalId, zoneId, dateTime, warehouseId, quantity));
+        }
+
+        public void OnItemRemoved(int warehouseId, int internalId)
+        {
+            ItemRemoved?.Invoke(this, new ItemEventArgs(warehouseId, internalId));
+        }
+
+        public void OnItemMoved(int warehouseId, int internalId, int newZone)
+        {
+            ItemMoved?.Invoke(this, new ItemEventArgs(warehouseId, internalId, newZone));
+        }
+
         public ItemService(WarehouseService warehouseService)
         {
             this.warehouseService = warehouseService;
@@ -32,49 +63,43 @@ namespace jechFramework.Services
         /// <param name="name">navn er for å kunne gi navn til en gitt vare.</param>
         /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
 
-        /// <exception cref="InvalidOperationException">En exception for et tilfelle der en Item med samme internalId blir opprettet.</exception>
+        /// <exception cref="ServiceException">En exception for et tilfelle der en Item med samme internalId blir opprettet.</exception>
         public void CreateItem(int warehouseId, int internalId, int? externalId, string name, string type)
-
         {
-            Warehouse warehouse = null;
-
             try
             {
-                warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false); // Ingen utskrift av detaljer
+                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
                 if (warehouse == null)
                 {
                     Console.WriteLine($"Warehouse with ID {warehouseId} not found. Skipping item creation.");
                     return;
                 }
+
+                if (warehouse.ItemList.Any(i => i.internalId == internalId))
+                {
+                    Console.WriteLine($"Item with internal ID {internalId} already exists. Skipping item creation.");
+                    return;
+                }
+
+                var newItem = new Models.Item
+                {
+                    internalId = internalId,
+                    externalId = externalId,
+                    name = name,
+                    type = type
+                };
+
+                warehouse.ItemList.Add(newItem);
+
+                OnItemCreated(warehouseId, internalId, externalId, name, type);
+
+                //Console.WriteLine($"New item created: {name} with ID: {internalId} in warehouse ID: {warehouseId}.");
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while trying to find warehouse {warehouseId}: {ex.Message}. Skipping item creation.");
-                return;
+                Console.WriteLine($"Error creating item: {ex.Message}");
             }
-
-            // Sjekk om et Item med samme internalId allerede finnes i ItemList for det Warehouse-objektet
-            if (warehouse.ItemList.Any(i => i.internalId == internalId))
-            {
-
-                Console.WriteLine($"Item with internal ID {internalId} already exists in the warehouse item list. Skipping item creation.");
-                return; // Returnerer fra metoden for å unngå å legge til duplikate items.
-
-            }
-
-            // Opprett et nytt Item-objekt og legg det til i ItemList for det funnet Warehouse-objektet
-            var newItem = new Item
-            {
-                internalId = internalId,
-                externalId = externalId,
-                name = name,
-                type = type
-            };
-
-            warehouse.ItemList.Add(newItem);
-            Console.WriteLine($"New item created: {name} with ID: {internalId} in warehouse ID: {warehouseId}.");
         }
-
 
 
 
@@ -86,17 +111,17 @@ namespace jechFramework.Services
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
 
-        /// <exception cref="InvalidOperationException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
-        public void AddItem(int internalId, int initialZoneId, DateTime dateTime, int warehouseId, int quantity = 1)
+        /// <exception cref="ServiceException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
+        public void AddItem(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1)
         {
             try
             {
                 // Forsøker å finne en tilgjengelig sone som kan akseptere varen, starter med den foretrukne sonen.
-                var availableZone = warehouseService.FindAvailableZoneForItem(warehouseId, initialZoneId, quantity);
+                var availableZone = warehouseService.FindAvailableZoneForItem(warehouseId, zoneId, quantity);
                 if (availableZone == null)
                 {
-                    Console.WriteLine($"Unable to find an available zone for item {internalId} in warehouse {warehouseId}.");
-                    return;
+                    throw new ServiceException($"Unable to find an available zone for item {internalId} in warehouse {warehouseId}.");
+                    
                 }
 
                 // Sjekker om item allerede eksisterer i den tilgjengelige sonen
@@ -110,17 +135,19 @@ namespace jechFramework.Services
                 else
                 {
                     // Oppretter og legger til en ny item hvis den ikke eksisterer
-                    itemToAdd = new Item { internalId = internalId, zoneId = availableZone.zoneId, dateTime = dateTime, quantity = quantity };
+                    itemToAdd = new Models.Item { internalId = internalId, zoneId = availableZone.zoneId, dateTime = dateTime, quantity = quantity };
                     availableZone.ItemsInZoneList.Add(itemToAdd);
-                    Console.WriteLine($"Item with internal ID {internalId} added to zone {availableZone.zoneId} with quantity {quantity}.");
+
+                    OnItemAdded(internalId, zoneId, dateTime, warehouseId, quantity);
+                    //Console.WriteLine($"Item with internal ID {internalId} added to zone {availableZone.zoneId} with quantity {quantity}.");
                 }
 
                 // Logger bevegelsen for den nye eller oppdaterte item
                 LogItemMovement(new ItemHistory(internalId, null, availableZone.zoneId, dateTime));
             }
-            catch (Exception ex)
+            catch (ServiceException ex)
             {
-                Console.WriteLine($"An error occurred while trying to add item {internalId} to warehouse {warehouseId}: {ex.Message}");
+                Console.WriteLine(ex.Message);
 
             }
         }
@@ -131,43 +158,51 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
 
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ServiceException"></exception>
         public void RemoveItem(int warehouseId, int internalId)
-
         {
-            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
-            if (warehouse == null)
+            try
             {
-                throw new InvalidOperationException($"Warehouse with ID {warehouseId} not found.");
-            }
-
-            // Anta at vi nå har en struktur for å finne varen i riktig sone
-            Item itemToRemove = null;
-            Zone zoneOfItem = null;
-            foreach (var zone in warehouse.zoneList)
-            {
-                itemToRemove = zone.ItemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
-                if (itemToRemove != null)
+                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
                 {
-                    zoneOfItem = zone;
-                    break;
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+                }
+
+                // Anta at vi nå har en struktur for å finne varen i riktig sone
+                Models.Item itemToRemove = null;
+                Zone zoneOfItem = null;
+                foreach (var zone in warehouse.zoneList)
+                {
+                    itemToRemove = zone.ItemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
+                    if (itemToRemove != null)
+                    {
+                        zoneOfItem = zone;
+                        break;
+                    }
+                }
+
+                if (itemToRemove == null)
+                {
+                    throw new ServiceException($"Item {internalId} not found.");
+                }
+
+                // Reduserer antall eller fjerner varen helt
+                if (itemToRemove.quantity > 1)
+                {
+                    itemToRemove.quantity -= 1;
+                }
+                else
+                {
+                    zoneOfItem.ItemsInZoneList.Remove(itemToRemove);
+
+                    OnItemRemoved(warehouseId, internalId);
+                    //Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from zone {zoneOfItem.zoneId}.");
                 }
             }
-
-            if (itemToRemove == null)
+            catch (ServiceException ex)
             {
-                throw new ServiceException("Item not found.");
-            }
-
-            // Reduserer antall eller fjerner varen helt
-            if (itemToRemove.quantity > 1)
-            {
-                itemToRemove.quantity -= 1;
-            }
-            else
-            {
-                zoneOfItem.ItemsInZoneList.Remove(itemToRemove);
-                Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from zone {zoneOfItem.zoneId}.");
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -181,52 +216,56 @@ namespace jechFramework.Services
 
         public void MoveItemToLocation(int warehouseId, int internalId, int newZone)
         {
-            // Først finn det spesifikke Warehouse-objektet
-            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
-            if (warehouse == null)
+            try
             {
-                Console.WriteLine($"Warehouse with ID {warehouseId} not found. Cannot move item.");
-                return;
+                // Først finn det spesifikke Warehouse-objektet
+                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found. Cannot move item.");
+                }
+
+                // Finn item i alle soner i det valgte lageret
+                Models.Item item = null;
+                foreach (var zone in warehouse.zoneList)
+                {
+                    item = zone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                    if (item != null) break;
+                }
+
+                if (item == null)
+                {
+                    throw new ServiceException($"Item with internal ID {internalId} not found in any zone. No action taken.");
+                }
+
+
+                var oldZone = item.zoneId;
+                var newZoneObj = warehouse.zoneList.FirstOrDefault(z => z.zoneId == newZone);
+                if (newZoneObj == null)
+                {
+                    throw new ServiceException($"New zone with ID {newZone} not found in warehouse {warehouseId}. Cannot move item.");
+                }
+
+                // Oppdaterer lokasjonen og tidsstempel
+                item.zoneId = newZone;
+                item.dateTime = DateTime.Now;
+
+                // Oppdaterer også sonens liste hvis nødvendig
+                if (!newZoneObj.ItemsInZoneList.Contains(item))
+                {
+                    newZoneObj.ItemsInZoneList.Add(item);
+                    // Anta at vi også må fjerne item fra den gamle sonen, her må du implementere logikk for det
+                }
+
+                LogItemMovement(new ItemHistory(internalId, oldZone, newZone, item.dateTime));
+
+                OnItemMoved(warehouseId, internalId, newZone);
+                //Console.WriteLine($"Item {internalId} has been moved from zone {oldZone} to zone {newZone} at {item.dateTime}.");
             }
-
-
-            // Finn item i alle soner i det valgte lageret
-            Item item = null;
-            foreach (var zone in warehouse.zoneList)
+            catch (ServiceException ex)
             {
-                item = zone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
-                if (item != null) break;
+                Console.WriteLine(ex.Message);
             }
-
-            if (item == null)
-            {
-                Console.WriteLine($"Item with internal ID {internalId} not found in any zone. No action taken.");
-                return;
-            }
-
-
-            var oldZone = item.zoneId;
-            var newZoneObj = warehouse.zoneList.FirstOrDefault(z => z.zoneId == newZone);
-            if (newZoneObj == null)
-            {
-                Console.WriteLine($"New zone with ID {newZone} not found in warehouse {warehouseId}. Cannot move item.");
-                return;
-            }
-
-            // Oppdaterer lokasjonen og tidsstempel
-            item.zoneId = newZone;
-            item.dateTime = DateTime.Now;
-
-            // Oppdaterer også sonens liste hvis nødvendig
-            if (!newZoneObj.ItemsInZoneList.Contains(item))
-            {
-                newZoneObj.ItemsInZoneList.Add(item);
-                // Anta at vi også må fjerne item fra den gamle sonen, her må du implementere logikk for det
-            }
-
-            LogItemMovement(new ItemHistory(internalId, oldZone, newZone, item.dateTime));
-            Console.WriteLine($"Item {internalId} has been moved from zone {oldZone} to zone {newZone} at {item.dateTime}.");
-
         }
 
 
@@ -249,7 +288,7 @@ namespace jechFramework.Services
             File.AppendAllText(logFilePath, logEntry);
         }
 
-      
+
         /// <summary>
         /// Funksjon for å telle antall Item-gjenstander med gitt internalId.
         /// </summary>
@@ -257,22 +296,35 @@ namespace jechFramework.Services
         /// <returns>Returnerer en Int for alle registrerte Item-gjenstander med gitt internalId.</returns>
         public int FindHowManyItemsInItemList(int warehouseId, int zoneId)
         {
-            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
-            if (warehouse == null)
+            try
             {
-                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
-                return 0; // Ingen varer å telle hvis lageret ikke finnes.
+                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+                    // Ingen varer å telle hvis lageret ikke finnes.
+                }
+
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+                if (zone == null)
+                {
+                    throw new ServiceException($"Zone with ID {zoneId} in warehouse {warehouseId} does not exist.");
+                    // Ingen varer å telle hvis sonen ikke finnes.
+                }
+                else
+                {
+                    int countedItems = zone.ItemsInZoneList.Count;
+                    return countedItems;
+                }
+                
+                
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return 0;
             }
 
-            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
-            if (zone == null)
-            {
-                Console.WriteLine($"Zone with ID {zoneId} in warehouse {warehouseId} does not exist.");
-                return 0; // Ingen varer å telle hvis sonen ikke finnes.
-            }
-
-            int countedItems = zone.ItemsInZoneList.Count;
-            return countedItems;
         }
 
 
@@ -283,7 +335,7 @@ namespace jechFramework.Services
         /// <returns>Returnerer en Int med totalt antall Kvantitet.</returns>
         public int FindHowManyItemQuantityByInternalId(int warehouseId, int internalId)
         {
-            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
+            var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
             if (warehouse == null)
             {
                 Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
@@ -317,7 +369,7 @@ namespace jechFramework.Services
 
             else if (zone.ItemsInZoneList == null)
             {
-                throw new ServiceException($"");
+                throw new ServiceException($"Error 404");
             }
 
             Console.WriteLine($"item Id: {item.internalId}\n" +
@@ -350,12 +402,13 @@ namespace jechFramework.Services
 
         public int? GetLocationByInternalId(int warehouseId, int internalId)
         {
+            try
+            {
             // Finn det spesifikke Warehouse-objektet ved hjelp av warehouseId.
-            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
+            var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
             if (warehouse == null)
             {
-                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
-                return null;
+                throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
             }
 
             // Gå gjennom alle soner i lageret for å finne varen.
@@ -371,6 +424,12 @@ namespace jechFramework.Services
 
             // Returnerer null hvis varen ikke finnes i noen sone.
             return null;
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
 
@@ -382,16 +441,23 @@ namespace jechFramework.Services
         //}
         public bool ItemExists(int warehouseId, int internalId)
         {
-            // Først, finn det aktuelle Warehouse-objektet ved hjelp av warehouseId
-            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
-            if (warehouse == null)
+            try
             {
-                Console.WriteLine($"Warehouse with ID {warehouseId} not found. Cannot check if item exists.");
+                // Først, finn det aktuelle Warehouse-objektet ved hjelp av warehouseId
+                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found. Cannot check if item exists.");
+                }
+
+                // Sjekk deretter om et Item med gitt internalId eksisterer i dette Warehouse-objektets ItemList
+                return warehouse.ItemList.Any(i => i.internalId == internalId);
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
                 return false;
             }
-
-            // Sjekk deretter om et Item med gitt internalId eksisterer i dette Warehouse-objektets ItemList
-            return warehouse.ItemList.Any(i => i.internalId == internalId);
         }
     }
 

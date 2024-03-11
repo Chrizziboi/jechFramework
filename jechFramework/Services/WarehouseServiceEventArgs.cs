@@ -2,16 +2,21 @@
 
 namespace jechFramework.Services
 {
-        public class WarehouseEventArgs : EventArgs
-        {
+    public class WarehouseServiceEventArgs()
+    {
+
+    }
+
+    public class WarehouseEventArgs : EventArgs
+    {
         public Warehouse Warehouse { get; private set; }
 
-            public WarehouseEventArgs(Warehouse warehouse)
-            {
-                this.Warehouse = warehouse;
+        public WarehouseEventArgs(Warehouse warehouse)
+        {
+            this.Warehouse = warehouse;
 
-            }
         }
+    }
 
     public class ZoneEventArgs : EventArgs
     {
@@ -36,7 +41,5 @@ namespace jechFramework.Services
             this.Employee = employee;
         }
     }
-
-
 
 }

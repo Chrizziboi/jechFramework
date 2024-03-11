@@ -19,7 +19,7 @@ namespace MyConsoleApp
             WaresOutService waresOutService = new WaresOutService(itemService);
 
             warehouseService.CreateWarehouse(1, "Warehouse 1", 5);
-            warehouseService.FindWarehouseInWarehouseList(1);
+            warehouseService.FindWarehouseInWarehouseListWithPrint(1);
 
             warehouseService.CreateZone(1, 1, "Emirs P-Plass", 40);
             warehouseService.CreateZone(1, 2, "Chris P-Plass", 40);
@@ -45,7 +45,7 @@ namespace MyConsoleApp
                 new Item() { internalId = 2, name = "Ananas", type = "Fruit" }
             };
 
-            waresInService.ScheduleWaresIn(1,1, DateTime.Now, 1, TimeSpan.FromMinutes(30), incomingItems);
+            waresInService.WaresIn(1,1, DateTime.Now, 1, TimeSpan.FromMinutes(30), incomingItems);
 
             itemService.FindHowManyItemsInItemList(1,1);
 
@@ -75,13 +75,13 @@ namespace MyConsoleApp
             };
             
             // Simulerer en ordre som behandles og varer som sendes ut
-            waresOutService.ScheduleWaresOut(1,2, DateTime.Now.AddHours(1), "Customer Location", outgoingItems);
+            waresOutService.WaresOut(1,2, DateTime.Now.AddHours(1), "Customer Location", outgoingItems);
             try
             {
                 List<Item> nonExistingItems = new List<Item>() {
             new Item() { internalId = 999, name = "Non-Existing Item", type = "Ghost" }
             };
-                waresOutService.ScheduleWaresOut(1,3, DateTime.Now.AddHours(2), "Ghost Location", nonExistingItems);
+                waresOutService.WaresOut(1,3, DateTime.Now.AddHours(2), "Ghost Location", nonExistingItems);
             }
             catch (InvalidOperationException ex)
             {

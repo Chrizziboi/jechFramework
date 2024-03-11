@@ -106,13 +106,13 @@ namespace jechFramework.Services
         /// <exception cref="ServiceException"></exception>
         public void FindWareHouseInWarehouseList(int warehouseId)
         {
-            try 
+            try
             {
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
 
                 if (warehouse == null)
                 {
-                    
+
                     throw new ServiceException($"A warehouse with id{warehouseId} could not be found.");
 
                 }
@@ -126,26 +126,34 @@ namespace jechFramework.Services
             {
                 Console.WriteLine(ex.Message);
             }
+        }
 
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="ServiceException"></exception>
         public Warehouse FindWarehouseInWarehouseListWithPrint(int warehouseId, bool printDetails = true)
         {
-            var warehouse = warehouseList.FirstOrDefault(wh => wh.warehouseId == warehouseId);
-
-            if (warehouse == null)
+            try
             {
-                Console.WriteLine($"A warehouse with id: {warehouseId} could not be found.");
-                throw new InvalidOperationException($"A warehouse with id {warehouseId} could not be found.");
-            }
+                var warehouse = warehouseList.FirstOrDefault(wh => wh.warehouseId == warehouseId);
 
-            if (printDetails)
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"A warehouse with id {warehouseId} could not be found.");
+                }
+
+                if (printDetails)
+                {
+                    Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
+                                      $"warehouse Name: {warehouse.warehouseName}\n" +
+                                      $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
+                }
+
+                return warehouse; // Returnerer Warehouse-objektet hvis funnet
+            }
+            catch (ServiceException ex)
             {
-                Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
-                                  $"warehouse Name: {warehouse.warehouseName}\n" +
-                                  $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
+                Console.WriteLine(ex.Message);
+                return null;
             }
-
-            return warehouse; // Returnerer Warehouse-objektet hvis funnet
         }
         public List<Warehouse> GetAllWarehouses()
         {
@@ -253,22 +261,28 @@ namespace jechFramework.Services
         }
         public bool CanAddItemsToZone(int warehouseId, int zoneId, int quantityToAdd)
         {
-            var warehouse = FindWarehouseInWarehouseList(warehouseId, false);
-            if (warehouse == null)
+            try
             {
-                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                var warehouse = FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+                }
+
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+                if (zone == null)
+                {
+                    throw new ServiceException($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
+                }
+
+                int currentItemCount = zone.ItemsInZoneList.Sum(item => item.quantity);
+                return currentItemCount + quantityToAdd <= zone.zoneCapacity;
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
                 return false;
             }
-
-            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
-            if (zone == null)
-            {
-                Console.WriteLine($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
-                return false;
-            }
-
-            int currentItemCount = zone.ItemsInZoneList.Sum(item => item.quantity);
-            return currentItemCount + quantityToAdd <= zone.zoneCapacity;
         }
 
         /// <summary>
@@ -342,32 +356,38 @@ namespace jechFramework.Services
 
         public Zone FindAvailableZoneForItem(int warehouseId, int preferredZoneId, int quantity)
         {
-            var warehouse = FindWarehouseInWarehouseList(warehouseId, false);
-            if (warehouse == null)
+            try
             {
-                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                var warehouse = FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+                }
+
+                // Først sjekk den foretrukne sonen
+                var preferredZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == preferredZoneId);
+                if (preferredZone != null && CanAddItemsToZone(warehouseId, preferredZoneId, quantity))
+                {
+                    return preferredZone;
+                }
+
+                // Hvis den foretrukne sonen ikke har plass, søk etter en annen sone
+                foreach (var zone in warehouse.zoneList)
+                {
+                    if (CanAddItemsToZone(warehouseId, zone.zoneId, quantity))
+                    {
+                        return zone;
+                    }
+                }
+
+                // Hvis ingen soner har plass, returner null
+                throw new ServiceException($"No available zone found in warehouse {warehouseId} for quantity {quantity}.");
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
                 return null;
             }
-
-            // Først sjekk den foretrukne sonen
-            var preferredZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == preferredZoneId);
-            if (preferredZone != null && CanAddItemsToZone(warehouseId, preferredZoneId, quantity))
-            {
-                return preferredZone;
-            }
-
-            // Hvis den foretrukne sonen ikke har plass, søk etter en annen sone
-            foreach (var zone in warehouse.zoneList)
-            {
-                if (CanAddItemsToZone(warehouseId, zone.zoneId, quantity))
-                {
-                    return zone;
-                }
-            }
-
-            // Hvis ingen soner har plass, returner null
-            Console.WriteLine($"No available zone found in warehouse {warehouseId} for quantity {quantity}.");
-            return null;
         }
         
 
