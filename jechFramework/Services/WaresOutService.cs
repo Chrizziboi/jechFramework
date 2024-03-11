@@ -29,19 +29,19 @@ namespace jechFramework.Services
         /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public void ScheduleWaresOut(int warehouseId,int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
+        public void ScheduleWaresOut(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
         {
             if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
-
             if (scheduledWaresOuts.Any(wo => wo.OrderId == orderId))
             {
                 throw new InvalidOperationException("A wares out with this orderId is already scheduled.");
             }
 
-            // Sjekker lagerbeholdningen for hvert utgående vareelement
+            // Sjekker lagerbeholdningen for hvert utgående vareelement og forbereder for fjerning
             foreach (var item in outgoingItems)
             {
-                if (itemService.FindHowManyItemQuantityByInternalId(warehouseId,item.internalId) <= 0)
+                var quantityAvailable = itemService.FindHowManyItemQuantityByInternalId(warehouseId, item.internalId);
+                if (quantityAvailable <= 0)
                 {
                     throw new InvalidOperationException($"Item with internal ID {item.internalId} is unavailable.");
                 }
@@ -57,12 +57,14 @@ namespace jechFramework.Services
 
             scheduledWaresOuts.Add(waresOut);
 
-            // Fjerner de utgående varene fra lageret
+            // Fjerner de utgående varene fra lageret basert på tilgjengelig mengde
             foreach (var item in outgoingItems)
             {
-                itemService.RemoveItem(item.internalId); // Antatt at dette reduserer antallet korrekt
+                // Antatt at RemoveItem nå krever warehouseId og internalId
+                itemService.RemoveItem(warehouseId, item.internalId);
             }
         }
+
     }
 }
 

@@ -20,7 +20,7 @@ namespace MyConsoleApp
             warehouseService.CreateWarehouse(1, "Warehouse 1", 5);
             warehouseService.FindWarehouseInWarehouseList(1);
 
-            warehouseService.CreateZone(1, 1, "Emirs P-Plass", 5);
+            warehouseService.CreateZone(1, 1, "Emirs P-Plass", 40);
             warehouseService.CreateZone(1, 2, "Chris P-Plass", 4);
             warehouseService.CreateZone(1, 3, "Joakim P-Plass", 3);
             warehouseService.CreateZone(1, 4, "Hannan P-Plass", 2);
@@ -34,7 +34,8 @@ namespace MyConsoleApp
             itemService.CreateItem(1,5, null, "Cola", "Soda");
 
             // Legger til varer med riktig zoneId og warehouseId
-            itemService.AddItem(4, 1, DateTime.Now, 1);
+            //itemService.AddItem(4, 1, DateTime.Now, 1, 50);
+            itemService.AddItem(3, 1, DateTime.Now, 1, 5);
             itemService.AddItem(6, 1, DateTime.Now, 1);
             itemService.AddItem(5, 1, DateTime.Now, 1);
 
@@ -48,7 +49,6 @@ namespace MyConsoleApp
             itemService.FindHowManyItemsInItemList(1,1);
 
             itemService.FindHowManyItemQuantityByInternalId(1,1);
-         
 
             // Flytting av varen til ulike lokasjoner og sporing av varehistorikk
             itemService.MoveItemToLocation(1,6, 2);
@@ -69,24 +69,24 @@ namespace MyConsoleApp
 
             // Planlegging av varer som skal sendes ut
             List<Item> outgoingItems = new List<Item>() {
-            new Item() { internalId = 4, name = "Pizza", type = "Food" },
+            new Item() { internalId = 3, name = "T-Shirt", type = "Clothes" },
             new Item() { internalId = 5, name = "Cola", type = "Soda" }
             };
-            /*
+            
             // Simulerer en ordre som behandles og varer som sendes ut
-            waresOutService.ScheduleWaresOut(2, DateTime.Now.AddHours(1), "Customer Location", outgoingItems);
+            waresOutService.ScheduleWaresOut(1,2, DateTime.Now.AddHours(1), "Customer Location", outgoingItems);
             try
             {
                 List<Item> nonExistingItems = new List<Item>() {
             new Item() { internalId = 999, name = "Non-Existing Item", type = "Ghost" }
             };
-                waresOutService.ScheduleWaresOut(3, DateTime.Now.AddHours(2), "Ghost Location", nonExistingItems);
+                waresOutService.ScheduleWaresOut(1,3, DateTime.Now.AddHours(2), "Ghost Location", nonExistingItems);
             }
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine("Failed to schedule wares out for non-existing items: " + ex.Message);
             }
-            */
+            
             //waresOutService.ScheduleWaresOut(1,);
 
             itemService.ClearWarehouseData();

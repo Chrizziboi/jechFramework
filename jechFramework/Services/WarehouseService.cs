@@ -57,7 +57,10 @@ namespace jechFramework.Services
 
             return warehouse; // Returnerer Warehouse-objektet hvis funnet
         }
-
+        public List<Warehouse> GetAllWarehouses()
+        {
+            return warehouseList;
+        }
 
 
         /// <summary>
@@ -150,7 +153,25 @@ namespace jechFramework.Services
                 // Optionally handle the exception here if needed
             }
         }
+        public bool CanAddItemsToZone(int warehouseId, int zoneId, int quantityToAdd)
+        {
+            var warehouse = FindWarehouseInWarehouseList(warehouseId, false);
+            if (warehouse == null)
+            {
+                Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                return false;
+            }
 
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone == null)
+            {
+                Console.WriteLine($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
+                return false;
+            }
+
+            int currentItemCount = zone.ItemsInZoneList.Sum(item => item.quantity);
+            return currentItemCount + quantityToAdd <= zone.zoneCapacity;
+        }
 
         /// <summary>
         /// Funksjon for å skrive ut alle soner for et varehus.

@@ -80,47 +80,35 @@ namespace jechFramework.Services
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
         /// <exception cref="InvalidOperationException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
-        public void AddItem(int internalId, int zoneId, DateTime dateTime, int warehouseId)
+        public void AddItem(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1)
         {
             try
             {
-                // Forsøker å finne lageret uten å kaste en exception.
+                if (!warehouseService.CanAddItemsToZone(warehouseId, zoneId, quantity))
+                {
+                    Console.WriteLine($"Cannot add {quantity} of item {internalId} to zone {zoneId} in warehouse {warehouseId} as it would exceed its capacity.");
+                    return;
+                }
+
+                // Resten av koden for å legge til item, som før.
                 var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
-                if (warehouse == null)
+                var zone = warehouse?.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+
+                // Dersom item allerede eksisterer, oppdaterer kvantiteten. Hvis ikke, oppretter og legger til ny item.
+                var itemToAdd = zone?.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                if (itemToAdd != null)
                 {
-                    Console.WriteLine($"Warehouse with ID {warehouseId} not found. Cannot add item.");
-                    return;
+                    itemToAdd.quantity += quantity;
+                    Console.WriteLine($"Quantity of item with internal ID {internalId} in zone {zoneId} increased by {quantity}.");
                 }
-
-                // Sjekker om varen eksisterer i lagerets vareliste.
-                var itemToAdd = warehouse.ItemList.FirstOrDefault(i => i.internalId == internalId);
-                if (itemToAdd == null)
+                else
                 {
-                    Console.WriteLine($"No item with internal ID {internalId} exists in the creation list. Cannot add item.");
-                    return;
-                }
-
-                // Forsøker å finne sonen innenfor det valgte lageret.
-                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
-                if (zone == null)
-                {
-                    Console.WriteLine($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist. Cannot add item.");
-                    return;
-                }
-
-                // Oppdaterer varens sonetilhørighet og tidsstempel.
-                itemToAdd.zoneId = zoneId;
-                itemToAdd.dateTime = dateTime;
-
-                // Siden varen allerede eksisterer i lagerets vareliste, trenger vi ikke legge den til igjen,
-                // men det er viktig å sørge for at den også reflekteres i den spesifikke sonens vareliste om nødvendig.
-                if (!zone.ItemsInZoneList.Contains(itemToAdd))
-                {
-                    zone.ItemsInZoneList.Add(itemToAdd);
+                    itemToAdd = new Item { internalId = internalId, zoneId = zoneId, dateTime = dateTime, quantity = quantity };
+                    zone?.ItemsInZoneList.Add(itemToAdd);
+                    Console.WriteLine($"Item with internal ID {internalId} added to zone {zoneId} with quantity {quantity}.");
                 }
 
                 LogItemMovement(new ItemHistory(internalId, null, zoneId, dateTime));
-                Console.WriteLine($"Item with internal ID {internalId} added to zone {zoneId} in warehouse {warehouseId} at {dateTime}.");
             }
             catch (Exception ex)
             {
@@ -128,36 +116,49 @@ namespace jechFramework.Services
             }
         }
 
-
-
         /// <summary>
         /// Funksjon for å fjerne en Item-gjenstand ut fra lageret.
         /// </summary>
         /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void RemoveItem(int internalId)
+        public void RemoveItem(int warehouseId, int internalId)
         {
-            var item = zone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
-            if (item != null)
+            var warehouse = warehouseService.FindWarehouseInWarehouseList(warehouseId, false);
+            if (warehouse == null)
             {
-                if (item.quantity > 1)
+                throw new InvalidOperationException($"Warehouse with ID {warehouseId} not found.");
+            }
+
+            // Anta at vi nå har en struktur for å finne varen i riktig sone
+            Item itemToRemove = null;
+            Zone zoneOfItem = null;
+            foreach (var zone in warehouse.zoneList)
+            {
+                itemToRemove = zone.ItemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
+                if (itemToRemove != null)
                 {
-                    // Reduserer antallet med én hvis det er mer enn én på lager.
-                    item.quantity -= 1;
-                }
-                else
-                {
-                    // Fjerner varen helt hvis dette var den siste.
-                    zone.ItemsInZoneList.Remove(item);
-                    Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from the warehouse list.");
-                    // Her kan du implementere ytterligere logikk for varsling eller håndtering av utsolgte varer.
+                    zoneOfItem = zone;
+                    break;
                 }
             }
-            else
+
+            if (itemToRemove == null)
             {
                 throw new InvalidOperationException("Item not found.");
             }
+
+            // Reduserer antall eller fjerner varen helt
+            if (itemToRemove.quantity > 1)
+            {
+                itemToRemove.quantity -= 1;
+            }
+            else
+            {
+                zoneOfItem.ItemsInZoneList.Remove(itemToRemove);
+                Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from zone {zoneOfItem.zoneId}.");
+            }
         }
+
 
 
         /// <summary>
@@ -314,8 +315,22 @@ namespace jechFramework.Services
 
         public void ClearWarehouseData()
         {
-            zone.ItemsInZoneList.Clear(); // Tømmer listen over varer i varehuset
-            warehouse.ItemList.Clear();          // Eventuelt tøm andre lister eller ressurser om nødvendig
+            // Anta at WarehouseService inneholder en metode for å hente alle lagre.
+            var allWarehouses = warehouseService.GetAllWarehouses();
+
+            foreach (var warehouse in allWarehouses)
+            {
+                // Tømmer varelisten for hvert lager
+                warehouse.ItemList.Clear();
+
+                // Går gjennom hver sone i lageret og tømmer varelisten
+                foreach (var zone in warehouse.zoneList)
+                {
+                    zone.ItemsInZoneList.Clear();
+                }
+            }
+
+            Console.WriteLine("All warehouse and zone item data cleared.");
         }
 
 

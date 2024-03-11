@@ -104,9 +104,5 @@ namespace jechFramework.Models
             this.warehousePalletShelfWidth = warehousePalletShelfWidth;
 
         }
-
-
-
-
     }
 }
