@@ -7,6 +7,7 @@ namespace MyConsoleApp
     {
         static void Main(string[] args)
         {
+
             Console.WriteLine("Welcome to JECH Warehouse Simulation");
 
             // Opprettelse av tjenesteinstanser
@@ -95,6 +96,7 @@ namespace MyConsoleApp
             Console.WriteLine("Simulation complete. Data has been cleared.");
             Console.WriteLine("Press any key to close this window...");
             Console.ReadKey();
+
         }
     }
 }

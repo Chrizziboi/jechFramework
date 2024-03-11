@@ -27,6 +27,7 @@ namespace jechFramework.Services
         /// <param name="scheduledTime">Det spesifikke tidspunktet varene er planlagt å sendes ut på.</param>
         /// <param name="destination">Destinasjonen hvor varene skal sendes.</param>
         /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
+
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         public void ScheduleWaresOut(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
@@ -34,7 +35,7 @@ namespace jechFramework.Services
             if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
             if (scheduledWaresOuts.Any(wo => wo.OrderId == orderId))
             {
-                throw new InvalidOperationException("A wares out with this orderId is already scheduled.");
+                throw new ServiceException("A wares out with this orderId is already scheduled.");
             }
 
             // Sjekker lagerbeholdningen for hvert utgående vareelement og forbereder for fjerning
@@ -43,7 +44,7 @@ namespace jechFramework.Services
                 var quantityAvailable = itemService.FindHowManyItemQuantityByInternalId(warehouseId, item.internalId);
                 if (quantityAvailable <= 0)
                 {
-                    throw new InvalidOperationException($"Item with internal ID {item.internalId} is unavailable.");
+                    throw new ServiceException($"Item with internal ID {item.internalId} is unavailable.");
                 }
             }
 

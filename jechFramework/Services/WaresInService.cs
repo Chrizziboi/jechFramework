@@ -15,6 +15,7 @@ namespace jechFramework.Services
         private readonly ItemService itemService;
         private readonly WarehouseService warehouseService; // Ny avhengighet
 
+
         public WaresInService(ItemService itemService, WarehouseService warehouseService)
         {
             this.itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
@@ -30,6 +31,7 @@ namespace jechFramework.Services
 
                 if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
                 if (scheduledWaresIns.Any(wi => wi.orderId == orderId)) throw new InvalidOperationException("A wares in with this orderId is already scheduled.");
+                
             }
             catch (Exception ex)
             {
@@ -52,7 +54,9 @@ namespace jechFramework.Services
                     var itemZoneId = existingZoneId ?? zoneId;
                     itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
                 }
+
                 catch (Exception ex)
+
                 {
                     Console.WriteLine($"Failed to process item {item.internalId}: {ex.Message}");
                     // Håndter feilen på en måte som tillater at simulasjonen fortsetter, f.eks. logge feilen
