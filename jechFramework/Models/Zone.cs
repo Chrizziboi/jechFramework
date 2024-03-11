@@ -16,9 +16,9 @@ namespace jechFramework.Models
         public string zoneDescription { get; set; }
         public int zoneCapacity { get; set; } = 40;
         //antall item objekter per soner.
-        public List<Item> ItemsInZoneList { get; set; } = new List<Item>();
+        public List<Item> ItemsInZoneList { get; set; } = new List<Item>(); // nye items in warehouse list
 
-       
+
         public Zone(int zoneId, string zoneName, int zoneCapacity)
         {
             this.zoneId = zoneId;

@@ -38,23 +38,27 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="warehouseId"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public void FindWareHouseInWarehouseList(int warehouseId)
+        public Warehouse FindWarehouseInWarehouseList(int warehouseId, bool printDetails = true)
         {
-            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+            var warehouse = warehouseList.FirstOrDefault(wh => wh.warehouseId == warehouseId);
 
             if (warehouse == null)
             {
                 Console.WriteLine($"A warehouse with id: {warehouseId} could not be found.");
-                throw new InvalidOperationException($"A warehouse with id{warehouseId} could not be found.");
-
+                throw new InvalidOperationException($"A warehouse with id {warehouseId} could not be found.");
             }
 
-            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
-                              $"warehouse Name: {warehouse.warehouseName}\n" +
-                              $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
+            if (printDetails)
+            {
+                Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
+                                  $"warehouse Name: {warehouse.warehouseName}\n" +
+                                  $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
+            }
 
-
+            return warehouse; // Returnerer Warehouse-objektet hvis funnet
         }
+
+
 
         /// <summary>
         /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.

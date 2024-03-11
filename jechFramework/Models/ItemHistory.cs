@@ -21,7 +21,7 @@ namespace jechFramework.Models
         /// <param name="oldLocation">Gammel plassering av elementet.</param>
         /// <param name="newLocation">Ny plassering av elementet.</param>
         /// <param name="dateTime">Tidspunktet for endringen.</param>
-        public ItemHistory(int internalId, int? oldLocation, int newLocation, DateTime dateTime)
+        public ItemHistory(int internalId, int? oldZone, int newZone, DateTime dateTime)
         {
             this.internalId = internalId;
             this.oldZone = oldZone;

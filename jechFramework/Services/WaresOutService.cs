@@ -10,6 +10,7 @@ namespace jechFramework.Services
     {
         private readonly List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
         private readonly ItemService itemService; // Assuming there is an ItemService to handle items in the warehouse
+        private readonly WarehouseService warehouseService; // Ny avhengighet
 
         // Constructor to inject ItemService
         public WaresOutService(ItemService itemService)
@@ -28,7 +29,7 @@ namespace jechFramework.Services
         /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public void ScheduleWaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
+        public void ScheduleWaresOut(int warehouseId,int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems)
         {
             if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
 
@@ -40,7 +41,7 @@ namespace jechFramework.Services
             // Sjekker lagerbeholdningen for hvert utgående vareelement
             foreach (var item in outgoingItems)
             {
-                if (itemService.FindHowManyItemQuantityByInternalId(item.internalId) <= 0)
+                if (itemService.FindHowManyItemQuantityByInternalId(warehouseId,item.internalId) <= 0)
                 {
                     throw new InvalidOperationException($"Item with internal ID {item.internalId} is unavailable.");
                 }
@@ -62,8 +63,6 @@ namespace jechFramework.Services
                 itemService.RemoveItem(item.internalId); // Antatt at dette reduserer antallet korrekt
             }
         }
-
-
     }
 }
 
