@@ -22,13 +22,13 @@ namespace jechFramework.Models
         // maks antall soner  per varehus.
         public int warehousePalletShelfWidth { get; set; } = 80;
 
-        public List<Zone> zoneList { get; set; } = new List<Zone>();
+        public List<Zone> zoneList { get; set; } = new List<Zone>(); 
         /// <param name="zoneList">Dette er en liste for de forskjellige sonene i et varehus</param>
         /// 
         public List<Employee> employeeList { get; set; } = new List<Employee>();
         /// <param name="employeeList">Listen over alle ansatte i et varehus.</param>
         /// 
-        public List<Item> ItemList { get; set; } = new List<Item>();
+        public List<Item> ItemList { get; set; } = new List<Item>(); // nye created item list
         /// <param name="ItemList">Listen over alle Item-objekter i et varehus.</param>
         /// 
 
@@ -104,9 +104,5 @@ namespace jechFramework.Models
             this.warehousePalletShelfWidth = warehousePalletShelfWidth;
 
         }
-
-
-
-
     }
 }

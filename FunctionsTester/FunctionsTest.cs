@@ -1,4 +1,4 @@
-﻿using jechFramework.Models;
+using jechFramework.Models;
 using jechFramework.Services;
 
 namespace FunctionsTester
@@ -15,7 +15,9 @@ namespace FunctionsTester
             Console.WriteLine("\nWarehouseService Functions" +
                               "\n--------------------------\n");
 
+
             WarehouseService WService = new();             
+
 
 
             WService.WarehouseCreated += Service_OnWarehouseCreated;
