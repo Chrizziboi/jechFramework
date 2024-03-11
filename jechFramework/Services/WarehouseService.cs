@@ -20,9 +20,12 @@ namespace jechFramework.Services
         ///                                       ///
 
 
-       
-
-        public delegate void WarehouseCreatedEventHandler(object source, WarehouseEventArgs args);
+        public delegate void WarehouseCreatedEventHandler(Warehouse warehouse);
+        public delegate void WarehouseRemovedEventHandler(Warehouse warehouse);
+        public delegate void ZoneCreatedEventHandler(Warehouse warehouse, Zone zone);
+        public delegate void ZoneRemovedEventHandler(Warehouse warehouse, Zone zone);
+        public delegate void EmployeeCreatedEventHandler(Warehouse warehouse, Employee employee);
+        public delegate void EmployeeRemovedEventHandler(Warehouse warehouse, Employee employee);
 
         public event EventHandler<WarehouseEventArgs> WarehouseCreated;
         public event EventHandler<WarehouseEventArgs> WarehouseRemoved;
@@ -30,9 +33,11 @@ namespace jechFramework.Services
         public event EventHandler<ZoneEventArgs> ZoneRemoved;
         public event EventHandler<EmployeeEventArgs> EmployeeCreated;
         public event EventHandler<EmployeeEventArgs> EmployeeRemoved;
+        
 
         public void OnWarehouseCreated(Warehouse warehouse)
         {
+            //Console.WriteLine($"Warehouse created with Id: {warehouse}.");
             WarehouseCreated?.Invoke(this, new WarehouseEventArgs(warehouse));
         }
 
@@ -61,16 +66,6 @@ namespace jechFramework.Services
             EmployeeRemoved?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
         }
 
-        //protected virtual void OnWarehouseCreated(Warehouse warehouse)
-        //{
-        //    WarehouseCreated?.Invoke(this, new WarehouseEventArgs(warehouse));
-        //}
-
-
-        private static void Service_WarehouseCreated(object source, WarehouseEventArgs args)
-        {
-            Console.WriteLine($"Warehouse Created: {args.Warehouse.warehouseName}");
-        }
 
         ///                                        ///
         ///   Service funksjoner for Warehouse.cs  ///
@@ -82,13 +77,25 @@ namespace jechFramework.Services
         /// </summary>
         public void CreateWarehouse(int warehouseId, string warehouseName, int warehouseCapacity)
         {
-            var newWarehouse = new Warehouse(warehouseId, warehouseName, warehouseCapacity);
+            try
+            {
+                var newWarehouse = new Warehouse(warehouseId, warehouseName, warehouseCapacity);
+                if (warehouseList.Any(w => w.warehouseId == warehouseId))
+                {
+                    throw new ServiceException($"Warehouse already exist.");
+                    // (myValue == 1 || myValue == 2 || myValue == 3) !=
+                    //  || or - && and
+                }
 
-            warehouseList.Add(newWarehouse);
+                warehouseList.Add(newWarehouse);
 
-            OnWarehouseCreated(newWarehouse);
-
-
+                OnWarehouseCreated(newWarehouse);
+                
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
 
@@ -99,19 +106,26 @@ namespace jechFramework.Services
         /// <exception cref="ServiceException"></exception>
         public void FindWareHouseInWarehouseList(int warehouseId)
         {
-            var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
-
-            if (warehouse == null)
+            try 
             {
-                Console.WriteLine($"A warehouse with id: {warehouseId} could not be found.");
-                throw new ServiceException($"A warehouse with id{warehouseId} could not be found.");
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+
+                if (warehouse == null)
+                {
+                    
+                    throw new ServiceException($"A warehouse with id{warehouseId} could not be found.");
+
+                }
+
+                Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
+                                  $"warehouse Name: {warehouse.warehouseName}\n" +
+                                  $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
 
             }
-
-            Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
-                              $"warehouse Name: {warehouse.warehouseName}\n" +
-                              $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
-
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         /// <summary>
@@ -128,6 +142,8 @@ namespace jechFramework.Services
             }
 
             warehouseList.Remove(warehouse);
+
+            OnWarehouseRemoved(warehouse);
 
         }
 
@@ -147,12 +163,12 @@ namespace jechFramework.Services
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id {warehouseId} does not exist.");
                 }
                 var existingZone = warehouse.zoneList.FirstOrDefault(existingZone => existingZone.zoneId == zoneId);
                 if (existingZone != null)
                 {
-                    throw new ServiceException($"Zone with id: {zoneId} already exists in Warehouse id {warehouseId}.");
+                    throw new ServiceException($"Zone with id {zoneId} already exists in Warehouse with id {warehouseId}.");
                 }
 
                 // Check if adding this zone would exceed warehouse capacity
@@ -160,12 +176,15 @@ namespace jechFramework.Services
 
                 if (totalZoneCapacity > warehouse.warehouseCapacity)
                 {
-                    throw new ServiceException($"Adding zone with id: {zoneId} would exceed warehouse capacity.");
+                    throw new ServiceException($"Adding zone with id {zoneId} would exceed warehouse capacity, " +
+                                               $"therefore Zone not created.");
                 }
 
-                Zone zone = new(zoneId, zoneName, zoneCapacity);
-                warehouse.zoneList.Add(zone);
-                Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
+                Zone newZone = new(zoneId, zoneName, zoneCapacity);
+                warehouse.zoneList.Add(newZone);
+
+                OnZoneCreated(warehouse, newZone);
+                //Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
             }
             catch (ServiceException ex)
             {
@@ -180,23 +199,25 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="warehouseId">int tall for å gi en identifikator for et gitt varehus.</param>
         /// <param name="zoneId">Dette er en Id for hver sone for å lett kunne holde orden på soner.</param>
-        public void RemoveZoneInWarehouse(int warehouseId, int zoneId)
+        public void RemoveZone(int warehouseId, int zoneId)
         {
             try
             {
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
+                    throw new ServiceException($"Warehouse with id {warehouseId} does not exist.");
                 }
 
                 var zoneToRemove = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
                 if (zoneToRemove == null)
                 {
-                    throw new ServiceException($"Zone with id: {zoneId} does not exist in Warehouse id {warehouseId}. Therefore zone could not be removed.");
+                    throw new ServiceException($"Zone with id {zoneId} does not exist in Warehouse with 5id {warehouseId}. Therefore zone could not be removed.");
                 }
 
                 warehouse.zoneList.Remove(zoneToRemove);
+                OnZoneRemoved(warehouse, zoneToRemove);
+
             }
             catch (ServiceException ex)
             {
@@ -220,7 +241,7 @@ namespace jechFramework.Services
                     throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
                 }
 
-                Console.WriteLine($"Zones in Warehouse '{warehouse.warehouseName}':");
+                Console.WriteLine($"Zones in Warehouse {warehouse.warehouseName}:");
 
                 foreach (var zone in warehouse.zoneList)
                 {
@@ -241,16 +262,35 @@ namespace jechFramework.Services
         /// <param name="warehouseId"></param>
         /// <param name="zoneId"></param>
         /// <returns></returns>
-        public Zone FindZoneById(int warehouseId, int zoneId)
+        public void FindZoneById(int warehouseId, int zoneId)
         {
-            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
-            if (warehouse != null)
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+                if(warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with id {warehouseId} not found");
+                }
+                else if(warehouse.zoneList.Any(zone => zone.zoneId != zoneId))
+                {
+                    throw new ServiceException($"Zone with id {zoneId} not found in warehouse with id {warehouseId}");
+                }
+                else
+                {
+                    Console.WriteLine(warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId));
+                }
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            /*if (warehouse != null)
             {
                 return warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
             }
             return null; // Returnerer null hvis varehuset eller sonen ikke ble funnet
-        }
-
+        */}
+            //$"Zone with id {zoneId} not found in warehouse with id {warehouseId}"
 
         /// <summary>
         /// Funksjon for å skrive ut alle varer i en spesifisert sone.
@@ -321,8 +361,9 @@ namespace jechFramework.Services
                 //    throw new ServiceException($"Employee with id: {employeeId} Already exists.");
                 //}
 
-                Employee employee = new(employeeId, employeeName);
-                warehouse.employeeList.Add(employee);
+                Employee newEmployee = new(employeeId, employeeName);
+                warehouse.employeeList.Add(newEmployee);
+                OnEmployeeCreated(warehouse, newEmployee);
 
             }
             catch (ServiceException ex)
@@ -355,6 +396,7 @@ namespace jechFramework.Services
                 }
 
                 warehouse.employeeList.Remove(employee);
+                OnEmployeeRemoved(warehouse, employee);
 
             }
             catch (ServiceException ex)
