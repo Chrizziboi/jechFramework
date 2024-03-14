@@ -1,6 +1,6 @@
 ﻿namespace jechFramework.Models
 {
-    internal class Pallet
+    public class Pallet
     {
         /// <summary>
         /// Pallet klassen er laget for masse-samlinger av en gitt Item for å kunne lagre paller av en vare
@@ -9,22 +9,27 @@
         public int internalPalletId { get; set; }
         //item + pallet id
 
-        public string? palletName { get; set; }
+        public string? palletName { get; set; } = null;
 
-        public string? palletDescription { get; set; }
+        public string? palletDescription { get; set; } = null;
 
         public int palletWeight { get; set; }
 
         public string palletStorageType { get; set; }
 
-        public string? palletLocation { get; set; }
+        public string? palletLocation { get; set; } = null;
 
-        public int palletQuantity { get; set; }
+        public int palletQuantity { get; set; } 
 
         public List<Item> itemList { get; set; }
 
+        public Pallet() 
+        {
+        
+        }
 
-        private Pallet(int internalPalletId, string palletName)
+
+        public Pallet(int internalPalletId, string palletName, List<Item> itemList)
         {
             this.internalPalletId = internalPalletId;
             this.palletName = palletName;

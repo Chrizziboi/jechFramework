@@ -6,7 +6,9 @@ namespace jechFramework.Models
     internal class RecurringOrder
     {
         public int OrderId { get; set; }
+        
         public DateTime StartTime { get; set; }
+
        public RecurrencePattern RecurrencePattern { get; set; }
         public List<Item> Items { get; set; }
 

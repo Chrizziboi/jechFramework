@@ -61,6 +61,7 @@ namespace jechFramework.Services
             EmployeeCreated?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
         }
 
+
         public void OnEmployeeRemoved(Warehouse warehouse, Employee employee)
         {
             EmployeeRemoved?.Invoke(this, new EmployeeEventArgs(warehouse, employee));

@@ -12,13 +12,13 @@ namespace jechFramework.Models
         /// Item klassen er laget for å kunne opprette gjenstander på lageret.
         /// </summary>
 
-        public int internalId { get; set; } 
+        public int internalId { get; set; }
 
-        public int? externalId { get; set; }
+        public int? externalId { get; set; } = null;
 
         public string name { get; set; }
 
-        public string? description { get; set; }
+        public string? description { get; set; } = null;
 
         public int weight { get; set; }
 

@@ -16,6 +16,11 @@ namespace jechFramework.Models
         public int zoneId { get; set; }
         public List<Item> incomingItems { get; set; }
 
+        public WaresIn()
+        {
+
+        }
+
         /// <summary>
         /// Initialiserer en ny instans av WaresIn-klassen med 4 parametere.
         /// </summary>
@@ -33,9 +38,6 @@ namespace jechFramework.Models
         /// <summary>
         /// Initialiserer en ny instans av WaresIn-klassen uten parametere.
         /// </summary>
-        public WaresIn()
-        {
 
-        }
     }
 }

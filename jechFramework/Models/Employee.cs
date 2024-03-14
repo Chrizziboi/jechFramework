@@ -12,6 +12,7 @@ namespace jechFramework.Models
     public class Employee
     {
         public int employeeId  { get; set; }
+
         public string employeeName { get; set; }
 
         public string employeeDescription { get; set; }

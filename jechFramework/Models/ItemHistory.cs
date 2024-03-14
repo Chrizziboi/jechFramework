@@ -9,7 +9,7 @@ namespace jechFramework.Models
     {
 
         public int internalId { get; private set; }
-        public int? oldZone { get; private set; }
+        public int? oldZone { get; private set; } = null;
         public int newZone { get; private set; }
         public DateTime dateTime { get; private set; }
 

@@ -21,6 +21,7 @@ namespace jechFramework.Models
         public int warehouseCapacity { get; set; } = 5;
         // maks antall soner  per varehus.
         public int warehousePalletShelfWidth { get; set; } = 80;
+        
 
         public List<Zone> zoneList { get; set; } = new List<Zone>(); 
         /// <param name="zoneList">Dette er en liste for de forskjellige sonene i et varehus</param>

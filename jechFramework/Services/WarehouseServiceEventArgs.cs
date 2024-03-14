@@ -14,7 +14,6 @@ namespace jechFramework.Services
         public WarehouseEventArgs(Warehouse warehouse)
         {
             this.Warehouse = warehouse;
-
         }
     }
 
