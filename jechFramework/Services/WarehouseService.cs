@@ -276,7 +276,7 @@ namespace jechFramework.Services
                     throw new ServiceException($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
                 }
 
-                int currentItemCount = zone.ItemsInZoneList.Sum(item => item.quantity);
+                int currentItemCount = zone.itemsInZoneList.Sum(item => item.quantity);
                 return currentItemCount + quantityToAdd <= zone.zoneCapacity;
             }
             catch (ServiceException ex)
@@ -415,13 +415,13 @@ namespace jechFramework.Services
 
                 Console.WriteLine($"Items in Zone '{zone.zoneName}' in Warehouse '{warehouse.warehouseName}':");
 
-                if (zone.ItemsInZoneList.Count == 0)
+                if (zone.itemsInZoneList.Count == 0)
                 {
                     Console.WriteLine("There are no items in this zone.");
                 }
                 else
                 {
-                    foreach (var item in zone.ItemsInZoneList)
+                    foreach (var item in zone.itemsInZoneList)
                     {
                         Console.WriteLine($"Item ID: {item.internalId}, Name: {item.name}, Quantity: {item.quantity}");
                     }
@@ -532,5 +532,123 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+        public void AddShelfToZone(int zoneId, Shelf shelf)
+        {
+            // Finn først varehuset som inneholder sonen med gitt zoneId
+            foreach (var warehouse in warehouseList)
+            {
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId); // Merk liten z i zoneId og zoneList
+                if (zone != null)
+                {
+                    // Legg til reolen i sonens reolliste
+                    zone.shelves.Add(shelf); // Antatt at Zone-klassen har en property 'shelves'
+                    Console.WriteLine($"Shelf with ID {shelf.ShelfId} added to zone {zone.zoneName}.");
+                    return;
+                }
+            }
+            Console.WriteLine($"Zone with ID {zoneId} not found.");
+        }
+
+
+        public void RemoveShelfFromZone(int zoneId, Guid shelfId)
+        {
+            // Finn først varehuset som inneholder sonen med gitt zoneId
+            foreach (var warehouse in warehouseList)
+            {
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId); // Merk liten z i zoneId og zoneList
+                if (zone != null)
+                {
+                    // Finn reolen basert på shelfId
+                    var shelfToRemove = zone.shelves.FirstOrDefault(s => s.ShelfId == shelfId); // Antatt at Zone-klassen har en property 'shelves'
+                    if (shelfToRemove != null)
+                    {
+                        // Fjern reolen fra sonens reolliste
+                        zone.shelves.Remove(shelfToRemove); // Antatt at Zone-klassen har en property 'shelves'
+                        Console.WriteLine($"Shelf with ID {shelfId} removed from zone {zone.zoneName}.");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Shelf with ID {shelfId} not found in zone {zone.zoneName}.");
+                        return;
+                    }
+                }
+            }
+            Console.WriteLine($"Zone with ID {zoneId} not found.");
+        }
+
+
+
+        public void UpdateShelf(Guid shelfId, int newLength, int newDepth, int newCapacity)
+        {
+            var shelf = FindShelfById(shelfId);
+            if (shelf != null)
+            {
+                // Oppdaterer reolens egenskaper med de nye verdiene
+                shelf.length = newLength;
+                shelf.depth = newDepth;
+                shelf.capacity = newCapacity;
+                Console.WriteLine($"Shelf with ID {shelfId} has been updated.");
+            }
+            else
+            {
+                Console.WriteLine($"Shelf with ID {shelfId} not found.");
+            }
+        }
+
+
+        public Shelf FindShelfById(Guid shelfId)
+        {
+            foreach (var warehouse in warehouseList)
+            {
+                foreach (var zone in warehouse.zoneList)
+                {
+                    var shelf = zone.shelves.FirstOrDefault(s => s.ShelfId == shelfId);
+                    if (shelf != null)
+                    {
+                        return shelf; // Returnerer reolen hvis funnet
+                    }
+                }
+            }
+            return null; // Returnerer null hvis reolen ikke ble funnet
+        }
+
+
+        public List<Shelf> GetAllShelvesInZone(int zoneId)
+        {
+            foreach (var warehouse in warehouseList)
+            {
+                foreach (var zone in warehouse.zoneList)
+                {
+                    if (zone.zoneId == zoneId)
+                    {
+                        return zone.shelves; // Returnerer listen over hyller i sonen
+                    }
+                }
+            }
+            return new List<Shelf>(); // Returnerer en tom liste hvis sonen ikke ble funnet
+        }
+
+
+        public int CalculateTotalCapacityInZone(int zoneId)
+        {
+            int totalCapacity = 0;
+            foreach (var warehouse in warehouseList)
+            {
+                foreach (var zone in warehouse.zoneList)
+                {
+                    if (zone.zoneId == zoneId)
+                    {
+                        foreach (var shelf in zone.shelves)
+                        {
+                            totalCapacity += shelf.Capacity; // Summerer kapasiteten for hver hylle
+                        }
+                        return totalCapacity; // Returnerer den totale kapasiteten for sonen
+                    }
+                }
+            }
+            return 0; // Returnerer 0 hvis sonen ikke ble funnet
+        }
+
     }
 }

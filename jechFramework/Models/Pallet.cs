@@ -28,7 +28,6 @@
         
         }
 
-
         public Pallet(int internalPalletId, string palletName, List<Item> itemList)
         {
             this.internalPalletId = internalPalletId;

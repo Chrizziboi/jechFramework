@@ -125,7 +125,7 @@ namespace jechFramework.Services
                 }
 
                 // Sjekker om item allerede eksisterer i den tilgjengelige sonen
-                var itemToAdd = availableZone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                var itemToAdd = availableZone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
                 if (itemToAdd != null)
                 {
                     // Øker kvantiteten for eksisterende item
@@ -136,7 +136,7 @@ namespace jechFramework.Services
                 {
                     // Oppretter og legger til en ny item hvis den ikke eksisterer
                     itemToAdd = new Models.Item { internalId = internalId, zoneId = availableZone.zoneId, dateTime = dateTime, quantity = quantity };
-                    availableZone.ItemsInZoneList.Add(itemToAdd);
+                    availableZone.itemsInZoneList.Add(itemToAdd);
 
                     OnItemAdded(internalId, zoneId, dateTime, warehouseId, quantity);
                     //Console.WriteLine($"Item with internal ID {internalId} added to zone {availableZone.zoneId} with quantity {quantity}.");
@@ -174,7 +174,7 @@ namespace jechFramework.Services
                 Zone zoneOfItem = null;
                 foreach (var zone in warehouse.zoneList)
                 {
-                    itemToRemove = zone.ItemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
+                    itemToRemove = zone.itemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
                     if (itemToRemove != null)
                     {
                         zoneOfItem = zone;
@@ -194,7 +194,7 @@ namespace jechFramework.Services
                 }
                 else
                 {
-                    zoneOfItem.ItemsInZoneList.Remove(itemToRemove);
+                    zoneOfItem.itemsInZoneList.Remove(itemToRemove);
 
                     OnItemRemoved(warehouseId, internalId);
                     //Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from zone {zoneOfItem.zoneId}.");
@@ -229,7 +229,7 @@ namespace jechFramework.Services
                 Models.Item item = null;
                 foreach (var zone in warehouse.zoneList)
                 {
-                    item = zone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                    item = zone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
                     if (item != null) break;
                 }
 
@@ -251,9 +251,9 @@ namespace jechFramework.Services
                 item.dateTime = DateTime.Now;
 
                 // Oppdaterer også sonens liste hvis nødvendig
-                if (!newZoneObj.ItemsInZoneList.Contains(item))
+                if (!newZoneObj.itemsInZoneList.Contains(item))
                 {
-                    newZoneObj.ItemsInZoneList.Add(item);
+                    newZoneObj.itemsInZoneList.Add(item);
                     // Anta at vi også må fjerne item fra den gamle sonen, her må du implementere logikk for det
                 }
 
@@ -313,7 +313,7 @@ namespace jechFramework.Services
                 }
                 else
                 {
-                    int countedItems = zone.ItemsInZoneList.Count;
+                    int countedItems = zone.itemsInZoneList.Count;
                     return countedItems;
                 }
                 
@@ -345,7 +345,7 @@ namespace jechFramework.Services
             int totalQuantity = 0;
             foreach (var zone in warehouse.zoneList)
             {
-                totalQuantity += zone.ItemsInZoneList.Where(item => item.internalId == internalId)
+                totalQuantity += zone.itemsInZoneList.Where(item => item.internalId == internalId)
                                                       .Sum(item => item.quantity);
             }
 
@@ -360,14 +360,14 @@ namespace jechFramework.Services
         public void FindItemByInternalIdInWarehouse(int internalId)
         {
 
-            var item = zone.ItemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
+            var item = zone.itemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
 
             if (item == null)
             {
                 throw new ServiceException($"An Item with id{item} could not be found.");
             }
 
-            else if (zone.ItemsInZoneList == null)
+            else if (zone.itemsInZoneList == null)
             {
                 throw new ServiceException($"Error 404");
             }
@@ -392,7 +392,7 @@ namespace jechFramework.Services
                 // Går gjennom hver sone i lageret og tømmer varelisten
                 foreach (var zone in warehouse.zoneList)
                 {
-                    zone.ItemsInZoneList.Clear();
+                    zone.itemsInZoneList.Clear();
                 }
             }
 
@@ -414,7 +414,7 @@ namespace jechFramework.Services
             // Gå gjennom alle soner i lageret for å finne varen.
             foreach (var zone in warehouse.zoneList)
             {
-                var item = zone.ItemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                var item = zone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
                 if (item != null)
                 {
                     // Returnerer zoneId som int? når varen er funnet.
