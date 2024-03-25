@@ -61,17 +61,14 @@ namespace jechFramework.Services
             EmployeeCreated?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
         }
 
-
         public void OnEmployeeRemoved(Warehouse warehouse, Employee employee)
         {
             EmployeeRemoved?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
         }
 
-
         ///                                        ///
         ///   Service funksjoner for Warehouse.cs  ///
         ///                                        ///
-
 
         /// <summary>
         /// Funksjon for å opprette et varehus.
@@ -103,7 +100,6 @@ namespace jechFramework.Services
         /// Funksjon for å finne et varehus i varehus-listen
         /// </summary>
         /// <param name="warehouseId"></param>
-
         /// <exception cref="ServiceException"></exception>
         public void FindWareHouseInWarehouseList(int warehouseId)
         {
@@ -162,7 +158,6 @@ namespace jechFramework.Services
 
         }
 
-
         /// <summary>
         /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.
         /// </summary>
@@ -185,7 +180,6 @@ namespace jechFramework.Services
         ///                                        ///
         ///   Service funksjoner for Employee.cs   ///
         ///                                        ///
-
 
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.
@@ -227,7 +221,6 @@ namespace jechFramework.Services
                 // Optionally handle the exception here if needed
             }
         }
-
 
         /// <summary>
         /// Funksjon for å ta vekk en sone fra et varehus.
@@ -314,7 +307,6 @@ namespace jechFramework.Services
             }
         }
 
-
         /// <summary>
         /// Funksjon for å finne en sone ved hjelp av Id.
         /// </summary>
@@ -353,8 +345,6 @@ namespace jechFramework.Services
         }
             //$"Zone with id {zoneId} not found in warehouse with id {warehouseId}"
 
-
-
         public Zone FindAvailableZoneForItem(int warehouseId, int preferredZoneId, int quantity)
         {
             try
@@ -390,7 +380,6 @@ namespace jechFramework.Services
                 return null;
             }
         }
-        
 
         /// <summary>
         /// Funksjon for å skrive ut alle varer i en spesifisert sone.
@@ -436,11 +425,9 @@ namespace jechFramework.Services
 
         }
 
-
         ///                                              ///
         ///   Service funksjoner for Employee.cs         ///
         ///                                              ///
-
 
         /// <summary>
         /// Funksjon for å oprette ansatte for et gitt varehus.
@@ -472,7 +459,6 @@ namespace jechFramework.Services
 
             }
         }
-
 
         /// <summary>
         /// Funksjon for å ta vekk en ansatt fra et gitt varehus.
@@ -532,6 +518,11 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
+        ///                                              ///
+        ///       Service funksjoner for Shelf.cs        ///
+        ///                                              ///
+
         public void AddShelfToZone(int zoneId, Shelf shelf)
         {
             // Finn først varehuset som inneholder sonen med gitt zoneId
@@ -641,7 +632,7 @@ namespace jechFramework.Services
                     {
                         foreach (var shelf in zone.shelves)
                         {
-                            totalCapacity += shelf.Capacity; // Summerer kapasiteten for hver hylle
+                            totalCapacity += shelf.capacity; // Summerer kapasiteten for hver hylle
                         }
                         return totalCapacity; // Returnerer den totale kapasiteten for sonen
                     }
