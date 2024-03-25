@@ -587,7 +587,7 @@ namespace jechFramework.Services
                 // Oppdaterer reolens egenskaper med de nye verdiene
                 shelf.length = newLength;
                 shelf.depth = newDepth;
-                shelf.capacity = newCapacity;
+                shelf.palletCapacity = newCapacity;
                 Console.WriteLine($"Shelf with ID {shelfId} has been updated.");
             }
             else
@@ -641,7 +641,7 @@ namespace jechFramework.Services
                     {
                         foreach (var shelf in zone.shelves)
                         {
-                            totalCapacity += shelf.Capacity; // Summerer kapasiteten for hver hylle
+                            totalCapacity += shelf.palletCapacity; // Summerer kapasiteten for hver hylle
                         }
                         return totalCapacity; // Returnerer den totale kapasiteten for sonen
                     }
