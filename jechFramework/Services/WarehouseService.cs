@@ -161,6 +161,7 @@ namespace jechFramework.Services
         public List<Warehouse> GetAllWarehouses()
         {
             return warehouseList;
+            
 
         }
 
@@ -581,7 +582,7 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
-
+        /// for å kunne vise en bruker hvilken autorisasjon den ansatte har
         public void CheckEmployeeAccessStatus(int warehouseId, int employeeId)
         {
             try
@@ -839,33 +840,6 @@ namespace jechFramework.Services
                 return zone.storageType == item.storageType || zone.storageType == StorageType.None;
             }
         }
-        public string GetItemNameById(int warehouseId, int internalId)
-        {
 
-            try
-            {
-                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
-                if (warehouse == null)
-                {
-                    throw new ServiceException($"Warehouse with ID {warehouseId} not found. Skipping item creation.");
-                }
-                foreach (var warehouse in warehouseList)
-                {
-                    foreach (var item in warehouse.itemList)
-                    {
-                        if (item.internalId == internalId)
-                        {
-                            return item.name;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating item: {ex.Message}");
-            }
-            // Returnerer en standard tekst hvis varen ikke finnes
-            return "Item name not found";
-        }
     }
 }

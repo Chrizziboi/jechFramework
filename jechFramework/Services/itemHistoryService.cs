@@ -16,6 +16,8 @@ public class ItemHistoryService
     private static string logFilePath = "ItemMovements.log"; // Stien til loggfilen
     private WarehouseService warehouseService = new();
 
+    //private Warehouse warehouseInstance = new();
+
 
     /// <summary>
     /// Tom konstruktør for å gjøre kobling mellom klasser enklere.
@@ -68,7 +70,7 @@ public class ItemHistoryService
     /// <summary>
     /// Returnerer en liste over alle elementhistorier.
     /// </summary>
-    /// <returns> En liste over alle elementhistorier. </returns>
+    /// <returns> En liste over alle elementhistorier.</returns>
     public static List<ItemHistory> GetAll()
     {
         UpdateHistoryFromLog(); // Oppdaterer listen hver gang denne metoden kalles
@@ -88,11 +90,22 @@ public class ItemHistoryService
                 return;
             }
 
-            string itemName = warehouseService.GetItemNameById(warehouseId,internalId);
+            var warehouse = warehouseService.warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse == null)
+            {
+                throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+            }
 
-            Console.WriteLine($"History for '{itemName}' (Internal ID: {internalId}):");
+            var item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
+            if (item == null)
+            {
+                throw new ServiceException($"Item with internal ID {internalId} not found.");
+            }
+            //string itemName = warehouseService.GetItemNameById(warehouseId,internalId);
+
+            Console.WriteLine($"History for '{item.name}' (Internal ID: {item.internalId}):");
             Console.WriteLine($"{"Date",-20} | {"Old Location",-20} | {"New Location",-20}");
-            Console.WriteLine(new string('-', 60)); // Separator
+            Console.WriteLine(new string('-', 60)); 
 
             foreach (var itemHistory in singleItemHistory)
             {
@@ -106,6 +119,39 @@ public class ItemHistoryService
             Console.WriteLine($"Error retrieving item history for internal ID {internalId}: {ex.Message}");
         }
     }
+
+    public void GetItemHistoryById2(int warehouseId,int internalId)
+    {
+        try
+        {
+            UpdateHistoryFromLog(); 
+            var singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
+
+            if (!singleItemHistory.Any())
+            {
+                Console.WriteLine($"No history found for the item with internal ID: {internalId}.");
+                return;
+            }
+
+            
+            Console.WriteLine($"(Internal ID: {internalId}):");
+            Console.WriteLine($"{"Date",-20} | {"Old Location",-20} | {"New Location",-20}");
+            Console.WriteLine(new string('-', 60)); 
+
+            foreach (var itemHistory in singleItemHistory)
+            {
+                var oldZoneDisplay = itemHistory.oldZone.HasValue ? $"Zone {itemHistory.oldZone.Value}" : "None";
+                var newZoneDisplay = $"Zone {itemHistory.newZone}";
+                Console.WriteLine($"{itemHistory.dateTime,-20:dd.MM.yyyy HH:mm} | {oldZoneDisplay,-20} | {newZoneDisplay,-20}");
+            }
+        }
+        catch (ServiceException ex)
+        {
+            Console.WriteLine($"Error retrieving item history for internal ID {internalId}: {ex.Message}");
+        }
+    }
+
+
 
 
 

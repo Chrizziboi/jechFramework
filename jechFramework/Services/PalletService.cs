@@ -20,9 +20,30 @@ namespace jechFramework.Services
 
         private readonly WaresOutService WaresOutServiceInstance = new();
 
+        /// <summary>
+        /// Metoden for å fjerne en palle fra palleList
+        /// </summary>
+        /// <param name="palletList">Liste over pallet</param>
+        public void addPallet(List<Pallet> palletList)
+        {
+            try
+            { 
+                if(palletList == null)
+                {
+                    throw new ServiceException($"palletList not found or does not exist");
+                }
+
+                Pallet newPallet = new Pallet();
+                palletList.Add(newPallet);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
 
         /// <summary>
-        /// Meotden for å fjerne en pallett fra palleList
+        /// Meotden for å fjerne en palle fra palleList
         /// </summary>
         /// <param name="palletList">Liste over paller</param>
         public void removePallet(List<Pallet> palletList)
@@ -120,7 +141,7 @@ namespace jechFramework.Services
         //
         //}
         //
-        public void countPalletInWarehouse(int warehouseId, WarehouseService warehouseService)
+        public void countPalletInWarehouse(int warehouseId, WarehouseService warehouseService, WaresOutService waresOutService)
         {
             //var warehouse = WarehouseService.warehouseList.FirstOrDefault(Warehouse => Warehouse.warehouseId == warehouseId);
 
@@ -136,14 +157,8 @@ namespace jechFramework.Services
                     {
                         throw new ServiceException($"A warehouse with id {warehouseId} could not be found.");   
                     }
-                    int palletCount = 0;
-                    foreach(var zone in warehouse.zoneList)
-                    {
-                        foreach(var shelf in zone.shelves)
-                        {
-                            palletCount += WaresOutServiceInstance.palletList.Count;
-                        }
-                    }
+                   
+                    int palletCount = waresOutService.palletList.Count;
                     Console.WriteLine($"Number of pallets in warehouse: {palletCount}");
                 }
                 else

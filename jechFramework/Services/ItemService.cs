@@ -136,6 +136,7 @@ namespace jechFramework.Services
                 bool capacityFound = false;
                 foreach (var shelf in availableZone.shelves)
                 {
+
                     if (warehouseService.HasAvailableCapacity(shelf))
                     {
                         capacityFound = true;
