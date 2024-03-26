@@ -15,7 +15,6 @@ namespace jechFramework.Models
         public int palletCapacity { get; set; }
         public int floors { get; set; } // Etasjer på reolen, kan være 0 hvis ikke spesifisert
 
-        public List<Pallet> palletList = new();
 
         public Shelf() 
         {

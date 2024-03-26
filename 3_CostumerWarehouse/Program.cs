@@ -21,14 +21,15 @@ namespace Program
             WService.SetAccessToHighValueGoods(1, 1, true);
             WService.CheckEmployeeAccessStatus(1, 1);
 
+            List<StorageType> zoneStorageTypes = new List<StorageType> { StorageType.Small, StorageType.Medium, StorageType.Large };
 
-            WService.CreateZone(1, 1, "High Value Goods", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210));
-            WService.CreateZone(1, 2, "Climate Controlled Storage Area", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210));
-            WService.CreateZone(1, 3, "Pallet Racking", 5, TimeSpan.FromMinutes(4), TimeSpan.FromMinutes(4));
-            WService.CreateZone(1, 4, "Small Item Shelving", 30, TimeSpan.FromSeconds(110), TimeSpan.FromSeconds(70));
-            WService.CreateZone(1, 5, "Packing/Stacking", 150, TimeSpan.FromSeconds(50), TimeSpan.FromSeconds(50));
+            WService.CreateZone(1, 1, "High Value Goods", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
+            WService.CreateZone(1, 2, "Climate Controlled Storage Area", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.ClimateControlled);
+            WService.CreateZone(1, 3, "Pallet Racking", 5, TimeSpan.FromMinutes(4), TimeSpan.FromMinutes(4), StorageType.Standard);
+            WService.CreateZoneWithMultipleType(1, 4, "Small Item Shelving", 30, TimeSpan.FromSeconds(110), TimeSpan.FromSeconds(70), zoneStorageTypes);
+            WService.CreateZone(1, 5, "Packing/Stacking", 150, TimeSpan.FromSeconds(50), TimeSpan.FromSeconds(50), StorageType.None);
 
-            WService.GetAllWarehouses();
+            //WService.GetAllWarehouses();
             WService.GetAllZonesInWarehouse(1);
 
             //Shelf newShelf = new Shelf(200, 40, 100, 2);
@@ -70,8 +71,8 @@ namespace Program
 
 
 
-            IService.CreateItem(1, 1, null, "Cheese", Item.StorageType.Small);
-            IService.CreateItem(1, 2, null, "Ball'o'Cheese", Item.StorageType.Medium);
+            IService.CreateItem(1, 1, null, "Cheese", StorageType.HighValue);
+            IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.HighValue);
             IService.AddItem(1, 1, DateTime.Now, 1, 101);
             IService.AddItem(1, 1, DateTime.Now, 1, 1);
             IService.AddItem(2, 1, DateTime.Now, 1, 1);
@@ -83,22 +84,23 @@ namespace Program
             IService.MoveItemToLocation(1, 2, 3);
             IService.MoveItemToLocation(1, 2, 4);
 
+
             IHService.GetItemHistoryById(1);
             IHService.GetItemHistoryById(2);
 
-            Pallet pallet = new Pallet(10, "palle");
-            WService.PlaceItemOnShelf(1, 1, 1, 1);
-            Console.WriteLine("----- Count Pallets -----");
-            PService.countPalletInWarehouse(1, WService);
+           Pallet pallet = new Pallet(10, "Hannan's pall");
+           WService.PlaceItemOnShelf(1, 1, 1, 1);
+           Console.WriteLine("----------------------- Count Pallets -----------------------");
+           PService.countPalletInWarehouse(1, WService);
+           PService.countPalletInWarehouse(3, WService);
 
 
-            IService.ClearWarehouseData();
-            IHService.ClearHistoryLog(); // Dette vil slette loggfilen
+           IService.ClearWarehouseData();
+           IHService.ClearHistoryLog(); // Dette vil slette loggfilen
 
             Console.WriteLine("Simulation complete. Data has been cleared.");
             Console.WriteLine("Press any key to close this window...");
             Console.ReadKey();
-
         }
     }
 }

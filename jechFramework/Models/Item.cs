@@ -8,7 +8,7 @@ namespace jechFramework.Models
 {
     public class Item
     {
-        public Guid shelfId;
+        public int shelfId;
 
         /// <summary>
         /// Item klassen er laget for å kunne opprette gjenstander på lageret.
@@ -24,6 +24,7 @@ namespace jechFramework.Models
 
         public int weight { get; set; }
 
+        //public int itemSize { get; set; }
         public string type { get; set; }
 
         public StorageType storageType { get; set; }
@@ -34,19 +35,22 @@ namespace jechFramework.Models
 
         public DateTime dateTime { get; set; } = DateTime.Now;
 
+        //public List<StorageType> itemPacketList { get; set; } = new List<StorageType>();
+        
+
         /// <summary>
         ///  Enum for å definere forskjellige gjenstands-størrelser.
         /// </summary>
-        public enum StorageType
-        {
-            None = 0,
-            Small = 1,
-            Medium = 2,
-            Large = 3,
-            Standard,
-            ClimateControlled,
-            HighValue
-        }
+        //public enum StorageType
+        //{
+        //    None = 0,
+        //    Small = 1,
+        //    Medium = 2,
+        //    Large = 3,
+        //    Standard,
+        //    ClimateControlled,
+        //    HighValue
+        //}
 
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen uten parametere.

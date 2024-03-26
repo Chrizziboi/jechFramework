@@ -18,30 +18,60 @@ namespace jechFramework.Services
 
         private readonly Warehouse warehouseInstance = new();
 
-        private readonly Shelf shelfInstance = new();
+        private readonly WaresOutService WaresOutServiceInstance = new();
 
-       //private int lastPalletId = 0;
-       //private List<Pallet> pallets = new List<Pallet>();
-       //
-       //public void AddPallet(int itemId, int warehouseId)
-       //{
-       //    lastPalletId++;
-       //
-       //    string itemIdString = itemId.ToString();
-       //    string warehouseIdString = warehouseId.ToString();
-       //    string zoneIdString = "5";
-       //
-       //    string combinedIdString = warehouseIdString + zoneIdString + lastPalletId.ToString() + itemIdString;
-       //
-       //    int combinedId = int.Parse(combinedIdString);
-       //
-       //    Pallet newPallet = new Pallet
-       //    {
-       //        internalPalletId = combinedId
-       //    };
-       //
-       //    pallets.Add(newPallet);
-       //}
+
+        /// <summary>
+        /// Meotden for å fjerne en pallett fra palleList
+        /// </summary>
+        /// <param name="palletList">Liste over paller</param>
+        public void removePallet(List<Pallet> palletList)
+        {
+            try
+            {
+                if (palletList == null)
+                {
+                    //håndtere tilfelle det palletList er null
+                    throw new ServiceException($"palletList not found or does not exist");
+                }
+
+                if (palletList.Any())
+                {
+                    Pallet palletToRemove = palletList.First();
+                    palletList.Remove(palletToRemove);
+                }
+                else
+                {
+                    throw new ServiceException($"PalletList is empty");
+                }
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        //private int lastPalletId = 0;
+        //
+        //public void AddPallet(int warehouseId, int internalId)
+        //{
+        //    lastPalletId++;
+        //  
+        //    string internalIdString = internalId.ToString();
+        //    string warehouseIdString = warehouseId.ToString();
+        //    string zoneIdString = "5";
+        //
+        //    string combinedIdString = warehouseIdString + zoneIdString + lastPalletId.ToString() + internalIdString;
+        //
+        //    int combinedId = int.Parse(combinedIdString);
+        //
+        //    Pallet newPallet = new Pallet
+        //    {
+        //        internalPalletId = combinedId
+        //    };
+        //
+        //    shelfInstance.palletList.Add(newPallet);
+        //}
         // internalPalletId + Item.internalId
         //private static List<Pallet> palletList = new List<Pallet>();
         //
@@ -95,25 +125,33 @@ namespace jechFramework.Services
             //var warehouse = WarehouseService.warehouseList.FirstOrDefault(Warehouse => Warehouse.warehouseId == warehouseId);
 
             try
-            { 
-                var warehouse = warehouseService.warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
-                //var zone = warehouseInstance.zoneList;
-                //var shelf = shelfInstance.palletList;
+            {
+                if (warehouseService.warehouseList.Any(w => w.warehouseId == warehouseId))
+                {
+                    var warehouse = warehouseService.warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+                    //var zone = warehouseInstance.zoneList;
+                    //var shelf = shelfInstance.palletList;
                 
-                if (warehouse == null) 
-                {
-                    throw new ServiceException($"A warehouse with id {warehouseId} could not be found.");   
-                }
-                int palletCount = 0;
-                foreach(var zone in warehouse.zoneList)
-                {
-                    foreach(var shelf in zone.shelves)
+                    if (warehouse == null) 
                     {
-                        palletCount += shelf.palletList.Count;
+                        throw new ServiceException($"A warehouse with id {warehouseId} could not be found.");   
                     }
+                    int palletCount = 0;
+                    foreach(var zone in warehouse.zoneList)
+                    {
+                        foreach(var shelf in zone.shelves)
+                        {
+                            palletCount += WaresOutServiceInstance.palletList.Count;
+                        }
+                    }
+                    Console.WriteLine($"Number of pallets in warehouse: {palletCount}");
+                }
+                else
+                {
+                    throw new ServiceException($"Warehouse with Id {warehouseId} not found in warehouseList");
                 }
 
-                Console.WriteLine($"Number of pallets in warehouse: {palletCount}");
+                
             }
             catch (ServiceException ex)
             {

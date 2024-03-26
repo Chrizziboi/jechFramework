@@ -11,8 +11,11 @@ namespace jechFramework.Services
         private readonly List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
         private readonly ItemService itemService; // Assuming there is an ItemService to handle items in the warehouse
         private readonly WarehouseService warehouseService; // Ny avhengighet
+        private readonly Shelf shelf = new(); // Ny avhengighet
 
         public int lastShipmentNumber = 0;
+
+        public List<Pallet> palletList = new();
 
         public delegate void WaresOutScheduledEventHandler(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber);
 
@@ -22,6 +25,9 @@ namespace jechFramework.Services
         {
             WaresOutScheduledSentOut?.Invoke(this, new WaresOutEventArgs(warehouseId, orderId, scheduledTime, destination, outgoingItems, lastShipmentNumber));
         }
+
+        public WaresOutService() 
+        { }
 
         // Constructor to inject ItemService
         public WaresOutService(ItemService itemService)
@@ -61,7 +67,12 @@ namespace jechFramework.Services
                         }
 
                         // Antatt at RemoveItem nå krever warehouseId og internalId
-                        itemService.RemoveItem(warehouseId, item.internalId);
+                        //itemService.RemoveItem(warehouseId, item.internalId, item.quantity);
+
+                        //if(item.quantity % 30 == 0)
+                        //{
+                        //    PalletService.removePallet(palletList);
+                        //}
                     }
                     catch (ServiceException ex)
                     {
