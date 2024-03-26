@@ -8,16 +8,24 @@ namespace jechFramework.Models
 {
     public class Shelf
     {
-        public Guid ShelfId { get; private set; } // Unik identifikator for reolen
+        private static int nextId = 1; // Statisk variabel for å holde styr på neste ID
+        public int shelfId { get; set; } // Endret til int for sekvensiell ID
         public int length { get; set; }
         public int depth { get; set; }
-        public int palletCapacity { get; set; } // Antall paller reolen kan inneholde
+        public int palletCapacity { get; set; }
         public int floors { get; set; } // Etasjer på reolen, kan være 0 hvis ikke spesifisert
+
+        public List<Pallet> palletList = new();
+
+        public Shelf() 
+        {
+        
+        }
 
         // Konstruktør som forventer etasjer
         public Shelf(int length, int depth, int palletCapacity, int floors)
         {
-            ShelfId = Guid.NewGuid(); // Generer en unik ID når en ny instans opprettes
+            shelfId = nextId++; // Generer en unik ID når en ny instans opprettes
             this.length = length;
             this.depth = depth;
             this.palletCapacity = palletCapacity;
@@ -27,7 +35,7 @@ namespace jechFramework.Models
         // Konstruktør uten etasjer, setter standardverdi for Floors til 0
         public Shelf(int length, int depth, int palletCapacity)
         {
-            ShelfId = Guid.NewGuid(); // Generer en unik ID her også
+            shelfId = nextId++; // Generer en unik ID her også
             this.length = length;
             this.depth = depth;
             this.palletCapacity = palletCapacity;

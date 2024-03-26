@@ -59,6 +59,7 @@ namespace jechFramework.Services
                         {
                             throw new ServiceException($"Item with internal ID {item.internalId} is unavailable.");
                         }
+
                         // Antatt at RemoveItem nå krever warehouseId og internalId
                         itemService.RemoveItem(warehouseId, item.internalId);
                     }

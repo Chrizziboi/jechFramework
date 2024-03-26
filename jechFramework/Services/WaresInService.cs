@@ -48,7 +48,7 @@ namespace jechFramework.Services
                 {
                     if (!itemService.ItemExists(warehouseId,item.internalId))
                     {
-                        itemService.CreateItem(warehouseId, item.internalId, item.externalId, item.name, item.type);
+                        itemService.CreateItem(warehouseId, item.internalId, item.externalId, item.name, item.storageType);
                     }
                     var existingZoneId = itemService.GetLocationByInternalId(warehouseId,item.internalId);
                     var itemZoneId = existingZoneId ?? zoneId;

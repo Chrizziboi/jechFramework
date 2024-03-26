@@ -11,20 +11,20 @@ namespace jechFramework.Services
         public int internalId { get; private set; }
         public int? externalId { get; private set; }
         public string name { get; private set; }
-        public string type { get; private set; }
+        public Enum storagetype { get; private set; }
         public int zoneId { get; private set; }
         public DateTime dateTime { get; private set; }
         public int quantity { get; private set; }
         public int newZone { get; private set; }
         public int oldZone { get; private set; }
 
-        public ItemEventArgs(int warehouseId, int internalId, int? externalId, string name, string type, int zoneId, DateTime DateTime, int quantity, int newZone, int oldZone)
+        public ItemEventArgs(int warehouseId, int internalId, int? externalId, string name, Enum storagetype, int zoneId, DateTime DateTime, int quantity, int newZone, int oldZone)
         {
             this.warehouseId = warehouseId;
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
-            this.type = type;
+            this.storagetype = storagetype;
             this.zoneId = zoneId;
             this.dateTime = DateTime;
             this.quantity = quantity;
@@ -32,13 +32,13 @@ namespace jechFramework.Services
             this.oldZone = oldZone;
         }
 
-        public ItemEventArgs(int warehouseId, int internalId, int? externalId, string name, string type)
+        public ItemEventArgs(int warehouseId, int internalId, int? externalId, string name, Enum storagetype)
         {
             this.warehouseId = warehouseId;
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
-            this.type = type;
+            this.storagetype = storagetype;
         }
 
         public ItemEventArgs(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity)

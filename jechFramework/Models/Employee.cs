@@ -27,6 +27,8 @@ namespace jechFramework.Models
 
         public string employeeTelephoneNumber { get; set; }
 
+        public bool employeeAuthorizationToHighValueGoods { get; set; } = false;
+
 
         public Employee(int employeeId, string employeeName)
         {
