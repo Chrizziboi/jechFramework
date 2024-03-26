@@ -107,8 +107,8 @@ namespace Program
             IService.MoveItemToLocation(1, 2, 4);
 
             Console.WriteLine("\n----- Get Item History By Id -----");
-            IHService.GetItemHistoryById2(1,1);
-            IHService.GetItemHistoryById2(1,2);
+            IHService.GetItemHistoryById(1,1);
+            IHService.GetItemHistoryById(1,2);
 
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 3, null, "Kebab", StorageType.HighValue );
