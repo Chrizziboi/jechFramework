@@ -14,6 +14,10 @@ public class ItemHistoryService
     /// </summary>
     private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
     private static string logFilePath = "ItemMovements.log"; // Stien til loggfilen
+    private WarehouseService warehouseService = new();
+
+    //private Warehouse warehouseInstance = new();
+
 
     /// <summary>
     /// Tom konstruktør for å gjøre kobling mellom klasser enklere.
@@ -66,38 +70,47 @@ public class ItemHistoryService
     /// <summary>
     /// Returnerer en liste over alle elementhistorier.
     /// </summary>
-    /// <returns> En liste over alle elementhistorier. </returns>
+    /// <returns> En liste over alle elementhistorier.</returns>
     public static List<ItemHistory> GetAll()
     {
         UpdateHistoryFromLog(); // Oppdaterer listen hver gang denne metoden kalles
         return itemHistoryList;
     }
 
-    public void GetItemHistoryById(int internalId)
+    public void GetItemHistoryById(int warehouseId,int internalId)
     {
         try
         {
-            UpdateHistoryFromLog(); // Ensure the list is updated based on the log file
+            UpdateHistoryFromLog(); 
             var singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
 
             if (!singleItemHistory.Any())
             {
-                Console.WriteLine($"No history was found for item with internalId: {internalId}.");
+                Console.WriteLine($"No history found for the item with internal ID: {internalId}.");
                 return;
             }
 
+            
+            Console.WriteLine($"(Internal ID: {internalId}):");
+            Console.WriteLine($"{"Date",-20} | {"Old Location",-20} | {"New Location",-20}");
+            Console.WriteLine(new string('-', 60)); 
+
             foreach (var itemHistory in singleItemHistory)
             {
-                var oldZoneDisplay = itemHistory.oldZone.HasValue ? itemHistory.oldZone.Value.ToString() : "None";
-                Console.WriteLine($"--------------\n - DateTime: {itemHistory.dateTime}.\n - Old Location: {oldZoneDisplay}.\n - New Location: {itemHistory.newZone}.\n");
+                var oldZoneDisplay = itemHistory.oldZone.HasValue ? $"Zone {itemHistory.oldZone.Value}" : "None";
+                var newZoneDisplay = $"Zone {itemHistory.newZone}";
+                Console.WriteLine($"{itemHistory.dateTime,-20:dd.MM.yyyy HH:mm} | {oldZoneDisplay,-20} | {newZoneDisplay,-20}");
             }
         }
         catch (ServiceException ex)
         {
-            Console.WriteLine($"Error retrieving item history for internalId {internalId}: {ex.Message}");
-            // Depending on your application's needs, you might want to log this error or notify someone.
+            Console.WriteLine($"Error retrieving item history for internal ID {internalId}: {ex.Message}");
         }
     }
+
+
+
+
 
     /// <summary>
     /// Tømmer historikkloggen ved å slette loggfilen hvis den eksisterer.

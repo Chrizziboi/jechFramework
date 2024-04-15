@@ -35,14 +35,14 @@ namespace MyConsoleApp
             itemService.CreateItem(1,5, null, "Cola", "Soda");
 
             // Legger til varer med riktig zoneId og warehouseId
-            itemService.AddItem(4, 1, DateTime.Now, 1,35);
+            itemService.AddItem(4, 1, DateTime.Now, 1, 35);
             itemService.AddItem(3, 1, DateTime.Now, 1, 5);
             itemService.AddItem(6, 1, DateTime.Now, 1, 5);
-            itemService.AddItem(5, 1, DateTime.Now, 1,1);
+            itemService.AddItem(5, 1, DateTime.Now, 1, 1);
 
             List<Item> incomingItems = new List<Item>() {
-                new Item() { internalId = 6, name = "Kebab", type = "Food" },
-                new Item() { internalId = 2, name = "Ananas", type = "Fruit" }
+                new Item() { internalId = 6, name = "Kebab", storageType = StorageType.HighValue },
+                new Item() { internalId = 2, name = "Ananas", storageType = StorageType.HighValue }
             };
 
             waresInService.WaresIn(1,1, DateTime.Now, 1, TimeSpan.FromMinutes(30), incomingItems);

@@ -29,7 +29,7 @@ namespace jechFramework.Models
         public List<Employee> employeeList { get; set; } = new List<Employee>();
         /// <param name="employeeList">Listen over alle ansatte i et varehus.</param>
         /// 
-        public List<Item> ItemList { get; set; } = new List<Item>(); // nye created item list
+        public List<Item> itemList { get; set; } = new List<Item>(); // nye created item list
         /// <param name="ItemList">Listen over alle Item-objekter i et varehus.</param>
         /// 
 

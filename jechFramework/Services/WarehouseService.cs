@@ -1,4 +1,5 @@
-﻿using jechFramework.Models;
+﻿using jechFramework.Interfaces;
+using jechFramework.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,12 @@ namespace jechFramework.Services
     public class WarehouseService //Service klasse for Warehouse.cs, Employee.cs og Zone.cs
     {
 
-        private List<Warehouse> warehouseList = new List<Warehouse>();
+        private readonly Warehouse warehouseInstance = new();
+        private readonly Shelf shelfInstance = new();
+
+        private readonly WaresOutService waresOutService = new WaresOutService();
+
+        public List<Warehouse> warehouseList = new List<Warehouse>();
         // Liste med varehus
 
 
@@ -33,7 +39,7 @@ namespace jechFramework.Services
         public event EventHandler<ZoneEventArgs> ZoneRemoved;
         public event EventHandler<EmployeeEventArgs> EmployeeCreated;
         public event EventHandler<EmployeeEventArgs> EmployeeRemoved;
-        
+
 
         public void OnWarehouseCreated(Warehouse warehouse)
         {
@@ -61,17 +67,14 @@ namespace jechFramework.Services
             EmployeeCreated?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
         }
 
-
         public void OnEmployeeRemoved(Warehouse warehouse, Employee employee)
         {
             EmployeeRemoved?.Invoke(this, new EmployeeEventArgs(warehouse, employee));
         }
 
-
         ///                                        ///
         ///   Service funksjoner for Warehouse.cs  ///
         ///                                        ///
-
 
         /// <summary>
         /// Funksjon for å opprette et varehus.
@@ -91,7 +94,7 @@ namespace jechFramework.Services
                 warehouseList.Add(newWarehouse);
 
                 OnWarehouseCreated(newWarehouse);
-                
+
             }
             catch (ServiceException ex)
             {
@@ -103,7 +106,6 @@ namespace jechFramework.Services
         /// Funksjon for å finne et varehus i varehus-listen
         /// </summary>
         /// <param name="warehouseId"></param>
-
         /// <exception cref="ServiceException"></exception>
         public void FindWareHouseInWarehouseList(int warehouseId)
         {
@@ -153,15 +155,15 @@ namespace jechFramework.Services
             catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
+                return null; // Returnerer null hvis det oppstår en feil
             }
         }
         public List<Warehouse> GetAllWarehouses()
         {
             return warehouseList;
+            
 
         }
-
 
         /// <summary>
         /// Funksjon for å ta vekk opprettede varehus fra varehuslisten.
@@ -186,45 +188,69 @@ namespace jechFramework.Services
         ///   Service funksjoner for Employee.cs   ///
         ///                                        ///
 
-
         /// <summary>
         /// Her er det laget en funksjon for å kunne lage en sone hvor man kan lage navn og velge kapasiteten til en ny sone.
         /// </summary>
-        public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity)
+        public void CreateZone(int warehouseId, int zoneId, string zoneName, int zoneCapacity, TimeSpan itemPlacementTime, TimeSpan itemRetrievalTime, StorageType storageType)
         {
-
             try
             {
-                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+                var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
                     throw new ServiceException($"Warehouse with id {warehouseId} does not exist.");
                 }
-                var existingZone = warehouse.zoneList.FirstOrDefault(existingZone => existingZone.zoneId == zoneId);
+                var existingZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
                 if (existingZone != null)
                 {
                     throw new ServiceException($"Zone with id {zoneId} already exists in Warehouse with id {warehouseId}.");
                 }
 
                 // Check if adding this zone would exceed warehouse capacity
-                int totalZoneCapacity = warehouse.zoneList.Count() + 1;
-
-                if (totalZoneCapacity > warehouse.warehouseCapacity)
+                if (warehouse.zoneList.Count + 1 > warehouse.warehouseCapacity)
                 {
                     throw new ServiceException($"Adding zone with id {zoneId} would exceed warehouse capacity, " +
                                                $"therefore Zone not created.");
                 }
 
-                Zone newZone = new(zoneId, zoneName, zoneCapacity);
+                Zone newZone = new(zoneId, zoneName, zoneCapacity, itemPlacementTime, itemRetrievalTime, storageType);
                 warehouse.zoneList.Add(newZone);
 
                 OnZoneCreated(warehouse, newZone);
-                //Console.WriteLine($"Successfully created Zone: {zoneId} in warehouse: {warehouseId}.");
             }
             catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
-                // Optionally handle the exception here if needed
+            }
+        }
+        public void CreateZoneWithMultipleType(int warehouseId, int zoneId, string zoneName, int zoneCapacity, TimeSpan itemPlacementTime, TimeSpan itemRetrievalTime, List<StorageType> zonePacketList)
+        {
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with id {warehouseId} does not exist.");
+                }
+                var existingZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+                if (existingZone != null)
+                {
+                    throw new ServiceException($"Zone with id {zoneId} already exists in Warehouse with id {warehouseId}.");
+                }
+
+                if (warehouse.zoneList.Count + 1 > warehouse.warehouseCapacity)
+                {
+                    throw new ServiceException($"Adding zone with id {zoneId} would exceed warehouse capacity, therefore Zone not created.");
+                }
+
+                Zone newZone = new Zone(zoneId, zoneName, zoneCapacity, itemPlacementTime, itemRetrievalTime, zonePacketList);
+
+                warehouse.zoneList.Add(newZone);
+                OnZoneCreated(warehouse, newZone);
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -276,8 +302,8 @@ namespace jechFramework.Services
                     throw new ServiceException($"Zone with ID {zoneId} in Warehouse {warehouseId} does not exist.");
                 }
 
-                int currentItemCount = zone.ItemsInZoneList.Sum(item => item.quantity);
-                return currentItemCount + quantityToAdd <= zone.zoneCapacity;
+                int currentItemCount = zone.itemsInZoneList.Sum(item => item.quantity);
+                return currentItemCount + quantityToAdd <= zone.shelfCapacity;
             }
             catch (ServiceException ex)
             {
@@ -302,9 +328,11 @@ namespace jechFramework.Services
 
                 Console.WriteLine($"Zones in Warehouse {warehouse.warehouseName}:");
 
+                //var zone = warehouse.zoneList.FirstOrDefault(zone => zone.zoneId == zoneId);
+
                 foreach (var zone in warehouse.zoneList)
                 {
-                    Console.WriteLine($"Zone ID: {zone.zoneId}, Name: {zone.zoneName}, Capacity: {zone.zoneCapacity}");
+                    Console.WriteLine($"Zone ID: {zone.zoneId}, Name: {zone.zoneName}, Capacity: {zone.shelfCapacity} , {zone.itemPlacementTime}, {zone.itemRetrievalTime}, {zone.storageType}");
                 }
             }
             catch (ServiceException ex)
@@ -313,7 +341,6 @@ namespace jechFramework.Services
 
             }
         }
-
 
         /// <summary>
         /// Funksjon for å finne en sone ved hjelp av Id.
@@ -326,11 +353,11 @@ namespace jechFramework.Services
             try
             {
                 var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
-                if(warehouse == null)
+                if (warehouse == null)
                 {
                     throw new ServiceException($"Warehouse with id {warehouseId} not found");
                 }
-                else if(warehouse.zoneList.Any(zone => zone.zoneId != zoneId))
+                else if (warehouse.zoneList.Any(zone => zone.zoneId != zoneId))
                 {
                     throw new ServiceException($"Zone with id {zoneId} not found in warehouse with id {warehouseId}");
                 }
@@ -351,9 +378,7 @@ namespace jechFramework.Services
 
             */
         }
-            //$"Zone with id {zoneId} not found in warehouse with id {warehouseId}"
-
-
+        //$"Zone with id {zoneId} not found in warehouse with id {warehouseId}"
 
         public Zone FindAvailableZoneForItem(int warehouseId, int preferredZoneId, int quantity)
         {
@@ -390,7 +415,6 @@ namespace jechFramework.Services
                 return null;
             }
         }
-        
 
         /// <summary>
         /// Funksjon for å skrive ut alle varer i en spesifisert sone.
@@ -415,13 +439,13 @@ namespace jechFramework.Services
 
                 Console.WriteLine($"Items in Zone '{zone.zoneName}' in Warehouse '{warehouse.warehouseName}':");
 
-                if (zone.ItemsInZoneList.Count == 0)
+                if (zone.itemsInZoneList.Count == 0)
                 {
-                    Console.WriteLine("There are no items in this zone.");
+                    throw new ServiceException("There are no items in this zone.");
                 }
                 else
                 {
-                    foreach (var item in zone.ItemsInZoneList)
+                    foreach (var item in zone.itemsInZoneList)
                     {
                         Console.WriteLine($"Item ID: {item.internalId}, Name: {item.name}, Quantity: {item.quantity}");
                     }
@@ -436,11 +460,9 @@ namespace jechFramework.Services
 
         }
 
-
         ///                                              ///
         ///   Service funksjoner for Employee.cs         ///
         ///                                              ///
-
 
         /// <summary>
         /// Funksjon for å oprette ansatte for et gitt varehus.
@@ -473,7 +495,6 @@ namespace jechFramework.Services
             }
         }
 
-
         /// <summary>
         /// Funksjon for å ta vekk en ansatt fra et gitt varehus.
         /// </summary>
@@ -487,7 +508,7 @@ namespace jechFramework.Services
                 if (warehouse == null)
                 {
                     throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
-                    
+
                 }
                 var employee = warehouse.employeeList.FirstOrDefault(Employee => Employee.employeeId == employeeId);
                 if (employee == null)
@@ -532,5 +553,293 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
+        public void SetAccessToHighValueGoods(int warehouseId, int employeeId, bool hasAccess)
+        {
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
+                }
+
+                var employee = warehouse.employeeList.FirstOrDefault(employee => employee.employeeId == employeeId);
+
+                if (employee == null)
+                {
+                    throw new ServiceException($"Employee with id: {employeeId} does not exists.");
+                }
+
+                employee.employeeAuthorizationToHighValueGoods = hasAccess;
+                Console.WriteLine($"Access to high value goods for employee {employeeId} in warehouse {warehouseId} set to {hasAccess}.");
+                //sett til event
+
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        /// for å kunne vise en bruker hvilken autorisasjon den ansatte har
+        public void CheckEmployeeAccessStatus(int warehouseId, int employeeId)
+        {
+            try
+            {
+                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
+
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
+                }
+
+                var employee = warehouse.employeeList.FirstOrDefault(employee => employee.employeeId == employeeId);
+
+                if (employee == null)
+                {
+                    throw new ServiceException($"Employee with id: {employeeId} does not exists.");
+                }
+
+                Console.WriteLine($"Employee {employeeId} has authorization status: {employee.employeeAuthorizationToHighValueGoods}.");
+
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
+        ///                                              ///
+        ///       Service funksjoner for Shelf.cs        ///
+        ///                                              ///
+
+
+
+        public void AddShelfToZone(int zoneId, int length, int depth, int palletCapacity, int floors = 0)
+        {
+            foreach (var warehouse in warehouseList)
+            {
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+                if (zone == null)
+                {
+                    throw new ServiceException($"Zone with ID {zoneId} not found.");
+                }
+
+                if (zone.shelves.Count >= zone.shelfCapacity)
+                {
+                    throw new ServiceException($"Cannot add more shelves to zone {zone.zoneName} as it has reached its capacity.");
+                    // Avslutter metoden hvis kapasiteten er nådd
+                }
+
+                // Opprett et nytt Shelf-objekt ved å bruke de medfølgende parameterne
+                Shelf newShelf = new Shelf(length, depth, palletCapacity, floors)
+                {
+                    // ShelfId genereres automatisk i Shelf-konstruktøren
+                };
+
+                // Legg til det nyopprettede hylleobjektet i sonens shelves-liste
+                zone.shelves.Add(newShelf);
+                Console.WriteLine($"Shelf with ID {newShelf.shelfId} added to zone {zone.zoneName}.");
+            }
+        }
+
+
+        public void RemoveShelfFromZone(int zoneId, int shelfId)
+        {
+            foreach (var warehouse in warehouseList)
+            {
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+                if (zone != null)
+                {
+                    var shelfToRemove = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
+                    if (shelfToRemove != null)
+                    {
+                        zone.shelves.Remove(shelfToRemove);
+                        Console.WriteLine($"Shelf with ID {shelfId} removed from zone {zone.zoneName}.");
+                        return;
+                    }
+                    else
+                    {
+                        throw new ServiceException($"Shelf with ID {shelfId} not found in zone {zone.zoneName}.");
+                    }
+                }
+            }
+            throw new ServiceException($"Zone with ID {zoneId} not found.");
+        }
+
+
+
+
+        public void UpdateShelf(int shelfId, int newLength, int newDepth, int newCapacity)
+        {
+            var shelf = FindShelfById(shelfId);
+            if (shelf != null)
+            {
+                // Oppdaterer reolens egenskaper med de nye verdiene
+                shelf.length = newLength;
+                shelf.depth = newDepth;
+                shelf.palletCapacity = newCapacity;
+                Console.WriteLine($"Shelf with ID {shelfId} has been updated.");
+            }
+            else
+            {
+                throw new ServiceException($"Shelf with ID {shelfId} not found.");
+            }
+        }
+
+
+
+        public Shelf FindShelfById(int shelfId)
+        {
+            foreach (var warehouse in warehouseList)
+            {
+                foreach (var zone in warehouse.zoneList)
+                {
+                    var shelf = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
+                    if (shelf != null)
+                    {
+                        return shelf; // Returnerer reolen hvis funnet
+                    }
+                }
+            }
+            return null; // Returnerer null hvis reolen ikke ble funnet
+        }
+
+
+
+        public List<Shelf> GetAllShelvesInZone(int warehouseId, int zoneId)
+        {
+            try
+            {
+                // Finner det spesifikke varehuset basert på warehouseId
+                var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    return new List<Shelf>();
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+                     // Returnerer en tom liste hvis varehuset ikke ble funnet
+                }
+
+                // Finner den spesifikke sonen innenfor det valgte varehuset
+                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+                if (zone == null)
+                {
+                    return new List<Shelf>();
+                    throw new ServiceException($"Zone with ID {zoneId} in warehouse {warehouseId} does not exist.");
+                    // Returnerer en tom liste hvis sonen ikke ble funnet
+                }
+
+                // Returnerer listen over hyller i sonen
+                return zone.shelves;
+            }
+            catch (Exception ex)
+            {
+                return new List<Shelf>(); // Returnerer en tom liste ved feil
+                throw new ServiceException($"An unexpected error occurred: {ex.Message}");
+                
+            }
+        }
+
+        public int CalculateTotalCapacityInZone(int zoneId)
+        {
+            int totalCapacity = 0;
+            foreach (var warehouse in warehouseList)
+            {
+                foreach (var zone in warehouse.zoneList)
+                {
+                    if (zone.zoneId == zoneId)
+                    {
+                        foreach (var shelf in zone.shelves)
+                        {
+                            totalCapacity += shelf.palletCapacity; // Summerer kapasiteten for hver hylle
+                        }
+                        return totalCapacity; // Returnerer den totale kapasiteten for sonen
+                    }
+                }
+            }
+            return 0; // Returnerer 0 hvis sonen ikke ble funnet
+        }
+
+        public bool HasAvailableCapacity(Shelf shelf)
+        {
+            // Anta at Shelf-objektet har en egenskap 'PalletCapacity' som angir maks antall paller,
+            // og en liste over paller 'Pallets' som allerede er plassert på reolen.
+            int currentPalletCount = waresOutService.palletList.Count;
+
+            // Sjekker om antallet paller som allerede er plassert på reolen er mindre enn reolens totale kapasitet.
+            return currentPalletCount < shelf.palletCapacity;
+        }
+
+        public void PlaceItemOnShelf(int internalId, int shelfId, int zoneId, int warehouseId)
+        {
+            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse == null)
+            {
+                throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
+                return;
+            }
+
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone == null)
+            {
+                throw new ServiceException($"Zone with ID {zoneId} not found in warehouse {warehouseId}.");
+            }
+
+            var shelf = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
+            if (shelf == null)
+            {
+                throw new ServiceException($"Shelf with ID {shelfId} not found in zone {zoneId}.");
+            }
+
+            if (!HasAvailableCapacity(shelf))
+            {
+                throw new ServiceException($"No available capacity on shelf {shelf.shelfId} in zone {zoneId}.");
+            }
+
+            var item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
+            if (item == null)
+            {
+                throw new ServiceException($"Item with internal ID {internalId} not found in warehouse {warehouseId}.");
+
+            }
+
+            if (!zone.itemsInZoneList.Contains(item))
+            {
+                zone.itemsInZoneList.Add(item);
+                Console.WriteLine($"Item {item.internalId} placed on shelf {shelf.shelfId} in zone {zoneId}.");
+            }
+            else
+            {
+                throw new ServiceException($"Item {item.internalId} is already placed in zone {zoneId}.");
+            }
+        }
+        //public bool IsStorageTypeCompatible(Zone zone, Item item)
+        //{
+        //    // Sjekker om zonens liste over støttede lagringstyper inneholder item sin lagringstype
+        //    bool isCompatible = zone.zonePacketList.Contains(item.storageType);
+        //    if (!isCompatible)
+        //    {
+        //        Console.WriteLine($"Adding item {item.internalId} with storage type {item.storageType} cannot be placed in the zone {zone.zoneId} since this zone supports storage types of {string.Join(", ", zone.zonePacketList)}.");
+        //    }
+        //    return isCompatible;
+        //}
+
+
+        public bool IsStorageTypeCompatible(Zone zone, Item item)
+        {
+            // Hvis zonePacketList er definert og inneholder elementer, bruk den for kompatibilitetssjekk
+            if (zone.zonePacketList != null && zone.zonePacketList.Any())
+            {
+                return zone.zonePacketList.Contains(item.storageType);
+            }
+            // Hvis zonePacketList ikke er brukt eller er tom, fall tilbake på å bruke sonens enkelt StorageType for sjekk
+            else
+            {
+                return zone.storageType == item.storageType || zone.storageType == StorageType.None;
+            }
+        }
+
     }
 }

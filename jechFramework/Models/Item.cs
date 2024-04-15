@@ -8,6 +8,8 @@ namespace jechFramework.Models
 {
     public class Item
     {
+        public int shelfId;
+
         /// <summary>
         /// Item klassen er laget for å kunne opprette gjenstander på lageret.
         /// </summary>
@@ -22,15 +24,33 @@ namespace jechFramework.Models
 
         public int weight { get; set; }
 
+        //public int itemSize { get; set; }
         public string type { get; set; }
 
-        public string storageType { get; set; }
+        public StorageType storageType { get; set; }
 
         public int? zoneId { get; set; } = 0;
 
         public int quantity { get; set; } = 1;
 
         public DateTime dateTime { get; set; } = DateTime.Now;
+
+        //public List<StorageType> itemPacketList { get; set; } = new List<StorageType>();
+        
+
+        /// <summary>
+        ///  Enum for å definere forskjellige gjenstands-størrelser.
+        /// </summary>
+        //public enum StorageType
+        //{
+        //    None = 0,
+        //    Small = 1,
+        //    Medium = 2,
+        //    Large = 3,
+        //    Standard,
+        //    ClimateControlled,
+        //    HighValue
+        //}
 
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen uten parametere.
@@ -47,9 +67,7 @@ namespace jechFramework.Models
         public Item(int internalId)
         {
             this.internalId = internalId;
-
         }
-
 
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen med 2 parameter.
@@ -62,7 +80,6 @@ namespace jechFramework.Models
             this.zoneId = zoneId;
 
         }
-
 
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen med 3 parameter.
@@ -78,7 +95,6 @@ namespace jechFramework.Models
 
         }
 
-
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen med 4 parameter.
         /// </summary>
@@ -87,12 +103,19 @@ namespace jechFramework.Models
         /// <param name="name">name er for å kunne gi navn til en gitt vare.</param>
         /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
         public Item(int internalId, int externalId, string name, string type)
-        { 
+        {
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
             this.type = type;
+        }
 
+        public Item(int internalId, string name, StorageType storageType, int zoneId)
+        { 
+            this.internalId= internalId;
+            this.name = name;
+            this.storageType = storageType;
+            this.zoneId = zoneId;
         }
 
 
@@ -105,7 +128,7 @@ namespace jechFramework.Models
         /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
         /// <param name="storageType">>storageType er for informasjon om hvilket type lager det burde/må stå på.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
-        public Item(int internalId, string name, int weight, string type, string storageType, DateTime dateTime)
+        public Item(int internalId, string name, int weight, string type, StorageType storageType, DateTime dateTime)
         {
             this.internalId = internalId;
             this.name = name;
@@ -113,7 +136,6 @@ namespace jechFramework.Models
             this.type = type;
             this.storageType = storageType;
             this.dateTime = dateTime;
-
         }
 
         /// <summary>
@@ -126,7 +148,7 @@ namespace jechFramework.Models
         /// <param name="weight">weight er for vekten på en gitt gjenstand.</param>
         /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
         /// <param name="storageType">storageType er for informasjon om hvilket type lager det burde/må stå på.</param>
-        public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType)
+        public Item(int internalId, int externalId, string name, string description, int weight, string type, StorageType storageType)
         {
             this.internalId = internalId;
             this.externalId = externalId;
@@ -135,7 +157,6 @@ namespace jechFramework.Models
             this.weight = weight;
             this.type = type;
             this.storageType = storageType;
-
         }
 
 
@@ -152,7 +173,7 @@ namespace jechFramework.Models
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param> 
         /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
-        public Item(int internalId, int externalId, string name, string description, int weight, string type, string storageType, int zoneId, int quantity, DateTime dateTime)
+        public Item(int internalId, int externalId, string name, string description, int weight, string type, StorageType storageType, int zoneId, int quantity, DateTime dateTime)
         {
             this.internalId = internalId;
             this.externalId = externalId;
@@ -164,7 +185,6 @@ namespace jechFramework.Models
             this.zoneId = zoneId;
             this.quantity = quantity;
             this.dateTime = DateTime.Now;
-
         }
 
         
