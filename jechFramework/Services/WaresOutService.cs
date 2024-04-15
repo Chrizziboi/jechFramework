@@ -1,12 +1,11 @@
 ﻿using jechFramework.Models;
-using jechFramework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace jechFramework.Services
 {
-    public class WaresOutService : IWaresOutService
+    public class WaresOutService
     {
         private readonly List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
         private readonly ItemService itemService; // Assuming there is an ItemService to handle items in the warehouse

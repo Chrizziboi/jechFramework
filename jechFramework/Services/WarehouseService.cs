@@ -1,5 +1,4 @@
-﻿using jechFramework.Interfaces;
-using jechFramework.Models;
+﻿using jechFramework.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
