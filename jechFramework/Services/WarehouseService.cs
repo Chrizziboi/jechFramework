@@ -82,22 +82,27 @@ namespace jechFramework.Services
         {
             try
             {
-                var newWarehouse = new Warehouse(warehouseId, warehouseName, warehouseCapacity);
+                // Sjekk om varehuset allerede eksisterer
                 if (warehouseList.Any(w => w.warehouseId == warehouseId))
                 {
-                    throw new ServiceException($"Warehouse already exist.");
-                    // (myValue == 1 || myValue == 2 || myValue == 3) !=
-                    //  || or - && and
+                    throw new ServiceException($"Warehouse with ID {warehouseId} already exists.");
                 }
 
+                // Opprett et nytt varehus
+                var newWarehouse = new Warehouse(warehouseId, warehouseName, warehouseCapacity);
                 warehouseList.Add(newWarehouse);
 
+                // Kall til ItemHistoryService for å sikre at loggfilen eksisterer
+                ItemHistoryService.EnsureLogfileExists();
+
+                // Kall til OnWarehouseCreated metode for å håndtere post-creation logikk
                 OnWarehouseCreated(newWarehouse);
 
+                Console.WriteLine($"Warehouse created with ID: {warehouseId}, Name: {warehouseName}, Capacity: {warehouseCapacity}");
             }
             catch (ServiceException ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error creating warehouse: {ex.Message}");
             }
         }
 
@@ -106,7 +111,7 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="warehouseId"></param>
         /// <exception cref="ServiceException"></exception>
-        
+
 
         /// <exception cref="ServiceException"></exception>
         public Warehouse FindWarehouseInWarehouseListWithPrint(int warehouseId, bool printDetails = true)

@@ -96,6 +96,7 @@ namespace Program
             IService.AddItem(1, 1, DateTime.Now, 1, 1);
             IService.AddItem(2, 2, DateTime.Now, 1, 1);
 
+            Console.WriteLine("\n----- Get all info on Items in Warehouse -----");
             IService.GetItemAllInfo(1, 2);
             IService.GetItemAllInfo(1, 1);
             
@@ -111,8 +112,8 @@ namespace Program
 
             
             Console.WriteLine("\n----- Get Item History By Id -----");
-            //IHService.GetItemHistoryById(1,1);
-            //IHService.GetItemHistoryById(1,2);
+            IHService.GetItemHistoryById(1,1);
+            IHService.GetItemHistoryById(1,2);
 
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 3, null, "Kebab", StorageType.HighValue );

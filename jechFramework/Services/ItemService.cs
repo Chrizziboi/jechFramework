@@ -1,5 +1,4 @@
-﻿
-using jechFramework.Models;
+﻿using jechFramework.Models;
 using jechFramework.Services;
 using System.IO;
 using System.Xml.Linq;
@@ -131,35 +130,19 @@ namespace jechFramework.Services
                     throw new ServiceException($"Unable to find an available zone {zoneId} in warehouse {warehouseId}, or the item's storage type is not compatible.");
                 }
 
-                bool capacityFound = false;
-                Shelf selectedShelf = null;
-                foreach (var shelf in availableZone.shelves)
-                {
-                    if (warehouseService.HasAvailableCapacity(shelf))
-                    {
-                        capacityFound = true;
-                        selectedShelf = shelf;
-                        break;
-                    }
-                }
-
-                if (!capacityFound)
-                {
-                    throw new ServiceException($"No available shelf capacity in zone {zoneId} for item {internalId}.");
-                }
-
                 var zoneItem = availableZone.itemsInZoneList.FirstOrDefault(zi => zi.internalId == internalId);
                 if (zoneItem != null)
                 {
-                    zoneItem.quantity += quantity;
+                    zoneItem.quantity += quantity;  // Øk eksisterende kvantitet, ikke overskriv
                     zoneItem.dateTime = dateTime;
+                    Console.WriteLine($"{quantity} of item: {internalId} has been successfully added to zone: {zoneId} in Warehouse: {warehouseId}. Total quantity now: {zoneItem.quantity}");
                 }
                 else
                 {
-                    item.zoneId = zoneId;
+                    // Opprett ny vareoppføring hvis den ikke finnes fra før
                     availableZone.itemsInZoneList.Add(new Item
                     {
-                        internalId = item.internalId,
+                        internalId = internalId,
                         externalId = item.externalId,
                         name = item.name,
                         storageType = item.storageType,
@@ -167,19 +150,25 @@ namespace jechFramework.Services
                         quantity = quantity,
                         dateTime = dateTime
                     });
+
+                    Console.WriteLine($"New item with internal ID {internalId} added to zone {zoneId} with quantity {quantity}.");
                 }
 
-                // Plasser item på valgt hylle
-                warehouseService.PlaceItemOnShelf(internalId, selectedShelf.shelfId, zoneId, warehouseId);
-
-                Console.WriteLine($"Item with internal ID {internalId} added to zone {zoneId} with quantity {quantity}.");
-                Console.WriteLine($"Item with internal ID {internalId} placed on shelf {selectedShelf.shelfId} in zone {zoneId}.");
-                OnItemAdded(internalId, zoneId, dateTime, warehouseId, quantity);
+                LogAddition(internalId, zoneId, dateTime, warehouseId, quantity); // Logg operasjonen
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error while adding item: {ex.Message}");
             }
+        }
+
+
+        private void LogAddition(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity)
+        {
+            var logEntry = $"{DateTime.Now}: Added item with internal ID {internalId} to zone {zoneId} in warehouse {warehouseId} with quantity {quantity}.\n";
+            var logFilePath = "ItemAdditions.log"; // Du kan velge å bruke samme loggfil som bevegelser eller en egen fil for tilføyelser
+
+            File.AppendAllText(logFilePath, logEntry);
         }
 
 
@@ -333,11 +322,27 @@ namespace jechFramework.Services
                     return;
                 }
 
-                var item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
+                Item item = null;
+
+                // Søk først i alle zoner etter varen
+                foreach (var zone in warehouse.zoneList)
+                {
+                    item = zone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
+                    if (item != null)
+                    {
+                        break;  // Finn varen og avbryt løkken
+                    }
+                }
+
+                // Hvis ikke funnet i soner, sjekk hovedlagerlisten
                 if (item == null)
                 {
-                    Console.WriteLine($"Item with internal ID {internalId} not found.");
-                    return;
+                    item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
+                    if (item == null)
+                    {
+                        Console.WriteLine($"Item with internal ID {internalId} not found in any zones or the main list.");
+                        return;
+                    }
                 }
 
                 // Skriv ut all tilgjengelig informasjon om item
@@ -357,6 +362,7 @@ namespace jechFramework.Services
                 Console.WriteLine($"Error retrieving item information: {ex.Message}");
             }
         }
+
 
 
 
