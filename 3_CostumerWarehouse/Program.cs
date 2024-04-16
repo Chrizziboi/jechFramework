@@ -90,24 +90,29 @@ namespace Program
 
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 1, null, "Cheese", StorageType.HighValue);
-            IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.HighValue);
+            IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.ClimateControlled);
             Console.WriteLine("\n----- Add Item -----");
             IService.AddItem(1, 1, DateTime.Now, 1, 101);
             IService.AddItem(1, 1, DateTime.Now, 1, 1);
-            IService.AddItem(2, 1, DateTime.Now, 1, 1);
+            IService.AddItem(2, 2, DateTime.Now, 1, 1);
 
+            IService.GetItemAllInfo(1, 2);
+            IService.GetItemAllInfo(1, 1);
+            
             Console.WriteLine("\n----- Get all Items in Zone -----");
             WService.GetAllItemsInZone(1, 1);
 
             Console.WriteLine("\n----- Move Item To Location -----");
             IService.MoveItemToLocation(1, 1, 2);
-            IService.MoveItemToLocation(1, 2, 2);
+            IService.MoveItemToLocation(1, 2, 1);
             IService.MoveItemToLocation(1, 2, 3);
             IService.MoveItemToLocation(1, 2, 4);
 
+
+            
             Console.WriteLine("\n----- Get Item History By Id -----");
-            IHService.GetItemHistoryById(1,1);
-            IHService.GetItemHistoryById(1,2);
+            //IHService.GetItemHistoryById(1,1);
+            //IHService.GetItemHistoryById(1,2);
 
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 3, null, "Kebab", StorageType.HighValue );
@@ -119,12 +124,12 @@ namespace Program
                 new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 10 },
                 new Item() { internalId = 7, name = "Dressing", storageType = StorageType.Standard }
             };
+
             Console.WriteLine("\n----- Wares In -----");
             waresInService.WaresIn(1, 1, DateTime.Now, incomingItems);
 
-            Console.WriteLine("\n----- Place Item On Shelf -----");
             Pallet pallet = new Pallet(10, "Hannan's pall");
-            WService.PlaceItemOnShelf(1, 1, 1, 1);
+            //WService.PlaceItemOnShelf(1, 1, 1, 1);
             Console.WriteLine("\n----- Count Pallets -----");
             //palletService.addPallet(waresOutService.palletList);
             //palletService.addPallet(waresOutService.palletList);
@@ -156,8 +161,10 @@ namespace Program
             Console.WriteLine("Simulation complete. Data has been cleared.");
             Console.WriteLine("Press any key to close this window...");
             Console.ReadKey();
- 
+
+            
         }
+            
 
         private static void Service_OnWarehouseCreated(object sender, WarehouseEventArgs e)
         {

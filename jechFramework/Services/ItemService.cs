@@ -119,11 +119,10 @@ namespace jechFramework.Services
                     throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
                 }
 
-                // Finn eksisterende item i warehouse.itemList
                 var item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
                 if (item == null)
                 {
-                    throw new ServiceException($"Item with internal ID {internalId} not found. Item must be created before adding to zone.");    
+                    throw new ServiceException($"Item with internal ID {internalId} not found. Item must be created before adding to zone.");
                 }
 
                 var availableZone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
@@ -132,36 +131,14 @@ namespace jechFramework.Services
                     throw new ServiceException($"Unable to find an available zone {zoneId} in warehouse {warehouseId}, or the item's storage type is not compatible.");
                 }
 
-                // Sjekker om det er ledig kapasitet i ønsket zone og at lagringstypen er kompatibel
                 bool capacityFound = false;
+                Shelf selectedShelf = null;
                 foreach (var shelf in availableZone.shelves)
                 {
-
                     if (warehouseService.HasAvailableCapacity(shelf))
                     {
                         capacityFound = true;
-                        // Håndterer eksisterende item i sonen eller legger til et nytt item
-                        var zoneItem = availableZone.itemsInZoneList.FirstOrDefault(zi => zi.internalId == internalId);
-                        if (zoneItem != null)
-                        {
-                            zoneItem.quantity += quantity;
-                            zoneItem.dateTime = dateTime;
-                            Console.WriteLine($"Quantity of item with internal ID {internalId} in zone {zoneId} increased by {quantity}.");
-                        }
-                        else
-                        {
-                            availableZone.itemsInZoneList.Add(new Item
-                            {
-                                internalId = item.internalId,
-                                externalId = item.externalId,
-                                name = item.name,
-                                storageType = item.storageType,
-                                zoneId = zoneId,
-                                quantity = quantity,
-                                dateTime = dateTime
-                            });
-                            Console.WriteLine($"Item with internal ID {internalId} added to zone {zoneId} with quantity {quantity}.");
-                        }
+                        selectedShelf = shelf;
                         break;
                     }
                 }
@@ -171,18 +148,40 @@ namespace jechFramework.Services
                     throw new ServiceException($"No available shelf capacity in zone {zoneId} for item {internalId}.");
                 }
 
-                // Notifiserer systemet om at et nytt item er lagt til og logger bevegelsen
-                OnItemAdded(internalId, zoneId, dateTime, warehouseId, quantity);
-                Console.WriteLine($"Item with internal ID {internalId} added to zone {availableZone.zoneName} on {dateTime} with quantity {quantity}.");
+                var zoneItem = availableZone.itemsInZoneList.FirstOrDefault(zi => zi.internalId == internalId);
+                if (zoneItem != null)
+                {
+                    zoneItem.quantity += quantity;
+                    zoneItem.dateTime = dateTime;
+                }
+                else
+                {
+                    item.zoneId = zoneId;
+                    availableZone.itemsInZoneList.Add(new Item
+                    {
+                        internalId = item.internalId,
+                        externalId = item.externalId,
+                        name = item.name,
+                        storageType = item.storageType,
+                        zoneId = zoneId,
+                        quantity = quantity,
+                        dateTime = dateTime
+                    });
+                }
 
-                // Logger bevegelsen for det nye eller oppdaterte item
-                LogItemMovement(new ItemHistory(internalId, null, zoneId, dateTime));
+                // Plasser item på valgt hylle
+                warehouseService.PlaceItemOnShelf(internalId, selectedShelf.shelfId, zoneId, warehouseId);
+
+                Console.WriteLine($"Item with internal ID {internalId} added to zone {zoneId} with quantity {quantity}.");
+                Console.WriteLine($"Item with internal ID {internalId} placed on shelf {selectedShelf.shelfId} in zone {zoneId}.");
+                OnItemAdded(internalId, zoneId, dateTime, warehouseId, quantity);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error while adding item: {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Funksjon for å fjerne en Item-gjenstand ut fra lageret.
@@ -255,7 +254,6 @@ namespace jechFramework.Services
 
                 Models.Item item = null;
                 Zone oldZoneObj = null;
-                // Finn item og dens nåværende sone
                 foreach (var zone in warehouse.zoneList)
                 {
                     item = zone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
@@ -277,21 +275,21 @@ namespace jechFramework.Services
                     throw new ServiceException($"New zone with ID {newZone} not found in warehouse {warehouseId}. Cannot move item.");
                 }
 
-                // Beregn den totale tiden det tar å flytte varen
+                // Check item and zone compatibility before moving the item
+                if (!CheckItemAndZoneCompatibility(item, newZoneObj))
+                {
+                    throw new ServiceException($"Item {internalId} cannot be moved to zone {newZone} due to incompatible storage types.");
+                }
+
                 TimeSpan totalTime = oldZoneObj.itemRetrievalTime + newZoneObj.itemPlacementTime;
                 DateTime newDateTime = item.dateTime.Add(totalTime);
 
-                // Oppdater item informasjon
-                item.zoneId = newZone;
-                item.dateTime = newDateTime;
-
-                // Flytt item fra gammel til ny sone
                 oldZoneObj.itemsInZoneList.Remove(item);
+                item.zoneId = newZone;  // Update zoneId before adding it to new zone
+                item.dateTime = newDateTime;
                 newZoneObj.itemsInZoneList.Add(item);
 
-                // Logg bevegelsen
                 LogItemMovement(new ItemHistory(internalId, oldZoneObj.zoneId, newZone, item.dateTime));
-
                 OnItemMoved(warehouseId, internalId, newZone);
                 Console.WriteLine($"Item {internalId} has been moved from zone {oldZoneObj.zoneId} to zone {newZone} at {item.dateTime}. Total movement time: {totalTime}.");
             }
@@ -300,6 +298,68 @@ namespace jechFramework.Services
                 Console.WriteLine($"Error while moving item: {ex.Message}");
             }
         }
+
+        public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
+        {
+            try
+            {
+                var compatibility = availableZone.zonePacketList.Contains(item.storageType);
+                if (!compatibility)
+                {
+                    Console.WriteLine($"Adding item {item.internalId} with storage type {item.storageType} cannot be placed in" +
+                                      $" the zone {availableZone.zoneId} since this zone has a storage type of {String.Join(", ", availableZone.zonePacketList)}.");
+                    return false;
+                }
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;  // Return false to indicate incompatibility if an exception occurs
+            }
+
+            return true;
+        }
+
+
+
+        public void GetItemAllInfo(int warehouseId, int internalId)
+        {
+            try
+            {
+                var warehouse = warehouseService.warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+                if (warehouse == null)
+                {
+                    Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
+                    return;
+                }
+
+                var item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
+                if (item == null)
+                {
+                    Console.WriteLine($"Item with internal ID {internalId} not found.");
+                    return;
+                }
+
+                // Skriv ut all tilgjengelig informasjon om item
+                Console.WriteLine($"Item Information:");
+                Console.WriteLine($"Internal ID: {item.internalId}");
+                Console.WriteLine($"External ID: {(item.externalId.HasValue ? item.externalId.ToString() : "Not Available")}");
+                Console.WriteLine($"Name: {item.name}");
+                Console.WriteLine($"Description: {item.description ?? "No Description"}");
+                Console.WriteLine($"Type: {item.type}");
+                Console.WriteLine($"Storage Type: {item.storageType}");
+                Console.WriteLine($"Zone ID: {item.zoneId ?? 0}");
+                Console.WriteLine($"Quantity: {item.quantity}");
+                Console.WriteLine($"Date Time: {item.dateTime}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving item information: {ex.Message}");
+            }
+        }
+
+
+
 
 
 
@@ -491,30 +551,6 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
                 return false;
             }
-        }
-
-        public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
-        {
-            try
-            {
-                //var compatibility = item.storageType.Equals(availableZone.zonePacketList);
-                var compatibility = availableZone.zonePacketList.Contains(item.storageType);
-
-
-                if (!compatibility)
-                {
-                    Console.WriteLine($"Adding item {item.internalId} with storage type {item.storageType} cannot be placed in" +
-                                      $" the zone {zone.zoneId} since this zone has a storage type of {zone.zonePacketList}.");
-                    return false;
-                }
-            }
-            catch (ServiceException ex)
-            {
-                Console.WriteLine(ex.Message);
-                
-            }
-
-            return true;
         }
     }
 }

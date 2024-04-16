@@ -106,29 +106,7 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="warehouseId"></param>
         /// <exception cref="ServiceException"></exception>
-        public void FindWareHouseInWarehouseList(int warehouseId)
-        {
-            try
-            {
-                var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
-
-                if (warehouse == null)
-                {
-
-                    throw new ServiceException($"A warehouse with id{warehouseId} could not be found.");
-
-                }
-
-                Console.WriteLine($"warehouse Id: {warehouse.warehouseId}\n" +
-                                  $"warehouse Name: {warehouse.warehouseName}\n" +
-                                  $"warehouse Capacity: {warehouse.warehouseCapacity}\n");
-
-            }
-            catch (ServiceException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
+        
 
         /// <exception cref="ServiceException"></exception>
         public Warehouse FindWarehouseInWarehouseListWithPrint(int warehouseId, bool printDetails = true)
