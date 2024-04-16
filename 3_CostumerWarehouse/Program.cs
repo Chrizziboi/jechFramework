@@ -29,7 +29,7 @@ namespace Program
             IService.ItemRemoved += Service_OnItemRemoved;
             IService.ItemMoved += Service_OnItemMoved;
 
-            WService.CreateWarehouse(1, "Varehus 1", 5); // Anta at varehuset har kapasitet til 5 soner
+            WService.CreateWarehouse(1, "Varehus 1", 6); // Anta at varehuset har kapasitet til 5 soner
                                                          // Anta at metoden CreateZone nå tar TimeSpan-objekter for tidsestimater
             WService.CreateEmployee(1, 1, "Hannan #ÅretsAnsatt");
             WService.CheckEmployeeAccessStatus(1, 1);
@@ -44,6 +44,8 @@ namespace Program
             WService.CreateZone(1, 3, "Pallet Racking", 5, TimeSpan.FromMinutes(4), TimeSpan.FromMinutes(4), StorageType.Standard);
             WService.CreateZoneWithMultipleType(1, 4, "Small Item Shelving", 30, TimeSpan.FromSeconds(110), TimeSpan.FromSeconds(70), zoneStorageTypes);
             WService.CreateZone(1, 5, "Packing/Stacking", 150, TimeSpan.FromSeconds(50), TimeSpan.FromSeconds(50), StorageType.None);
+            WService.CreateZone(1, 6, "High Value Goods", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
+
             Console.WriteLine("\n----- Get All Zones in Warehouse -----");
             //WService.GetAllWarehouses();
             WService.GetAllZonesInWarehouse(1);
@@ -80,6 +82,11 @@ namespace Program
             WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 6
             WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 7
 
+            WService.AddShelfToZone(6, 200, 40, 100);
+            WService.AddShelfToZone(6, 200, 40, 100);
+            WService.AddShelfToZone(6, 200, 40, 100);
+            WService.AddShelfToZone(6, 200, 80, 100);
+
             Console.WriteLine("\n----- Get all Shelves in Zone -----");
             WService.GetAllShelvesInZone(1, 1);
             WService.GetAllShelvesInZone(1, 2);
@@ -90,11 +97,11 @@ namespace Program
 
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 1, null, "Cheese", StorageType.HighValue);
-            IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.ClimateControlled);
+            IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.HighValue);
             Console.WriteLine("\n----- Add Item -----");
             IService.AddItem(1, 1, DateTime.Now, 1, 101);
             IService.AddItem(1, 1, DateTime.Now, 1, 1);
-            IService.AddItem(2, 2, DateTime.Now, 1, 1);
+            IService.AddItem(2, 1, DateTime.Now, 1, 1);
 
             Console.WriteLine("\n----- Get all info on Items in Warehouse -----");
             IService.GetItemAllInfo(1, 2);
@@ -104,10 +111,10 @@ namespace Program
             WService.GetAllItemsInZone(1, 1);
 
             Console.WriteLine("\n----- Move Item To Location -----");
-            IService.MoveItemToLocation(1, 1, 2);
+            IService.MoveItemToLocation(1, 1, 6);
+            IService.MoveItemToLocation(1, 2, 6);
             IService.MoveItemToLocation(1, 2, 1);
-            IService.MoveItemToLocation(1, 2, 3);
-            IService.MoveItemToLocation(1, 2, 4);
+            IService.MoveItemToLocation(1, 2, 6);
 
 
             
