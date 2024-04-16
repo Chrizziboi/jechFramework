@@ -15,8 +15,7 @@ namespace jechFramework.Services
 
         private Warehouse warehouse; // Referanse til Warehouse objekt for å aksessere ItemList
         private Zone zone;
-        // private static List<Item> ItemsInZoneList = new List<Item>();
-        // private static List<Item> ItemList = new List<Item>();
+
 
         public delegate void ItemCreatedEventHandler(int warehouseId, int internalId, int? externalId, string name, Enum storagetype);
         public delegate void ItemAddedEventHandler(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1);
@@ -53,15 +52,16 @@ namespace jechFramework.Services
             this.warehouseService = warehouseService;
         }
 
+
         /// <summary>
-        ///  Funksjon for å opprette og legge til nye varer i createdItems listen, altså en liste over Items-gjenstander 
-        ///  som er opprettet i varehuset.
+        /// Funksjon for å opprette og legge til nye varer i varehuset.
         /// </summary>
-        /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <param name="warehouseId">warehouseId for å vise id'en på produktet internt for varehuset.</param>
+        /// <param name="internalId">internalId for å bruke id'en på produktet internt for varehuset.</param>
         /// <param name="externalId">externalId for tilfellene man skulle trenge leverandør sin produkt id.</param>
-        /// <param name="name">navn er for å kunne gi navn til en gitt vare.</param>
-        /// <param name="itemPacketList">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
-        /// <exception cref="ServiceException">En exception for et tilfelle der en Item med samme internalId blir opprettet.</exception>
+        /// <param name="name">name er for å kunne gi navn til en gitt vare.</param>
+        /// <param name="storageType">storageType for å kunne sette hvilket type produkt form/størrelse.</param>
+        /// <exception cref="ServiceException">Objekter ikke funnet eller allerede finnes.</exception>
         public void CreateItem(int warehouseId, int internalId, int? externalId, string name, StorageType storageType)
         {
             try
@@ -103,12 +103,12 @@ namespace jechFramework.Services
         /// <summary>
         /// Funksjon for å legge en Item-gjenstand inn i lageret(wareHouseItemList), altså som legges inn i lageret sin liste.
         /// </summary>
-        /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
-        /// <param name="zoneId">zoneId er for å vise hvor i lageret Item.cs objekter ligger.</param>
-        /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
-        /// <param name="warehouseId">warehouseId er for å indentifisere hvilket varehus som skal brukes.</param>
-        /// <param name="quantity">quantity er for å legge til x antall av gitt Item.cs objekt.</param>
-        /// <exception cref="ServiceException">En exception som oppstår når det ikke finnes noen Items-objekter med det gitte internalId.</exception>
+        /// <param name="internalId">internalId for å bruke id'en på produktet internt for varehuset.</param>
+        /// <param name="zoneId">zoneId for å vise hvor i lageret Item.cs objekter ligger.</param>
+        /// <param name="dateTime">dateTime for registrering og historikk for Item.cs objekter.</param>
+        /// <param name="warehouseId">warehouseId for å indentifisere hvilket varehus som skal brukes.</param>
+        /// <param name="quantity">quantity for å legge til x antall av gitt Item.cs objekt.</param>
+        /// <exception cref="ServiceException">Objekter ikke funnet eller kapasitet er null.</exception>
         public void AddItem(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity = 1)
         {
             try
@@ -184,12 +184,14 @@ namespace jechFramework.Services
             }
         }
 
+
         /// <summary>
         /// Funksjon for å fjerne en Item-gjenstand ut fra lageret.
         /// </summary>
-        /// <param name="internalId">har brukt internalId for å vise iden på produktet internt for varehuset.</param>
-
-        /// <exception cref="ServiceException"></exception>
+        /// <param name="warehouseId">warehouseId for å vise id'en på produktet internt for varehuset.</param>
+        /// <param name="internalId">internalId for å vise id'en til varehuset.</param>
+        /// <param name="quantity">Quantity er for hvor mange av den gitte varen det gjelder.</param>
+        /// <exception cref="ServiceException">Objekter ikke funnet.</exception>
         public void RemoveItem(int warehouseId, int internalId, int quantity)
         {
             try
@@ -237,12 +239,14 @@ namespace jechFramework.Services
             }
         }
 
+
         /// <summary>
         /// Funksjon for å kunne flytte en Item-gjenstand til en ny lokasjon i lageret.
         /// </summary>
+        /// <param name="warehouseId">Parameter for valgt varehus.</param>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        /// <param name="newLocation">newLocation er for å sette en ny lokasjon på en Item gjenstand.</param>
-
+        /// <param name="newZone">newZone er for å sette en ny sone på en Item-gjenstand.</param>
+        /// <exception cref="ServiceException">Objekter ikke funnet.</exception>
         public void MoveItemToLocation(int warehouseId, int internalId, int newZone)
         {
             try
@@ -326,7 +330,8 @@ namespace jechFramework.Services
         /// <summary>
         /// Funksjon for å telle antall Item-gjenstander med gitt internalId.
         /// </summary>
-        /// <param name="internalId">navn er for å kunne gi navn til en gitt vare.</param>
+        /// <param name="warehouseId">parameter for valgt varehus.</param>
+        /// <param name="zoneId">parameter for valgt sone.</param>
         /// <returns>Returnerer en Int for alle registrerte Item-gjenstander med gitt internalId.</returns>
         public int FindHowManyItemsInItemList(int warehouseId, int zoneId)
         {
@@ -365,8 +370,10 @@ namespace jechFramework.Services
         /// <summary>
         /// Funksjon for å telle kvantiteten for et gitt Item-gjenstand.
         /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <param name="warehouseId">parameter for valgt varehus.</param>
+        /// <param name="internalId">internalId for å vise id'en på produktet internt for varehuset.</param>
         /// <returns>Returnerer en Int med totalt antall Kvantitet.</returns>
+        /// <exception cref="ServiceException">Varehuset finnes ikke.</exception>
         public int FindHowManyItemQuantityByInternalId(int warehouseId, int internalId)
         {
             var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
@@ -387,9 +394,10 @@ namespace jechFramework.Services
 
 
         /// <summary>
-        /// Inne i ItemService-klassen
+        /// funksjon for å finne en item-gjenstand ved bruk av internalId.
         /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
+        /// <param name="internalId">internalId for å vise id'en på produktet internt for varehuset.</param>
+        /// <exception cref="ServiceException">item-gjenstanden finnes ikke.</exception>
         public void FindItemByInternalIdInWarehouse(int internalId)
         {
 
@@ -412,6 +420,9 @@ namespace jechFramework.Services
         }
 
 
+        /// <summary>
+        /// Funksjon for å tømme varehus-data
+        /// </summary>
         public void ClearWarehouseData()
         {
             // Anta at WarehouseService inneholder en metode for å hente alle lagre.
@@ -433,6 +444,12 @@ namespace jechFramework.Services
         }
 
 
+        /// <summary>
+        /// Funksjon for å finne lokasjonen for en Item-gjenstand ved bruk av dens Id.
+        /// </summary>
+        /// <param name="warehouseId">parameter for valgt varehus.</param>
+        /// <param name="internalId">internalId for å vise id'en på produktet internt for varehuset.</param>
+        /// <returns>returnerer en int for lokasjonen.</returns>
         public int? GetLocationByInternalId(int warehouseId, int internalId)
         {
             try
@@ -466,12 +483,12 @@ namespace jechFramework.Services
         }
 
 
-
-
-        //public UpdateItemMovement(int internalId, string n)
-        //{
-        //    
-        //}
+        /// <summary>
+        /// Funksjon for å sjekke om en Item-gjenstand eksisterer.
+        /// </summary>
+        /// <param name="warehouseId">parameter for valgt varehus.</param>
+        /// <param name="internalId">internalId for å vise id'en på produktet internt for varehuset.</param>
+        /// <returns>returnerer True eller False om Item-gjenstanden finnes eller ikke.</returns>
         public bool ItemExists(int warehouseId, int internalId)
         {
             try
@@ -493,6 +510,13 @@ namespace jechFramework.Services
             }
         }
 
+
+        /// <summary>
+        /// Funksjon for å sjekke om Item-gjenstandens storageType er innenfor sonen sin storageType.
+        /// </summary>
+        /// <param name="item">Parameter for en Item-gjenstand.</param>
+        /// <param name="availableZone">Parameter for den sonen man vil sjekke kompatibilitet mot.</param>
+        /// <returns>Returnerer True eller False om Item-gjenstanden er kompatibel med sonen eller ikke.</returns>
         public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
         {
             try

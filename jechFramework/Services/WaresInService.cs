@@ -24,7 +24,7 @@ namespace jechFramework.Services
             this.warehouseService = warehouseService ?? throw new ArgumentNullException(nameof(warehouseService));
         }
 
-       
+
         /*public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Models.Item> incomingItems, WaresOutService waresoutService)
         {
             try
@@ -57,11 +57,20 @@ namespace jechFramework.Services
                     var itemZoneId = existingZoneId ?? zoneId;
                     itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
 
-                    if (item.quantity % 30 == 0)
+                    if (item.quantity > 0)
                     {
-                    palletService.addPallet(waresoutService.palletList);
+                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
+                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
+                        {
+                            numberOfPallets++; // Legg til en pall hvis det er en rest
+                        }
+                        for (int i = 0; i < numberOfPallets; i++)
+                        {
+                            palletService.AddPallet(waresoutService.PalletList);
+                        }
                     }
-                }
+
+        }
 
                 catch (ServiceException ex)
 
