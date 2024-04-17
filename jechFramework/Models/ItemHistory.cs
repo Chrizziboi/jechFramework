@@ -7,6 +7,7 @@ namespace jechFramework.Models
     /// </summary>
     public class ItemHistory
     {
+        private TimeSpan totalTime;
 
         public int internalId { get; private set; }
         public int? oldZone { get; private set; } = null;
@@ -27,6 +28,15 @@ namespace jechFramework.Models
             this.oldZone = oldZone;
             this.newZone = newZone;
             this.dateTime = dateTime;
+        }
+
+        public ItemHistory(int internalId, int? oldZone, int newZone, DateTime dateTime, TimeSpan totalTime) : this(internalId, oldZone, newZone, dateTime)
+        {
+            this.internalId = internalId;
+            this.oldZone = oldZone;
+            this.newZone = newZone;
+            this.dateTime = dateTime;
+            this.totalTime = totalTime;
         }
     }
 }

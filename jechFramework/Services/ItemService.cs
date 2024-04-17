@@ -241,46 +241,35 @@ namespace jechFramework.Services
                     throw new ServiceException($"Warehouse with ID {warehouseId} not found. Cannot move item.");
                 }
 
-                Models.Item item = null;
-                Zone oldZoneObj = null;
-                foreach (var zone in warehouse.zoneList)
-                {
-                    item = zone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
-                    if (item != null)
-                    {
-                        oldZoneObj = zone;
-                        break;
-                    }
-                }
-
+                var item = warehouse.zoneList.SelectMany(z => z.itemsInZoneList).FirstOrDefault(i => i.internalId == internalId);
                 if (item == null)
                 {
                     throw new ServiceException($"Item with internal ID {internalId} not found in any zone. No action taken.");
                 }
 
+                var oldZoneObj = warehouse.zoneList.FirstOrDefault(z => z.itemsInZoneList.Contains(item));
                 var newZoneObj = warehouse.zoneList.FirstOrDefault(z => z.zoneId == newZone);
                 if (newZoneObj == null)
                 {
                     throw new ServiceException($"New zone with ID {newZone} not found in warehouse {warehouseId}. Cannot move item.");
                 }
 
-                // Check item and zone compatibility before moving the item
                 if (!CheckItemAndZoneCompatibility(item, newZoneObj))
                 {
-                    throw new ServiceException($"Item {internalId} cannot be moved to zone {newZone} due to incompatible storage types.");
+                    return;
                 }
 
                 TimeSpan totalTime = oldZoneObj.itemRetrievalTime + newZoneObj.itemPlacementTime;
                 DateTime newDateTime = item.dateTime.Add(totalTime);
 
                 oldZoneObj.itemsInZoneList.Remove(item);
-                item.zoneId = newZone;  // Update zoneId before adding it to new zone
-                item.dateTime = newDateTime;
+                item.dateTime = newDateTime;  // Update dateTime to include the move duration
                 newZoneObj.itemsInZoneList.Add(item);
 
-                LogItemMovement(new ItemHistory(internalId, oldZoneObj.zoneId, newZone, item.dateTime));
-                OnItemMoved(warehouseId, internalId, newZone);
-                Console.WriteLine($"Item {internalId} has been moved from zone {oldZoneObj.zoneId} to zone {newZone} at {item.dateTime}. Total movement time: {totalTime}.");
+                // Logg bevegelsen etter vellykket flytting
+                LogItemMovement(new ItemHistory(internalId, oldZoneObj.zoneId, newZone, item.dateTime, totalTime));
+
+                Console.WriteLine($"Item {internalId} has been successfully moved from zone {oldZoneObj.zoneId} to zone {newZone}. Total movement time: {totalTime}.");
             }
             catch (Exception ex)
             {
@@ -288,26 +277,30 @@ namespace jechFramework.Services
             }
         }
 
+
+
+
+
         public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
         {
-            try
+            if (availableZone.zonePacketList == null || availableZone.zonePacketList.Count == 0)
             {
-                var compatibility = availableZone.zonePacketList.Contains(item.storageType);
-                if (!compatibility)
-                {
-                    Console.WriteLine($"Adding item {item.internalId} with storage type {item.storageType} cannot be placed in" +
-                                      $" the zone {availableZone.zoneId} since this zone has a storage type of {String.Join(", ", availableZone.zonePacketList)}.");
-                    return false;
-                }
+                Console.WriteLine($"Zone {availableZone.zoneId} has no defined storage types. Defined types are required for compatibility check.");
+                return false;
             }
-            catch (ServiceException ex)
+
+            Console.WriteLine($"Checking compatibility for item {item.internalId} with type {item.storageType} against zone {availableZone.zoneId} with types {String.Join(", ", availableZone.zonePacketList)}.");
+            var compatibility = availableZone.zonePacketList.Contains(item.storageType);
+            if (!compatibility)
             {
-                Console.WriteLine(ex.Message);
-                return false;  // Return false to indicate incompatibility if an exception occurs
+                Console.WriteLine($"Incompatible storage type. Item {item.internalId} with type {item.storageType} cannot be placed in zone {availableZone.zoneId} with types {String.Join(", ", availableZone.zonePacketList)}.");
+                return false;
             }
 
             return true;
         }
+
+
 
 
 

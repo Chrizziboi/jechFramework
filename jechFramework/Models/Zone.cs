@@ -27,7 +27,7 @@ namespace jechFramework.Models
 
         public Zone()
         {
-            
+            shelves = new List<Shelf>();
         }
 
         public Zone(int zoneId, string zoneName, int zoneCapacity, List<StorageType> zonePacketList)

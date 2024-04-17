@@ -188,16 +188,21 @@ namespace jechFramework.Services
                     throw new ServiceException($"Zone with id {zoneId} already exists in Warehouse with id {warehouseId}.");
                 }
 
-                // Check if adding this zone would exceed warehouse capacity
                 if (warehouse.zoneList.Count + 1 > warehouse.warehouseCapacity)
                 {
-                    throw new ServiceException($"Adding zone with id {zoneId} would exceed warehouse capacity, " +
-                                               $"therefore Zone not created.");
+                    throw new ServiceException($"Adding zone with id {zoneId} would exceed warehouse capacity, therefore Zone not created.");
                 }
 
-                Zone newZone = new(zoneId, zoneName, zoneCapacity, itemPlacementTime, itemRetrievalTime, storageType);
+                Zone newZone = new Zone
+                {
+                    zoneId = zoneId,
+                    zoneName = zoneName,
+                    shelfCapacity = zoneCapacity,
+                    itemPlacementTime = itemPlacementTime,
+                    itemRetrievalTime = itemRetrievalTime,
+                    zonePacketList = new List<StorageType> { storageType } // Initierer zonePacketList med gitt storageType
+                };
                 warehouse.zoneList.Add(newZone);
-
                 OnZoneCreated(warehouse, newZone);
             }
             catch (ServiceException ex)
@@ -205,6 +210,7 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
         public void CreateZoneWithMultipleType(int warehouseId, int zoneId, string zoneName, int zoneCapacity, TimeSpan itemPlacementTime, TimeSpan itemRetrievalTime, List<StorageType> zonePacketList)
         {
             try
@@ -225,8 +231,20 @@ namespace jechFramework.Services
                     throw new ServiceException($"Adding zone with id {zoneId} would exceed warehouse capacity, therefore Zone not created.");
                 }
 
-                Zone newZone = new Zone(zoneId, zoneName, zoneCapacity, itemPlacementTime, itemRetrievalTime, zonePacketList);
+                if (zonePacketList == null || zonePacketList.Count == 0)
+                {
+                    throw new ServiceException("Zone must have at least one storage type defined.");
+                }
 
+                Zone newZone = new Zone
+                {
+                    zoneId = zoneId,
+                    zoneName = zoneName,
+                    shelfCapacity = zoneCapacity,
+                    itemPlacementTime = itemPlacementTime,
+                    itemRetrievalTime = itemRetrievalTime,
+                    zonePacketList = zonePacketList // Bruker listen som er gitt
+                };
                 warehouse.zoneList.Add(newZone);
                 OnZoneCreated(warehouse, newZone);
             }
@@ -235,6 +253,7 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
 
 
         /// <summary>
@@ -609,19 +628,17 @@ namespace jechFramework.Services
                     throw new ServiceException($"Zone with ID {zoneId} not found.");
                 }
 
+                if (zone.shelves == null)
+                {
+                    zone.shelves = new List<Shelf>();  // Initialiserer shelves hvis den er null
+                }
+
                 if (zone.shelves.Count >= zone.shelfCapacity)
                 {
                     throw new ServiceException($"Cannot add more shelves to zone {zone.zoneName} as it has reached its capacity.");
-                    // Avslutter metoden hvis kapasiteten er nådd
                 }
 
-                // Opprett et nytt Shelf-objekt ved å bruke de medfølgende parameterne
-                Shelf newShelf = new Shelf(length, depth, palletCapacity, floors)
-                {
-                    // ShelfId genereres automatisk i Shelf-konstruktøren
-                };
-
-                // Legg til det nyopprettede hylleobjektet i sonens shelves-liste
+                Shelf newShelf = new Shelf(length, depth, palletCapacity, floors);
                 zone.shelves.Add(newShelf);
                 Console.WriteLine($"Shelf with ID {newShelf.shelfId} added to zone {zone.zoneName}.");
             }
