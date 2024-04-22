@@ -34,12 +34,6 @@ namespace jechFramework.Services
         {
             this.itemService = itemService;
         }
-        public void AddPalletTest()
-            {
-                //palletList.Add(PalletService.newPallet);
-                Pallet newPallet = new Pallet();
-                palletList.Add(newPallet);
-            }
 
         /// <summary>
         /// Metoden ScheduleWaresOut er designet for å håndtere planlegging av varer som skal sendes ut fra en lokasjon til 
@@ -82,11 +76,11 @@ namespace jechFramework.Services
                     throw new ServiceException("No items could be processed for this order due to stock limitations.");
                 }
 
-              // if (outgoingItems. % 30 = 0)
-              // {
-              //     palletService.removePallet(palletList);
-              // }
-              //
+                // if (outgoingItems. % 30 = 0)
+                // {
+                //     palletService.removePallet(palletList);
+                // }
+                //
                 lastShipmentNumber++;
                 var waresOut = new WaresOut
                 {
@@ -98,9 +92,8 @@ namespace jechFramework.Services
 
                 scheduledWaresOuts.Add(waresOut);
                 OnWaresOutScheduledSentOut(warehouseId, orderId, scheduledTime, destination, successfullyRemovedItems, lastShipmentNumber);
-            
             }
-            
+        
             catch (ServiceException ex)
             {
                 Console.WriteLine($"An error occurred while scheduling wares out:  {ex.Message}");

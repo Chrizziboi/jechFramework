@@ -74,14 +74,7 @@ namespace jechFramework.Services
                         }
                         for (int i = 0; i < numberOfPallets; i++)
                         {
-                            
-                            Pallet pallet = new Pallet();
-                            /*{
-                                internalPalletId = internalPalletId,
-                                palletName = palletName;
-                            };*/
-                            WaresOutService.AddPalletTest();
-                            //palletService.addPallet(waresOutServicen.palletList);
+                            palletService.addPallet(waresOutServicen.palletList);
                         }
                     }
 
