@@ -578,28 +578,6 @@ namespace jechFramework.Services
         /// <param name="item">Parameter for en Item-gjenstand.</param>
         /// <param name="availableZone">Parameter for den sonen man vil sjekke kompatibilitet mot.</param>
         /// <returns>Returnerer True eller False om Item-gjenstanden er kompatibel med sonen eller ikke.</returns>
-        public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
-        {
-            try
-            {
-                //var compatibility = item.storageType.Equals(availableZone.zonePacketList);
-                var compatibility = availableZone.zonePacketList.Contains(item.storageType);
-
-
-                if (!compatibility)
-                {
-                    Console.WriteLine($"Adding item {item.internalId} with storage type {item.storageType} cannot be placed in" +
-                                      $" the zone {zone.zoneId} since this zone has a storage type of {zone.zonePacketList}.");
-                    return false;
-                }
-            }
-            catch (ServiceException ex)
-            {
-                Console.WriteLine(ex.Message);
-                
-            }
-
-            return true;
-        }
+       
     }
 }
