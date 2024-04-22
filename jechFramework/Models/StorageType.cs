@@ -12,8 +12,8 @@ namespace jechFramework.Models
         Small = 1,
         Medium = 2,
         Large = 3,
-        Standard,
-        ClimateControlled,
-        HighValue
+        Standard = 4,
+        ClimateControlled = 5,
+        HighValue = 6
     }
 }

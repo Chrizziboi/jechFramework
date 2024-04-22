@@ -26,6 +26,20 @@ public class ItemHistoryService
     }
 
 
+    public static void EnsureLogfileExists()
+    {
+        if (!File.Exists(logFilePath))
+        {
+            using (var stream = File.Create(logFilePath))
+            {
+                var info = new UTF8Encoding(true).GetBytes("Log File Created: " + DateTime.Now + "\n");
+                stream.Write(info, 0, info.Length);
+            }
+            Console.WriteLine("Log file created: " + logFilePath);
+        }
+    }
+
+    // Oppdaterer for å lese loggfilen med den nye strukturen
     /// <summary>
     /// Oppdaterer historikken ved å lese loggfilen med den nye strukturen.
     /// </summary>
@@ -34,6 +48,14 @@ public class ItemHistoryService
         try
         {
             itemHistoryList.Clear();
+
+            // Sjekk om loggfilen eksisterer
+            if (!File.Exists(logFilePath))
+            {
+                Console.WriteLine($"Log file not found: {logFilePath}");
+                return;  // Avslutter metoden hvis filen ikke finnes
+            }
+
             var logEntries = File.ReadAllLines(logFilePath);
 
             foreach (var entry in logEntries)
@@ -50,7 +72,7 @@ public class ItemHistoryService
 
                         itemHistoryList.Add(new ItemHistory(internalId, oldZone, newZone, dateTime));
                     }
-                    catch (ServiceException ex)
+                    catch (FormatException ex)
                     {
                         Console.WriteLine($"Unable to parse log entry: {entry}. Error: {ex.Message}");
                         // Fortsetter til neste logginnslag
@@ -58,12 +80,13 @@ public class ItemHistoryService
                 }
             }
         }
-        catch (ServiceException ex)
+        catch (Exception ex)
         {
-            throw new ServiceException("Error reading from log file.", ex);
-            throw new ServiceException("An unexpected error occurred while updating history from log.", ex);
+            Console.WriteLine($"Error reading from log file: {ex.Message}");
+            // Kaster exception videre om nødvendig, eller håndter det lokalt
         }
     }
+
 
 
     /// <summary>
