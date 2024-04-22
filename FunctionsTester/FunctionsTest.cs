@@ -6,6 +6,7 @@ namespace FunctionsTester
 {
     internal class FunctionsTest
     {
+        /*
         static void Main(string[] args)
         {
 
@@ -228,6 +229,6 @@ namespace FunctionsTester
                               $"moved from zone: {e.oldZone} to zone: {e.newZone} at {DateTime.Now}" +
                               $" in Warehouse: {e.warehouseId}.");
         }
-
+        */
     }
 }
