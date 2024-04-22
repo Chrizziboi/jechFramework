@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 using System.IO;
 using jechFramework.Services;
 
+/// <summary>
+/// klasse for Håndtering av historikk.
+/// </summary>
 public class ItemHistoryService
 {
-    /// <summary>
-    /// Funksjoner for itemHistoryService.cs
-    /// </summary>
+   
     private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
     private static string logFilePath = "ItemMovements.log"; // Stien til loggfilen
     private WarehouseService warehouseService = new();
-
-    //private Warehouse warehouseInstance = new();
 
 
     /// <summary>
@@ -25,6 +24,7 @@ public class ItemHistoryService
     public ItemHistoryService()
     {
     }
+
 
     public static void EnsureLogfileExists()
     {
@@ -90,7 +90,7 @@ public class ItemHistoryService
 
 
     /// <summary>
-    /// Returnerer en liste over alle elementhistorier.
+    /// Funksjon for å hente en liste over alle elementhistorier.
     /// </summary>
     /// <returns> En liste over alle elementhistorier.</returns>
     public static List<ItemHistory> GetAll()
@@ -129,9 +129,6 @@ public class ItemHistoryService
             Console.WriteLine($"Error retrieving item history for internal ID {internalId}: {ex.Message}");
         }
     }
-
-
-
 
 
     /// <summary>

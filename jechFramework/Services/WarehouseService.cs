@@ -75,9 +75,7 @@ namespace jechFramework.Services
         ///   Service funksjoner for Warehouse.cs  ///
         ///                                        ///
 
-        /// <summary>
-        /// Funksjon for å opprette et varehus.
-        /// </summary>
+                                                 
         public void CreateWarehouse(int warehouseId, string warehouseName, int warehouseCapacity)
         {
             try

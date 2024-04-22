@@ -7,6 +7,9 @@ using jechFramework.Models;
 
 namespace jechFramework.Services
 {
+    /// <summary>
+    /// Klasse for håndtering av Palle-objekter.
+    /// </summary>
     public class PalletService
     {
 
@@ -140,6 +143,9 @@ namespace jechFramework.Services
         //
         //}
         //
+
+  
+        
         public void countPalletInWarehouse(int warehouseId, WarehouseService warehouseService, WaresOutService waresOutService)
         {
             //var warehouse = WarehouseService.warehouseList.FirstOrDefault(Warehouse => Warehouse.warehouseId == warehouseId);
