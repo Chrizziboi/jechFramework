@@ -18,7 +18,7 @@ namespace jechFramework.Models
 
         public int? externalId { get; set; } = null;
 
-        public string name { get; set; }
+        public string? name { get; set; } = string.Empty;
 
         public string? description { get; set; } = null;
 
@@ -31,7 +31,7 @@ namespace jechFramework.Models
 
         public int? zoneId { get; set; } = 0;
 
-        public int quantity { get; set; } = 1;
+        public ushort quantity { get; set; } = 1;
 
         public DateTime dateTime { get; set; } = DateTime.Now;
 
@@ -57,41 +57,6 @@ namespace jechFramework.Models
         /// </summary>
         public Item()
         {
-
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 1 parameter.
-        /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        public Item(int internalId)
-        {
-            this.internalId = internalId;
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 2 parameter.
-        /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        /// <param name="location">Location er for å vise hvor i lageret det ligger.</param>
-        public Item(int internalId, int zoneId)
-        {
-            this.internalId = internalId;
-            this.zoneId = zoneId;
-
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 3 parameter.
-        /// </summary>
-        /// <param name="externalId">externalId for tilfellene man skulle trenge leverandør sin produkt id.</param>
-        /// <param name="name">name er for å kunne gi navn til en gitt vare.</param>
-        /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
-        public Item(int externalId, string name, string type)
-        {
-            this.externalId = externalId;
-            this.name = name;
-            this.type = type;
 
         }
 
@@ -173,7 +138,7 @@ namespace jechFramework.Models
         /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param> 
         /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param>
         /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
-        public Item(int internalId, int externalId, string name, string description, int weight, string type, StorageType storageType, int zoneId, int quantity, DateTime dateTime)
+        public Item(int internalId, int externalId, string name, string description, int weight, string type, StorageType storageType, int zoneId, ushort quantity, DateTime dateTime)
         {
             this.internalId = internalId;
             this.externalId = externalId;

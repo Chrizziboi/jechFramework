@@ -46,7 +46,7 @@ namespace jechFramework.Services
         /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ServiceException"></exception>
-        public void WaresOut(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Models.Item> outgoingItems)
+        public void WaresOut(int warehouseId, int orderId, string destination, List<Models.Item> outgoingItems, DateTime scheduledTime)
         {
             try
             {
