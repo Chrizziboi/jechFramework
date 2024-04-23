@@ -14,7 +14,7 @@ namespace jechFramework.Services
         private ItemService itemService;
         private WarehouseService warehouseService; // Ny avhengighet
         private WaresOutService waresOutService = new(); // Ny avhengighet
-        private PalletService palletService = new();
+        private PalletService palletService = new PalletService();
         private Warehouse warehouse = new();
 
 
@@ -25,7 +25,7 @@ namespace jechFramework.Services
         }
 
 
-        public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, List<Item> incomingItems, WaresOutService waresOutServicen)
+        public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, List<Item> incomingItems, List<Pallet> palletList)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace jechFramework.Services
                         }
                         for (int i = 0; i < numberOfPallets; i++)
                         {
-                            palletService.addPallet(waresOutServicen.palletList);
+                            palletService.addPallet(palletList);
                         }
                     }
 
