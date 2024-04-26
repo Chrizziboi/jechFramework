@@ -617,70 +617,86 @@ namespace jechFramework.Services
 
 
 
-        public void AddShelfToZone(int zoneId, int length, int depth, int palletCapacity, int floors = 0)
+        public void AddShelfToZone(int warehouseId, int zoneId, int length, int depth, int palletCapacity, int floors = 0)
         {
-            foreach (var warehouse in warehouseList)
+
+            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse == null) 
+            { 
+                throw new ServiceException($"Warehouse with Id {warehouseId} not found.");
+            }
+
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone == null)
             {
-                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
-                if (zone == null)
-                {
-                    throw new ServiceException($"Zone with ID {zoneId} not found.");
-                }
+                throw new ServiceException($"Zone with ID {zoneId} not found.");
+            }
 
-                if (zone.shelves == null)
-                {
-                    zone.shelves = new List<Shelf>();  // Initialiserer shelves hvis den er null
-                }
+            if (zone.shelves == null)
+            {
+                zone.shelves = new List<Shelf>();  // Initialiserer shelves hvis den er null
+            }
 
-                if (zone.shelves.Count >= zone.shelfCapacity)
-                {
-                    throw new ServiceException($"Cannot add more shelves to zone {zone.zoneName} as it has reached its capacity.");
-                }
+            if (zone.shelves.Count >= zone.shelfCapacity)
+            {
+                throw new ServiceException($"Cannot add more shelves to zone {zone.zoneName} as it has reached its capacity.");
+            }
 
-                Shelf newShelf = new Shelf(length, depth, palletCapacity, floors);
-                zone.shelves.Add(newShelf);
-                Console.WriteLine($"Shelf with ID {newShelf.shelfId} added to zone {zone.zoneName}.");
+            Shelf newShelf = new Shelf(length, depth, palletCapacity, floors);
+            zone.shelves.Add(newShelf);
+            Console.WriteLine($"Shelf with ID {newShelf.shelfId} added to zone {zone.zoneName}.");
+            
+        }
+
+
+        public void RemoveShelfFromZone(int warehouseId, int zoneId, int shelfId)
+        {
+            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse == null)
+            {
+                throw new ServiceException($"Warehouse with Id {warehouseId} not found.");
+            }
+
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone != null)
+            {
+                var shelfToRemove = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
+                if (shelfToRemove != null)
+                {
+                    zone.shelves.Remove(shelfToRemove);
+                    Console.WriteLine($"Shelf with ID {shelfId} removed from zone {zone.zoneName}.");
+                    return;
+                }
+                else
+                {
+                    throw new ServiceException($"Shelf with ID {shelfId} not found in zone {zone.zoneName}.");
+                }
             }
         }
 
 
-        public void RemoveShelfFromZone(int zoneId, int shelfId)
+        public void UpdateShelf(int warehouseId, int zoneId, int shelfId, int newLength, int newDepth, int newCapacity)
         {
-            foreach (var warehouse in warehouseList)
+            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse == null)
             {
-                var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
-                if (zone != null)
+                throw new ServiceException($"Warehouse with Id {warehouseId} not found.");
+            }
+
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone != null)
+            {
+                var shelf = FindShelfById(warehouseId, zoneId, shelfId);
+                if (shelf != null)
                 {
-                    var shelfToRemove = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
-                    if (shelfToRemove != null)
-                    {
-                        zone.shelves.Remove(shelfToRemove);
-                        Console.WriteLine($"Shelf with ID {shelfId} removed from zone {zone.zoneName}.");
-                        return;
-                    }
-                    else
-                    {
-                        throw new ServiceException($"Shelf with ID {shelfId} not found in zone {zone.zoneName}.");
-                    }
+                    // Oppdaterer reolens egenskaper med de nye verdiene
+                    shelf.length = newLength;
+                    shelf.depth = newDepth;
+                    shelf.palletCapacity = newCapacity;
+                    Console.WriteLine($"Shelf with ID {shelfId} has been updated.");
                 }
             }
-            throw new ServiceException($"Zone with ID {zoneId} not found.");
-        }
-
-
-
-
-        public void UpdateShelf(int shelfId, int newLength, int newDepth, int newCapacity)
-        {
-            var shelf = FindShelfById(shelfId);
-            if (shelf != null)
-            {
-                // Oppdaterer reolens egenskaper med de nye verdiene
-                shelf.length = newLength;
-                shelf.depth = newDepth;
-                shelf.palletCapacity = newCapacity;
-                Console.WriteLine($"Shelf with ID {shelfId} has been updated.");
-            }
+            
             else
             {
                 throw new ServiceException($"Shelf with ID {shelfId} not found.");
@@ -689,21 +705,35 @@ namespace jechFramework.Services
 
 
 
-        public Shelf FindShelfById(int shelfId)
+        public Shelf FindShelfById(int warehouseId, int zoneId, int shelfId)
         {
-            foreach (var warehouse in warehouseList)
+            
+            var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+            if (warehouse == null)
             {
-                foreach (var zone in warehouse.zoneList)
-                {
-                    var shelf = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
-                    if (shelf != null)
-                    {
-                        return shelf; // Returnerer reolen hvis funnet
-                    }
-                }
+                Console.WriteLine($"No warehouse found with ID {warehouseId}");
+                return null; 
             }
-            return null; // Returnerer null hvis reolen ikke ble funnet
+
+            
+            var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
+            if (zone == null)
+            {
+                Console.WriteLine($"No zone found with ID {zoneId} in warehouse ID {warehouseId}");
+                return null; 
+            }
+
+            
+            var shelf = zone.shelves.FirstOrDefault(s => s.shelfId == shelfId);
+            if (shelf != null)
+            {
+                return shelf; 
+            }
+
+            Console.WriteLine($"No shelf found with ID {shelfId} in zone ID {zoneId} of warehouse ID {warehouseId}");
+            return null; 
         }
+
 
 
 
@@ -770,7 +800,8 @@ namespace jechFramework.Services
             return currentPalletCount < shelf.palletCapacity;
         }
 
-        public void PlaceItemOnShelf(int internalId, int shelfId, int zoneId, int warehouseId)
+
+        public void PlaceItemOnShelf(int warehouseId, int zoneId, int shelfId, int internalId)
         {
             var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
             if (warehouse == null)

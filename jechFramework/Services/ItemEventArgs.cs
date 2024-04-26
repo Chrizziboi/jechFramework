@@ -13,11 +13,10 @@ namespace jechFramework.Services
         public Item item = new();
 
 
-
         public int warehouseId { get; private set; }
         public int internalId { get; private set; }
         public int? externalId { get; private set; }
-        public string name { get; private set; }
+        public string? name { get; private set; } = string.Empty;
         public StorageType storageType { get; set; }
         public int zoneId { get; private set; }
         public DateTime dateTime { get; private set; }
@@ -25,7 +24,7 @@ namespace jechFramework.Services
         public int newZone { get; private set; }
         public int oldZone { get; private set; }
 
-        public ItemEventArgs(int warehouseId, int internalId, int? externalId, string name, StorageType storageType, int zoneId, DateTime DateTime, int quantity, int newZone, int oldZone)
+        public ItemEventArgs(int warehouseId, int zoneId, int internalId, int? externalId, string? name, StorageType storageType, DateTime DateTime, int quantity, int newZone, int oldZone)
         {
             this.warehouseId = warehouseId;
             this.internalId = internalId;
@@ -48,19 +47,20 @@ namespace jechFramework.Services
             this.storageType = storageType;
         }
 
-        public ItemEventArgs(int internalId, int zoneId, DateTime dateTime, int warehouseId, int quantity)
+        public ItemEventArgs(int warehouseId, int zoneId, int internalId, DateTime dateTime, int quantity = 1)
         {
-            this.internalId = internalId;
-            this.zoneId = zoneId;
-            this.dateTime = dateTime;
             this.warehouseId = warehouseId;
+            this.zoneId = zoneId;
+            this.internalId = internalId;
+            this.dateTime = dateTime;
             this.quantity = quantity;
         }
 
-        public ItemEventArgs(int warehouseId, int internalId)
+        public ItemEventArgs(int warehouseId, int internalId, ushort quantity)
         {
             this.warehouseId = warehouseId;
             this.internalId = internalId;
+            this.quantity = quantity;
         }
 
         public ItemEventArgs(int warehouseId, int internalId, int newZone)
@@ -69,6 +69,12 @@ namespace jechFramework.Services
             this.internalId = internalId;
             this.newZone = newZone;
 
+        }
+
+        public ItemEventArgs(int warehouseId, int internalId)
+        {
+            this.warehouseId = warehouseId;
+            this.internalId = internalId;
         }
     }
 }

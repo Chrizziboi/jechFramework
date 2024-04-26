@@ -14,7 +14,9 @@ namespace Program
             //Item Item = new();
             WaresInService waresInService = new WaresInService(IService, WService);
             WaresOutService waresOutService = new WaresOutService(IService);
-            PalletService palletService = new PalletService();
+
+            PalletService palletService = new();
+
 
             //              Subscriptions
             WService.WarehouseCreated += Service_OnWarehouseCreated;
@@ -52,40 +54,40 @@ namespace Program
 
             Console.WriteLine("\n----- Adding Shelf to Zone -----");
             //Shelf newShelf = new Shelf(200, 40, 100, 2);
-            WService.AddShelfToZone(1, 200, 40, 100);
-            WService.AddShelfToZone(1, 200, 40, 100);
-            WService.AddShelfToZone(1, 200, 40, 100);
-            WService.AddShelfToZone(1, 200, 80, 100);
+            WService.AddShelfToZone(1,1, 200, 40, 100);
+            WService.AddShelfToZone(1,1, 200, 40, 100);
+            WService.AddShelfToZone(1,1, 200, 40, 100);
+            WService.AddShelfToZone(1,1, 200, 80, 100);
 
-            WService.AddShelfToZone(2, 150, 40, 100);
-            WService.AddShelfToZone(2, 150, 40, 100);
-            WService.AddShelfToZone(2, 150, 40, 100);
-            WService.AddShelfToZone(2, 150, 80, 100);
+            WService.AddShelfToZone(1,2, 150, 40, 100);
+            WService.AddShelfToZone(1,2, 150, 40, 100);
+            WService.AddShelfToZone(1,2, 150, 40, 100);
+            WService.AddShelfToZone(1,2, 150, 80, 100);
 
-            WService.AddShelfToZone(3, 200, 40, 100, 8);
-            WService.AddShelfToZone(3, 200, 40, 100, 8);
-            WService.AddShelfToZone(3, 200, 40, 100, 8);
+            WService.AddShelfToZone(1,3, 200, 40, 100, 8);
+            WService.AddShelfToZone(1,3, 200, 40, 100, 8);
+            WService.AddShelfToZone(1,3, 200, 40, 100, 8);
 
             //WService.AddShelfToZone(4, 720, 40, 100, 7); // 3 (7*3=21) 720/7
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 seksjon 1
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 seksjon 2
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 sseksjon 3
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 sseksjon 4
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 sseksjon 5
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 sseksjon 6
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 1 sseksjon 7
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 seksjon 1
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 seksjon 2
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 3
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 4
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 5
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 6
-            WService.AddShelfToZone(4, 102, 40, 1, 0);// reol 2 sseksjon 7
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 seksjon 1
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 seksjon 2
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 sseksjon 3
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 sseksjon 4
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 sseksjon 5
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 sseksjon 6
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 1 sseksjon 7
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 seksjon 1
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 seksjon 2
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 sseksjon 3
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 sseksjon 4
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 sseksjon 5
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 sseksjon 6
+            WService.AddShelfToZone(1,4, 102, 40, 1, 0);// reol 2 sseksjon 7
 
-            WService.AddShelfToZone(6, 200, 40, 100);
-            WService.AddShelfToZone(6, 200, 40, 100);
-            WService.AddShelfToZone(6, 200, 40, 100);
-            WService.AddShelfToZone(6, 200, 80, 100);
+            WService.AddShelfToZone(1,6, 200, 40, 100);
+            WService.AddShelfToZone(1,6, 200, 40, 100);
+            WService.AddShelfToZone(1,6, 200, 40, 100);
+            WService.AddShelfToZone(1,6, 200, 80, 100);
 
             Console.WriteLine("\n----- Get all Shelves in Zone -----");
             WService.GetAllShelvesInZone(1, 1);
@@ -99,9 +101,9 @@ namespace Program
             IService.CreateItem(1, 1, null, "Cheese", StorageType.HighValue);
             IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.HighValue);
             Console.WriteLine("\n----- Add Item -----");
-            IService.AddItem(1, 1, DateTime.Now, 1, 101);
-            IService.AddItem(1, 1, DateTime.Now, 1, 1);
-            IService.AddItem(2, 1, DateTime.Now, 1, 1);
+            IService.AddItem(1,1, 1, DateTime.Now, 101);
+            IService.AddItem(1,1, 1, DateTime.Now, 1);
+            IService.AddItem(1,1, 2, DateTime.Now,  1);
 
             Console.WriteLine("\n----- Get all info on Items in Warehouse -----");
             IService.GetItemAllInfo(1, 2);
@@ -134,7 +136,9 @@ namespace Program
             };
 
             Console.WriteLine("\n----- Wares In -----");
-            waresInService.WaresIn(1, 1, DateTime.Now, incomingItems, palletService.palletList);
+
+            waresInService.WaresIn(1, 1, incomingItems, waresOutService, DateTime.Now);
+
 
             IService.GetItemAllInfo(1, 8);
             IService.GetItemAllInfo(1, 7);
@@ -156,10 +160,10 @@ namespace Program
 
             Console.WriteLine("\n----- Wares Out -----");
             IService.CreateItem(1, 10, null, "Soda", StorageType.Standard);
-            IService.AddItem(10,3 , DateTime.Now, 1, 50); // Legger til 50 Soda i zone 1
+            IService.AddItem(1,3,10 , DateTime.Now, 50); // Legger til 50 Soda i zone 1
 
             IService.CreateItem(1, 11, null, "Water", StorageType.Standard);
-            IService.AddItem(11, 3, DateTime.Now, 1, 30); // Legger til 30 Water i zone 1
+            IService.AddItem(1,3, 11, DateTime.Now, 30); // Legger til 30 Water i zone 1
 
             // Planlegger en WaresOut som krever mer av en vare enn hva som er tilgjengelig
             List<Item> outgoingItems = new List<Item>()
@@ -167,7 +171,7 @@ namespace Program
                 new Item() { internalId = 10, quantity = 60 }, // Prøver å sende ut mer Soda enn tilgjengelig
                 new Item() { internalId = 11, quantity = 20 }  // Dette antallet er tilgjengelig
             };
-            waresOutService.WaresOut(1, 102, DateTime.Now, "Downtown Hub", outgoingItems);
+            waresOutService.WaresOut(1, 102, "Downtown Hub", outgoingItems, DateTime.Now);
             IService.GetItemAllInfo(1, 10); // Skal vise at Soda fortsatt har 50 enheter, ingen ble fjernet
             IService.GetItemAllInfo(1, 11); // Skal vise at Water er redusert til 10 enheter (30 - 20)
 
