@@ -807,7 +807,7 @@ namespace jechFramework.Services
             if (warehouse == null)
             {
                 throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
-                return;
+                
             }
 
             var zone = warehouse.zoneList.FirstOrDefault(z => z.zoneId == zoneId);
