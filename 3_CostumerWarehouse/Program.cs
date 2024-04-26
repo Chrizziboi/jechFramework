@@ -14,7 +14,9 @@ namespace Program
             //Item Item = new();
             WaresInService waresInService = new WaresInService(IService, WService);
             WaresOutService waresOutService = new WaresOutService(IService);
+
             PalletService palletService = new();
+
 
             //              Subscriptions
             WService.WarehouseCreated += Service_OnWarehouseCreated;
@@ -134,7 +136,9 @@ namespace Program
             };
 
             Console.WriteLine("\n----- Wares In -----");
+
             waresInService.WaresIn(1, 1, incomingItems, waresOutService, DateTime.Now);
+
 
             IService.GetItemAllInfo(1, 8);
             IService.GetItemAllInfo(1, 7);
@@ -142,12 +146,17 @@ namespace Program
             Pallet pallet = new Pallet(10, "Hannan's pall");
             //WService.PlaceItemOnShelf(1, 1, 1, 1);
             Console.WriteLine("\n----- Count Pallets -----");
-            //palletService.addPallet(waresOutService.palletList);
-            //palletService.addPallet(waresOutService.palletList);
+            PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
+            Console.WriteLine("Adding 1 pallet");
+            palletService.addPallet(palletService.palletList);
+            PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
+            //palletService.addPallet(palletService.palletList);
+            Console.WriteLine("Removing 1 pallet");
+            palletService.removePallet(palletService.palletList);
 
-            PService.countPalletInWarehouse(1, WService, waresOutService);
-            PService.countPalletInWarehouse(3, WService, waresOutService);
-            Console.WriteLine(waresOutService.palletList.Any());
+            PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
+            PService.countPalletInWarehouse(3, palletService.palletList, WService.warehouseList);
+            Console.WriteLine(palletService.palletList.Any());
 
             Console.WriteLine("\n----- Wares Out -----");
             IService.CreateItem(1, 10, null, "Soda", StorageType.Standard);
@@ -167,7 +176,7 @@ namespace Program
             IService.GetItemAllInfo(1, 11); // Skal vise at Water er redusert til 10 enheter (30 - 20)
 
             Console.WriteLine("\nTesting complete removal of an item when quantity hits zero:");
-            IService.RemoveItem(1, 11, 10); // Dette skulle fjerne Water helt fra listen
+            IService.RemoveItem(1, 11, 30); // Dette skulle fjerne Water helt fra listen
             IService.GetItemAllInfo(1, 11); // Skal vise at varen ikke lenger finnes
             
             

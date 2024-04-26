@@ -15,6 +15,7 @@ namespace jechFramework.Services
         private readonly Shelf shelfInstance = new();
 
         private readonly WaresOutService waresOutService = new WaresOutService();
+        private readonly PalletService palletService;
 
         public List<Warehouse> warehouseList = new List<Warehouse>();
         // Liste med varehus
@@ -793,7 +794,7 @@ namespace jechFramework.Services
         {
             // Anta at Shelf-objektet har en egenskap 'PalletCapacity' som angir maks antall paller,
             // og en liste over paller 'Pallets' som allerede er plassert på reolen.
-            int currentPalletCount = waresOutService.palletList.Count;
+            int currentPalletCount = palletService.palletList.Count;
 
             // Sjekker om antallet paller som allerede er plassert på reolen er mindre enn reolens totale kapasitet.
             return currentPalletCount < shelf.palletCapacity;
