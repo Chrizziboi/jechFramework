@@ -76,7 +76,7 @@ namespace jechFramework.Services
                         }
                         for (int i = 0; i < numberOfPallets; i++)
                         {
-                            palletService.addPallet(palletList);
+                            palletService.addPallet(palletService.palletList);
                         }
                     }
 

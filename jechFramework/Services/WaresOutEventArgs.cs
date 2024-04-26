@@ -17,7 +17,7 @@ namespace jechFramework.Services
         public List<Item> outgoingItems { get; private set; }
         public int lastShipmentNumber { get; private set; }
 
-        public WaresOutEventArgs(int warehouseId, int orderId, string destination, List<Item> outgoingItems, int lastShipmentNumber, DateTime scheduledTime)
+        public WaresOutEventArgs(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber)
         {
             this.warehouseId = warehouseId;
             this.orderId = orderId;
