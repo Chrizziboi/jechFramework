@@ -88,7 +88,7 @@ namespace jechFramework.Services
 
                 OnItemCreated(warehouseId, internalId, externalId, name, storageType);
 
-                Console.WriteLine($"New item created: {name} with ID: {internalId} and Storagetype: {storageType} in warehouse ID: {warehouseId}.");
+                //Console.WriteLine($"New item created: {name} with ID: {internalId} and Storagetype: {storageType} in warehouse ID: {warehouseId}.");
             }
             catch (Exception ex)
             {
@@ -191,35 +191,22 @@ namespace jechFramework.Services
                     throw new ServiceException($"Warehouse with ID {warehouseId} not found.");
                 }
 
-                // Anta at vi nå har en struktur for å finne varen i riktig sone
-                Models.Item itemToRemove = null;
-                Zone zoneOfItem = null;
-                foreach (var zone in warehouse.zoneList)
-                {
-                    itemToRemove = zone.itemsInZoneList.FirstOrDefault(item => item.internalId == internalId);
-                    if (itemToRemove != null)
-                    {
-                        zoneOfItem = zone;
-                        break;
-                    }
-                }
+                var itemToRemove = warehouse.zoneList.SelectMany(z => z.itemsInZoneList)
+                                                     .FirstOrDefault(item => item.internalId == internalId);
 
                 if (itemToRemove == null)
                 {
                     throw new ServiceException($"Item {internalId} not found.");
                 }
 
-                // Reduserer antall eller fjerner varen helt
                 if (itemToRemove.quantity > quantity)
                 {
                     itemToRemove.quantity -= quantity;
                 }
                 else
                 {
-                    zoneOfItem.itemsInZoneList.Remove(itemToRemove);
-
-                    OnItemRemoved(warehouseId, internalId);
-                    //Console.WriteLine($"Item with internal ID {internalId} is now out of stock and has been removed from zone {zoneOfItem.zoneId}.");
+                    warehouse.zoneList.ForEach(z => z.itemsInZoneList.Remove(itemToRemove)); // Remove from all zones
+                    OnItemRemoved(warehouseId, internalId); // Trigger event if item is completely removed
                 }
             }
             catch (ServiceException ex)
@@ -227,6 +214,7 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
 
 
         /// <summary>
@@ -282,10 +270,6 @@ namespace jechFramework.Services
             }
         }
 
-
-
-
-
         public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
         {
             if (availableZone.zonePacketList == null || availableZone.zonePacketList.Count == 0)
@@ -321,6 +305,7 @@ namespace jechFramework.Services
                 }
 
                 Item item = null;
+                bool foundInZone = false;
 
                 // Søk først i alle zoner etter varen
                 foreach (var zone in warehouse.zoneList)
@@ -328,6 +313,7 @@ namespace jechFramework.Services
                     item = zone.itemsInZoneList.FirstOrDefault(i => i.internalId == internalId);
                     if (item != null)
                     {
+                        foundInZone = true;
                         break;  // Finn varen og avbryt løkken
                     }
                 }
@@ -336,15 +322,16 @@ namespace jechFramework.Services
                 if (item == null)
                 {
                     item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
-                    if (item == null)
+                    if (item != null)
                     {
-                        Console.WriteLine($"Item with internal ID {internalId} not found in any zones or the main list.");
-                        return;
+                        Console.WriteLine($"Item with internal ID {internalId} not found in the specified warehouse {warehouseId}.");
+                        return; // Returner etter å ha informert at varen ikke finnes i lageret
                     }
+                    
                 }
 
-                // Skriv ut all tilgjengelig informasjon om item
-                Console.WriteLine($"Item Information:");
+                // Skriv ut all tilgjengelig informasjon om item siden den ble funnet i en sone
+                Console.WriteLine($"----- Item Information: -----");
                 Console.WriteLine($"Internal ID: {item.internalId}");
                 Console.WriteLine($"External ID: {(item.externalId.HasValue ? item.externalId.ToString() : "Not Available")}");
                 Console.WriteLine($"Name: {item.name}");
@@ -353,18 +340,13 @@ namespace jechFramework.Services
                 Console.WriteLine($"Storage Type: {item.storageType}");
                 Console.WriteLine($"Zone ID: {item.zoneId ?? 0}");
                 Console.WriteLine($"Quantity: {item.quantity}");
-                Console.WriteLine($"Date Time: {item.dateTime}");
+                Console.WriteLine($"Last Moved Time: {item.dateTime}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error retrieving item information: {ex.Message}");
             }
         }
-
-
-
-
-
 
 
         /// <summary>

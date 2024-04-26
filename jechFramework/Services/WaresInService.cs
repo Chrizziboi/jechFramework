@@ -10,11 +10,11 @@ namespace jechFramework.Services
     /// </summary>
     public class WaresInService
     {
-        private readonly List<WaresIn> WaresIns = new List<WaresIn>();
-        private readonly ItemService itemService;
-        private readonly WarehouseService warehouseService; // Ny avhengighet
-        private readonly WaresOutService WaresOutService = new(); // Ny avhengighet
-        private PalletService palletService = new();
+        private List<WaresIn> WaresIns = new List<WaresIn>();
+        private ItemService itemService;
+        private WarehouseService warehouseService; // Ny avhengighet
+        private WaresOutService waresOutService = new(); // Ny avhengighet
+        private PalletService palletService = new PalletService();
         private Warehouse warehouse = new();
 
 
@@ -25,62 +25,7 @@ namespace jechFramework.Services
         }
 
 
-        /*public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, int zoneId, TimeSpan processingTime, List<Models.Item> incomingItems, WaresOutService waresoutService)
-        {
-            try
-            {
-                // Sjekk for eksistensen av varehuset
-                warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId,false); // Bekreft varehuset eksisterer
-
-                if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
-                if (WaresIns.Any(wi => wi.orderId == orderId)) throw new ServiceException("A wares in with this orderId is already scheduled.");
-                
-            }
-            catch (ServiceException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return; // Returnerer tidlig hvis en feil oppstår
-            }
-
-            var waresIn = new WaresIn { orderId = orderId, scheduledTime = scheduledTime, zoneId = zoneId, incomingItems = incomingItems };
-            WaresIns.Add(waresIn);
-
-            foreach (var item in incomingItems)
-            {
-                try
-                {
-                    if (!itemService.ItemExists(warehouseId,item.internalId))
-                    {
-                        itemService.CreateItem(warehouseId, item.internalId, item.externalId, item.name, item.storageType);
-                    }
-                    var existingZoneId = itemService.GetLocationByInternalId(warehouseId,item.internalId);
-                    var itemZoneId = existingZoneId ?? zoneId;
-                    itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
-
-                    if (item.quantity > 0)
-                    {
-                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
-                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
-                        {
-                            numberOfPallets++; // Legg til en pall hvis det er en rest
-                        }
-                        for (int i = 0; i < numberOfPallets; i++)
-                        {
-                            palletService.AddPallet(waresoutService.PalletList);
-                        }
-                    }
-
-        }
-
-                catch (ServiceException ex)
-
-                {
-                    Console.WriteLine($"Failed to process item {item.internalId}: {ex.Message}");
-                    // Håndter feilen på en måte som tillater at simulasjonen fortsetter, f.eks. logge feilen
-                }
-            }
-        } */
-        public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, List<Item> incomingItems)
+        public void WaresIn(int warehouseId, int orderId, DateTime scheduledTime, List<Item> incomingItems, List<Pallet> palletList)
         {
             try
             {
@@ -116,10 +61,49 @@ namespace jechFramework.Services
                     {
                         itemService.CreateItem(warehouseId, item.internalId, item.externalId, item.name, item.storageType);
                     }
+                    var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
+                    var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
+                    itemService.AddItem(item.internalId, compatibleZone.zoneId, scheduledTime, warehouseId, item.quantity); // Legger til item med spesifikk warehouseId
+
+                    if (item.quantity > 0)
+                    {
+                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
+                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
+                        {
+                            numberOfPallets++; // Legg til en pall hvis det er en rest
+                        }
+                        for (int i = 0; i < numberOfPallets; i++)
+                        {
+                            palletService.addPallet(palletList);
+                        }
+                    }
 
                     // Legg til varen i den kompatible sonen
-                    itemService.AddItem(item.internalId, compatibleZone.zoneId, scheduledTime, warehouseId, item.quantity);
+                    //itemService.AddItem(item.internalId, compatibleZone.zoneId, scheduledTime, warehouseId, item.quantity);
+                
+                    /*
+                    if (!itemService.ItemExists(warehouseId, item.internalId))
+                    {
+                        itemService.CreateItem(warehouseId, item.internalId, item.externalId, item.name, item.storageType);
+                    }
+                    var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
+                    var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
+                    itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
+
+                    if (item.quantity > 0)
+                    {
+                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
+                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
+                        {
+                            numberOfPallets++; // Legg til en pall hvis det er en rest
+                        }
+                        for (int i = 0; i < numberOfPallets; i++)
+                        {
+                            palletService.addPallet(waresOutService.palletList);
+                        }
+                    }*/
                 }
+
             }
             catch (ServiceException ex)
             {

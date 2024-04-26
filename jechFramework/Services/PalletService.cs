@@ -22,6 +22,10 @@ namespace jechFramework.Services
 
         private readonly WaresOutService WaresOutServiceInstance = new();
 
+        public List<Pallet> palletList = new();
+
+        private readonly PalletService palletService;
+
         /// <summary>
         /// Metoden for å fjerne en palle fra palleList
         /// </summary>
@@ -146,24 +150,20 @@ namespace jechFramework.Services
 
   
         
-        public void countPalletInWarehouse(int warehouseId, WarehouseService warehouseService, WaresOutService waresOutService)
+        public void countPalletInWarehouse(int warehouseId, List<Pallet> palletList, List<Warehouse> warehouseList)
         {
             //var warehouse = WarehouseService.warehouseList.FirstOrDefault(Warehouse => Warehouse.warehouseId == warehouseId);
 
             try
             {
-                if (warehouseService.warehouseList.Any(w => w.warehouseId == warehouseId))
+                if (warehouseList.Any(w => w.warehouseId == warehouseId))
                 {
-                    var warehouse = warehouseService.warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
+                    var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
                     //var zone = warehouseInstance.zoneList;
                     //var shelf = shelfInstance.palletList;
                 
-                    if (warehouse == null) 
-                    {
-                        throw new ServiceException($"A warehouse with id {warehouseId} could not be found.");   
-                    }
                    
-                    int palletCount = waresOutService.palletList.Count;
+                    int palletCount = palletList.Count;
                     Console.WriteLine($"Number of pallets in warehouse: {palletCount}");
                 }
                 else

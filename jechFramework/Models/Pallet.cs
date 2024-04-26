@@ -15,7 +15,7 @@ namespace jechFramework.Models
 
         public string? palletDescription { get; set; } = null;
 
-        public int palletWeight { get; set; }
+        public int? palletWeight { get; set; }
 
         public PalletStorageType palletStorageType { get; set; } = PalletStorageType.Standard;
 

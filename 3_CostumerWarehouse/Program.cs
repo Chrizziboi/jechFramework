@@ -13,8 +13,8 @@ namespace Program
             ItemHistoryService IHService = new();
             //Item Item = new();
             WaresInService waresInService = new WaresInService(IService, WService);
-            WaresOutService waresOutService = new WaresOutService();
-            PalletService palletService = new();
+            WaresOutService waresOutService = new WaresOutService(IService);
+            PalletService palletService = new PalletService();
 
             //              Subscriptions
             WService.WarehouseCreated += Service_OnWarehouseCreated;
@@ -129,24 +129,53 @@ namespace Program
             IService.CreateItem(1, 6, null, "Cola", StorageType.ClimateControlled);
 
             List<Item> incomingItems = new List<Item>() {
-                new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 10 },
+                new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 31 },
                 new Item() { internalId = 7, name = "Dressing", storageType = StorageType.Standard }
             };
 
             Console.WriteLine("\n----- Wares In -----");
-            waresInService.WaresIn(1, 1, DateTime.Now, incomingItems);
+            waresInService.WaresIn(1, 1, DateTime.Now, incomingItems, palletService.palletList);
+
+            IService.GetItemAllInfo(1, 8);
+            IService.GetItemAllInfo(1, 7);
 
             Pallet pallet = new Pallet(10, "Hannan's pall");
             //WService.PlaceItemOnShelf(1, 1, 1, 1);
             Console.WriteLine("\n----- Count Pallets -----");
-            //palletService.addPallet(waresOutService.palletList);
-            //palletService.addPallet(waresOutService.palletList);
+            PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
+            Console.WriteLine("Adding 1 pallet");
+            palletService.addPallet(palletService.palletList);
+            PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
+            //palletService.addPallet(palletService.palletList);
+            Console.WriteLine("Removing 1 pallet");
+            palletService.removePallet(palletService.palletList);
 
-            PService.countPalletInWarehouse(1, WService, waresOutService);
-            PService.countPalletInWarehouse(3, WService, waresOutService);
-            Console.WriteLine(waresOutService.palletList.Any());
+            PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
+            PService.countPalletInWarehouse(3, palletService.palletList, WService.warehouseList);
+            Console.WriteLine(palletService.palletList.Any());
 
+            Console.WriteLine("\n----- Wares Out -----");
+            IService.CreateItem(1, 10, null, "Soda", StorageType.Standard);
+            IService.AddItem(10,3 , DateTime.Now, 1, 50); // Legger til 50 Soda i zone 1
 
+            IService.CreateItem(1, 11, null, "Water", StorageType.Standard);
+            IService.AddItem(11, 3, DateTime.Now, 1, 30); // Legger til 30 Water i zone 1
+
+            // Planlegger en WaresOut som krever mer av en vare enn hva som er tilgjengelig
+            List<Item> outgoingItems = new List<Item>()
+            {
+                new Item() { internalId = 10, quantity = 60 }, // Prøver å sende ut mer Soda enn tilgjengelig
+                new Item() { internalId = 11, quantity = 20 }  // Dette antallet er tilgjengelig
+            };
+            waresOutService.WaresOut(1, 102, DateTime.Now, "Downtown Hub", outgoingItems);
+            IService.GetItemAllInfo(1, 10); // Skal vise at Soda fortsatt har 50 enheter, ingen ble fjernet
+            IService.GetItemAllInfo(1, 11); // Skal vise at Water er redusert til 10 enheter (30 - 20)
+
+            Console.WriteLine("\nTesting complete removal of an item when quantity hits zero:");
+            IService.RemoveItem(1, 11, 30); // Dette skulle fjerne Water helt fra listen
+            IService.GetItemAllInfo(1, 11); // Skal vise at varen ikke lenger finnes
+            
+            
             //              Unsubscriptions
 
             WService.WarehouseCreated -= Service_OnWarehouseCreated;

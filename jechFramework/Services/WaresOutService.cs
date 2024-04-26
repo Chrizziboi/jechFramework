@@ -7,14 +7,15 @@ namespace jechFramework.Services
 {
     public class WaresOutService
     {
-        private readonly List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
+        private List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
         private readonly ItemService itemService; // Assuming there is an ItemService to handle items in the warehouse
         private readonly WarehouseService warehouseService; // Ny avhengighet
         private readonly Shelf shelf = new(); // Ny avhengighet
+        private readonly PalletService palletService;
 
         public int lastShipmentNumber = 0;
 
-        public List<Pallet> palletList = new();
+        
 
         public delegate void WaresOutScheduledEventHandler(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber);
 
@@ -47,63 +48,53 @@ namespace jechFramework.Services
         /// <exception cref="ServiceException"></exception>
         public void WaresOut(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Models.Item> outgoingItems)
         {
-            try
+            
+            if (itemService == null)
             {
-                if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
-                if (scheduledWaresOuts.Any(wo => wo.orderId == orderId))
+                throw new InvalidOperationException("ItemService is not initialized.");
+            }
+            
+            if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
+            if (scheduledWaresOuts == null) scheduledWaresOuts = new List<WaresOut>();
+
+            if (scheduledWaresOuts.Any(wo => wo.orderId == orderId))
+            {
+                throw new ServiceException($"Wares out with orderId {orderId} is already scheduled.");
+            }
+
+            List<Models.Item> successfullyRemovedItems = new List<Models.Item>();
+
+            foreach (var item in outgoingItems)
+            {
+                var quantityAvailable = itemService.FindHowManyItemQuantityByInternalId(warehouseId, item.internalId);
+                if (quantityAvailable < item.quantity)
                 {
-                    throw new ServiceException($"Wares out with orderId {orderId} is already scheduled.");
+                    Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
+                    continue; // Skip this item but continue with others
                 }
 
-                foreach (var item in outgoingItems)
-                {
-                    try
-                    {
-                        var quantityAvailable = itemService.FindHowManyItemQuantityByInternalId(warehouseId, item.internalId);
-                        if (quantityAvailable <= 0)
-                        {
-                            throw new ServiceException($"Item with internal ID {item.internalId} is unavailable.");
-                        }
-
-                        // Antatt at RemoveItem nå krever warehouseId og internalId
-                        //itemService.RemoveItem(warehouseId, item.internalId, item.quantity);
-
-                        //if(item.quantity % 30 == 0)
-                        //{
-                        //    PalletService.removePallet(palletList);
-                        //}
-                    }
-                    catch (ServiceException ex)
-                    {
-                        Console.WriteLine($"Failed to process item {item.internalId}: {ex.Message}");
-                        // Hopper over fjerning av denne varen, men fortsetter prosessen for de andre varene
-                        continue;
-                    }
-                }
-
-                lastShipmentNumber++;
-
-                var waresOut = new WaresOut
-                {
-                    orderId = orderId,
-                    scheduledTime = scheduledTime,
-                    destination = destination,
-                    items = outgoingItems
-                };
-
-                scheduledWaresOuts.Add(waresOut);
-
-
-
-                OnWaresOutScheduledSentOut(warehouseId, orderId, scheduledTime, destination, outgoingItems, lastShipmentNumber);
-
+                itemService.RemoveItem(warehouseId, item.internalId, item.quantity);
+                successfullyRemovedItems.Add(item); // Track successfully processed items
             }
-            catch (ServiceException ex)
+
+            if (!successfullyRemovedItems.Any())
             {
-                // Logger feil for hele ScheduleWaresOut operasjonen og fortsetter
-                Console.WriteLine($"An error occurred while scheduling wares out:  {ex.Message}");
+                throw new ServiceException("No items could be processed for this order due to stock limitations.");
             }
+
+            lastShipmentNumber++;
+            var waresOut = new WaresOut
+            {
+                orderId = orderId,
+                scheduledTime = scheduledTime,
+                destination = destination,
+                items = successfullyRemovedItems // Only include successfully processed items
+            };
+
+            scheduledWaresOuts.Add(waresOut);
+            OnWaresOutScheduledSentOut(warehouseId, orderId, scheduledTime, destination, successfullyRemovedItems, lastShipmentNumber);
         }
+
     }
 }
 
