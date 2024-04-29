@@ -26,7 +26,7 @@ namespace jechFramework.Services
 
 
 
-        public void WaresIn(int warehouseId, int orderId, List<Item> incomingItems, WaresOutService waresOutServicen, DateTime scheduledTime)
+        public void WaresIn(int warehouseId, int orderId, List<Item> incomingItems, List<Pallet> palletList, DateTime scheduledTime)
 
         {
             try
@@ -65,7 +65,7 @@ namespace jechFramework.Services
                     }
                     var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
-                    itemService.AddItem(warehouseId, item.internalId, compatibleZone.zoneId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
+                    itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
 
                     if (item.quantity > 0)
                     {
@@ -76,7 +76,7 @@ namespace jechFramework.Services
                         }
                         for (int i = 0; i < numberOfPallets; i++)
                         {
-                            palletService.addPallet(palletService.palletList);
+                            palletService.addPallet(palletList);
                         }
                     }
 
