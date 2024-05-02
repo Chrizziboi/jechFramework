@@ -40,7 +40,7 @@ namespace Program
             WService.CreateZone(1, 2, "High Value Zone", 20, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
 
             Console.WriteLine("\n----- Create Employee -----");
-            WService.CreateEmployee(1, 1, "Kåre Johnny");
+            WService.CreateEmployee(1, 1, "Ola Nordmann");
             WService.CreateEmployee(1, 2, "Arne Roger");
 
             Console.WriteLine("\n----- Create Shelf -----");
@@ -53,7 +53,7 @@ namespace Program
             IService.CreateItem(1, 2, 2, "Rolex", StorageType.HighValue);
 
             //Create Pallet
-            palletService.addPallet(palletService.palletList);
+            PService.addPallet(palletService.palletList);
 
             Console.WriteLine("\n----- Add Item -----");
             IService.AddItem(1, 1, 1, DateTime.Now);
@@ -160,6 +160,39 @@ namespace Program
             Console.WriteLine("\n-----Get Item History By Id -----");
             IHService.GetItemHistoryById(1, 1);
             IHService.GetItemHistoryById(1, 2);
+
+            Console.WriteLine(WService.GetAllWarehouses());
+
+            Zone zone = new Zone();
+            Item item = new Item();
+            item.storageType = StorageType.ClimateControlled;
+            zone.storageType = StorageType.HighValue;
+            WService.IsStorageTypeCompatible(zone, item);
+
+            
+
+            Console.WriteLine("\n----- Remove Warehouse -----");
+            WService.FindWarehouseInWarehouseListWithPrint(2);
+            WService.RemoveWarehouse(2);
+            WService.FindWarehouseInWarehouseListWithPrint(2);
+
+            WService.AddShelfToZone(1, 1, 3, 4, 10, 6);
+
+            WService.RemoveShelfFromZone(1, 1, 1); 
+
+            WService.CanAddItemsToZone(1, 1, 3);
+
+            WService.FindShelfById(1, 1, 1);
+
+            WService.GetAllZonesInWarehouse(1);
+
+            WService.RemoveZone(1, 1);
+
+            WService.RemoveEmployee(1, 1);
+
+            PService.removePallet(PService.palletList);
+
+            IService.RemoveItem(1, 1, 1);
 
             Console.WriteLine("\n");
             
