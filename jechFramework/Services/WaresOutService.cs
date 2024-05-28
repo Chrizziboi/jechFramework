@@ -66,7 +66,7 @@ namespace jechFramework.Services
 
             foreach (var item in outgoingItems)
             {
-                var quantityAvailable = itemService.FindHowManyItemQuantityByInternalId(warehouseId, item.internalId);
+                var quantityAvailable = itemService.FindItemQuantityInWarehouse(warehouseId, item.internalId);
                 if (quantityAvailable < item.quantity)
                 {
                     Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");

@@ -65,7 +65,7 @@ namespace jechFramework.Services
                     }
                     var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
-                    itemService.AddItem(warehouseId, item.internalId, compatibleZone.zoneId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
+                    itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
 
                     if (item.quantity > 0)
                     {

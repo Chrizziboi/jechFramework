@@ -34,9 +34,35 @@ namespace Program
             WService.CreateWarehouse(1, "Varehus 1", 6); // Anta at varehuset har kapasitet til 5 soner
                                                          // Anta at metoden CreateZone nå tar TimeSpan-objekter for tidsestimater
             WService.CreateEmployee(1, 1, "Hannan #ÅretsAnsatt");
-            WService.CheckEmployeeAccessStatus(1, 1);
+            WService.CreateEmployee(1, 2, "Emir");
+            WService.GetAllEmployeesInWarehouse(1);
+            WService.RemoveEmployee(1, 2);
+            WService.GetAllEmployeesInWarehouse(1);
+            var employees = WService.GetAllEmployeesInWarehouse(1);
+            if (employees.Any())
+            {
+                Console.WriteLine($"Employees in Warehouse 'WarehouseName':");
+                foreach (var employee in employees)
+                {
+                    Console.WriteLine($"Employee ID: {employee.employeeId}, Name: {employee.employeeName}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No employees found.");
+            }
+
+
+            //WService.CheckEmployeeAccessStatus(1, 1);
+            //WService.SetAccessToHighValueGoods(1, 1, true);
+            //WService.CheckEmployeeAccessStatus(1, 1);
+
+            bool accessStatus = WService.CheckEmployeeAccessStatus(1, 1);
+            Console.WriteLine($"Employee 1 has authorization status: {accessStatus}");
+
             WService.SetAccessToHighValueGoods(1, 1, true);
-            WService.CheckEmployeeAccessStatus(1, 1);
+            accessStatus = WService.CheckEmployeeAccessStatus(1, 1);
+            Console.WriteLine($"Employee 1 has authorization status: {accessStatus}");
 
             List<StorageType> zoneStorageTypes = new List<StorageType> { StorageType.Small, StorageType.Medium, StorageType.Large };
 
@@ -46,12 +72,13 @@ namespace Program
             WService.CreateZone(1, 3, "Pallet Racking", 5, TimeSpan.FromMinutes(4), TimeSpan.FromMinutes(4), StorageType.Standard);
             WService.CreateZoneWithMultipleType(1, 4, "Small Item Shelving", 30, TimeSpan.FromSeconds(110), TimeSpan.FromSeconds(70), zoneStorageTypes);
             WService.CreateZone(1, 5, "Packing/Stacking", 150, TimeSpan.FromSeconds(50), TimeSpan.FromSeconds(50), StorageType.None);
-            WService.CreateZone(1, 6, "High Value Goods", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
+            WService.CreateZone(1, 6, "High Value Goods2", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
 
             Console.WriteLine("\n----- Get All Zones in Warehouse -----");
             //WService.GetAllWarehouses();
             WService.GetAllZonesInWarehouse(1);
-
+            WService.FindZoneById(1,1);
+            /*
             Console.WriteLine("\n----- Adding Shelf to Zone -----");
             //Shelf newShelf = new Shelf(200, 40, 100, 2);
             WService.AddShelfToZone(1,1, 200, 40, 100);
@@ -88,13 +115,13 @@ namespace Program
             WService.AddShelfToZone(1,6, 200, 40, 100);
             WService.AddShelfToZone(1,6, 200, 40, 100);
             WService.AddShelfToZone(1,6, 200, 80, 100);
-
+            /*
             Console.WriteLine("\n----- Get all Shelves in Zone -----");
             WService.GetAllShelvesInZone(1, 1);
             WService.GetAllShelvesInZone(1, 2);
             WService.GetAllShelvesInZone(1, 3);
             WService.GetAllShelvesInZone(1, 4);
-
+            
 
 
             Console.WriteLine("\n----- Create Item -----");
@@ -106,9 +133,13 @@ namespace Program
             IService.AddItem(1,1, 2, DateTime.Now,  1);
 
             Console.WriteLine("\n----- Get all info on Items in Warehouse -----");
+            Console.WriteLine(IService.GetItemAllInfo(1, 1));
             IService.GetItemAllInfo(1, 2);
             IService.GetItemAllInfo(1, 1);
-            
+
+            Console.WriteLine("\n----- chech counted pallets -----");
+           // PService.countPalletInWarehouse(1, palletList, WarehouseList);
+
             Console.WriteLine("\n----- Get all Items in Zone -----");
             WService.GetAllItemsInZone(1, 1);
 
@@ -123,7 +154,7 @@ namespace Program
             Console.WriteLine("\n----- Get Item History By Id -----");
             IHService.GetItemHistoryById(1,1);
             IHService.GetItemHistoryById(1,2);
-
+            
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 3, null, "Kebab", StorageType.HighValue );
             IService.CreateItem(1, 4, null, "T-Shirt",StorageType.ClimateControlled );
@@ -178,7 +209,7 @@ namespace Program
             Console.WriteLine("\nTesting complete removal of an item when quantity hits zero:");
             IService.RemoveItem(1, 11, 30); // Dette skulle fjerne Water helt fra listen
             IService.GetItemAllInfo(1, 11); // Skal vise at varen ikke lenger finnes
-            
+            */
             
             //              Unsubscriptions
 

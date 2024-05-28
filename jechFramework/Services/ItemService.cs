@@ -233,24 +233,25 @@ namespace jechFramework.Services
                 var warehouse = warehouseService.warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
                 if (warehouse == null)
                 {
-                    throw new ServiceException($"Warehouse with ID {warehouseId} not found. Cannot move item.");
+                    throw new ServiceException($"Warehouse {warehouseId} not found.");
                 }
 
                 var item = warehouse.zoneList.SelectMany(z => z.itemsInZoneList).FirstOrDefault(i => i.internalId == internalId);
                 if (item == null)
                 {
-                    throw new ServiceException($"Item with internal ID {internalId} not found in any zone. No action taken.");
+                    throw new ServiceException($"Item {internalId} not found.");
                 }
 
                 var oldZoneObj = warehouse.zoneList.FirstOrDefault(z => z.itemsInZoneList.Contains(item));
                 var newZoneObj = warehouse.zoneList.FirstOrDefault(z => z.zoneId == newZone);
                 if (newZoneObj == null)
                 {
-                    throw new ServiceException($"New zone with ID {newZone} not found in warehouse {warehouseId}. Cannot move item.");
+                    throw new ServiceException($"New zone {newZone} not found.");
                 }
 
                 if (!CheckItemAndZoneCompatibility(item, newZoneObj))
                 {
+                    Console.WriteLine($"Incompatible item {item.name} (ID: {internalId}) for new zone {newZoneObj.zoneName}.");
                     return;
                 }
 
@@ -258,17 +259,15 @@ namespace jechFramework.Services
                 DateTime newDateTime = item.dateTime.Add(totalTime);
 
                 oldZoneObj.itemsInZoneList.Remove(item);
-                item.dateTime = newDateTime;  // Update dateTime to include the move duration
+                item.dateTime = newDateTime;
                 newZoneObj.itemsInZoneList.Add(item);
 
-                // Logg bevegelsen etter vellykket flytting
                 LogItemMovement(new ItemHistory(internalId, oldZoneObj.zoneId, newZone, item.dateTime, totalTime));
-
-                Console.WriteLine($"Item {internalId} has been successfully moved from zone {oldZoneObj.zoneId} to zone {newZone}. Total movement time: {totalTime}.");
+                Console.WriteLine($"Moved '{item.name}' (ID: {internalId}) from '{oldZoneObj.zoneName}' to '{newZoneObj.zoneName}'. Time: {totalTime}.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while moving item: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}");
             }
         }
 
@@ -304,7 +303,7 @@ namespace jechFramework.Services
         /// </summary>
         /// <param name="warehouseId">Parameter for valgt varehus.</param>
         /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        public void GetItemAllInfo(int warehouseId, int internalId)
+        public Item GetItemAllInfo(int warehouseId, int internalId)
         {
             try
             {
@@ -312,7 +311,7 @@ namespace jechFramework.Services
                 if (warehouse == null)
                 {
                     Console.WriteLine($"Warehouse with ID {warehouseId} not found.");
-                    return;
+                    return null;
                 }
 
                 Item item = null;
@@ -327,6 +326,7 @@ namespace jechFramework.Services
                         foundInZone = true;
                         break;  // Finn varen og avbryt løkken
                     }
+                   
                 }
 
                 // Hvis ikke funnet i soner, sjekk hovedlagerlisten
@@ -336,7 +336,7 @@ namespace jechFramework.Services
                     if (item != null)
                     {
                         Console.WriteLine($"Item with internal ID {internalId} not found in the specified warehouse {warehouseId}.");
-                        return; // Returner etter å ha informert at varen ikke finnes i lageret
+                        return null; // Returner etter å ha informert at varen ikke finnes i lageret
                     }
                     
                 }
@@ -352,10 +352,13 @@ namespace jechFramework.Services
                 Console.WriteLine($"Zone ID: {item.zoneId ?? 0}");
                 Console.WriteLine($"Quantity: {item.quantity}");
                 Console.WriteLine($"Last Moved Time: {item.dateTime}");
+
+                return item;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error retrieving item information: {ex.Message}");
+                return null;
             }
         }
 
@@ -366,18 +369,13 @@ namespace jechFramework.Services
         /// <param name="itemHistory">En klasse for å registrere historikk for Item-gjenstander.</param>
         private void LogItemMovement(ItemHistory itemHistory)
         {
-            // Konverterer oldZone til en streng, bruker tom streng hvis null
             var oldZoneString = itemHistory.oldZone.HasValue ? itemHistory.oldZone.Value.ToString() : "NULL";
-
-            // Format for logginnlegget
-            var logEntry = $"{itemHistory.internalId},{oldZoneString},{itemHistory.newZone},{itemHistory.dateTime}\n";
-
-            // Spesifiser stien til loggfilen
-            var logFilePath = "ItemMovements.log";
-
-            // Skriver logginnlegget til filen
-            File.AppendAllText(logFilePath, logEntry);
+            var logEntry = $"{itemHistory.internalId},{oldZoneString},{itemHistory.newZone},{itemHistory.dateTime:yyyy-MM-dd HH:mm:ss}\n";
+            File.AppendAllText(ItemHistoryService.logFilePath, logEntry);
+            Console.WriteLine($"Logged: {itemHistory.internalId}, from Zone {oldZoneString} to {itemHistory.newZone}, on {itemHistory.dateTime:yyyy-MM-dd HH:mm:ss}");
         }
+
+
 
 
         /// <summary>
@@ -386,7 +384,7 @@ namespace jechFramework.Services
         /// <param name="warehouseId">parameter for valgt varehus.</param>
         /// <param name="zoneId">parameter for valgt sone.</param>
         /// <returns>Returnerer en Int for alle registrerte Item-gjenstander med gitt internalId.</returns>
-        public int FindHowManyItemsInItemList(int warehouseId, int zoneId)
+        public int FindHowManyItemsInZone(int warehouseId, int zoneId)
         {
             try
             {
@@ -409,14 +407,12 @@ namespace jechFramework.Services
                     return countedItems;
                 }
                 
-                
             }
             catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
                 return 0;
             }
-
         }
 
 
@@ -427,7 +423,7 @@ namespace jechFramework.Services
         /// <param name="internalId">internalId for å vise id'en på produktet internt for varehuset.</param>
         /// <returns>Returnerer en Int med totalt antall Kvantitet.</returns>
         /// <exception cref="ServiceException">Varehuset finnes ikke.</exception>
-        public int FindHowManyItemQuantityByInternalId(int warehouseId, int internalId)
+        public int FindItemQuantityInWarehouse(int warehouseId, int internalId)
         {
             var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
             if (warehouse == null)

@@ -26,6 +26,11 @@ namespace jechFramework.Services
 
         private readonly PalletService palletService;
 
+        public List<Pallet> GetPallets()
+        {
+            return palletList;
+        }
+
         /// <summary>
         /// Metoden for å fjerne en palle fra palleList
         /// </summary>
@@ -47,6 +52,7 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
 
         /// <summary>
         /// Meotden for å fjerne en palle fra palleList
@@ -149,13 +155,27 @@ namespace jechFramework.Services
         //
 
   
-        
-        public void countPalletInWarehouse(int warehouseId, List<Pallet> palletList, List<Warehouse> warehouseList)
+        /*
+        public int countPalletInWarehouse(int warehouseId)
         {
             //var warehouse = WarehouseService.warehouseList.FirstOrDefault(Warehouse => Warehouse.warehouseId == warehouseId);
 
             try
             {
+                var warehouse = warehouseServiceInstance.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null)
+                {
+                    throw new ServiceException($"Warehouse with ID {warehouseId} not found in warehouseList.");
+                    //return -1;
+                }
+
+                var palletList = palletService.GetPallets();
+                int palletCount = palletList.Count(p => p. == warehouseId);
+
+                return palletCount;
+
+
+                /*
                 if (warehouseList.Any(w => w.warehouseId == warehouseId))
                 {
                     var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
@@ -165,18 +185,15 @@ namespace jechFramework.Services
                    
                     int palletCount = palletList.Count;
                     Console.WriteLine($"Number of pallets in warehouse: {palletCount}");
+                    return palletCount;
                 }
-                else
-                {
-                    throw new ServiceException($"Warehouse with Id {warehouseId} not found in warehouseList");
-                }
-
                 
             }
             catch (ServiceException ex)
             {
-                Console.WriteLine(ex.Message);     
+                throw new ServiceException($"Warehouse with Id {warehouseId} not found in warehouseList");
+                return -1;
             }
+        }*/
         }
-    } 
-}
+    }

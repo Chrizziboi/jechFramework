@@ -14,7 +14,7 @@ public class ItemHistoryService
 {
    
     private static List<ItemHistory> itemHistoryList = new List<ItemHistory>();
-    private static string logFilePath = "ItemMovements.log"; // Stien til loggfilen
+    public static string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ItemMovements.log");
     private WarehouseService warehouseService = new();
 
 
@@ -28,16 +28,22 @@ public class ItemHistoryService
 
     public static void EnsureLogfileExists()
     {
+        Console.WriteLine("Checking log file at: " + logFilePath);
         if (!File.Exists(logFilePath))
         {
             using (var stream = File.Create(logFilePath))
             {
-                var info = new UTF8Encoding(true).GetBytes("Log File Created: " + DateTime.Now + "\n");
-                stream.Write(info, 0, info.Length);
+                // Kun opprette filen, ingen skriving av tekst som "Log File Created"
+                stream.Close(); // Lukker strømmen etter opprettelse
             }
             Console.WriteLine("Log file created: " + logFilePath);
         }
+        else
+        {
+            Console.WriteLine("Log file already exists.");
+        }
     }
+
 
     // Oppdaterer for å lese loggfilen med den nye strukturen
     /// <summary>
@@ -48,20 +54,17 @@ public class ItemHistoryService
         try
         {
             itemHistoryList.Clear();
-
-            // Sjekk om loggfilen eksisterer
             if (!File.Exists(logFilePath))
             {
                 Console.WriteLine($"Log file not found: {logFilePath}");
-                return;  // Avslutter metoden hvis filen ikke finnes
+                return;
             }
 
             var logEntries = File.ReadAllLines(logFilePath);
-
             foreach (var entry in logEntries)
             {
                 var fields = entry.Split(',');
-                if (fields.Length == 4)
+                if (fields.Length == 4 && fields[0].All(char.IsDigit)) // Sjekker om første felt er et tall
                 {
                     try
                     {
@@ -69,13 +72,11 @@ public class ItemHistoryService
                         int? oldZone = fields[1] != "NULL" ? int.Parse(fields[1]) : null;
                         int newZone = int.Parse(fields[2]);
                         DateTime dateTime = DateTime.Parse(fields[3]);
-
                         itemHistoryList.Add(new ItemHistory(internalId, oldZone, newZone, dateTime));
                     }
                     catch (FormatException ex)
                     {
                         Console.WriteLine($"Unable to parse log entry: {entry}. Error: {ex.Message}");
-                        // Fortsetter til neste logginnslag
                     }
                 }
             }
@@ -83,7 +84,6 @@ public class ItemHistoryService
         catch (Exception ex)
         {
             Console.WriteLine($"Error reading from log file: {ex.Message}");
-            // Kaster exception videre om nødvendig, eller håndter det lokalt
         }
     }
 
@@ -99,36 +99,48 @@ public class ItemHistoryService
         return itemHistoryList;
     }
 
-    public void GetItemHistoryById(int warehouseId,int internalId)
+    public List<ItemHistory> GetItemHistoryById(int warehouseId, int internalId)
     {
+        List<ItemHistory> results = new List<ItemHistory>();
+
         try
         {
-            UpdateHistoryFromLog(); 
+            UpdateHistoryFromLog(); // Oppdaterer historikklisten fra loggfilen
+
+            // Sjekker først om listen har noen elementer i det hele tatt
+            if (itemHistoryList == null || !itemHistoryList.Any())
+            {
+                Console.WriteLine("The item history list is empty or null.");
+                return results; // Returnerer tom liste hvis ingen historikk er tilgjengelig
+            }
+
+            // Filtrer historikken basert på internID
             var singleItemHistory = itemHistoryList.Where(itemHistory => itemHistory.internalId == internalId).ToList();
 
+            // Sjekker om filtreringen resulterte i noen treff
             if (!singleItemHistory.Any())
             {
                 Console.WriteLine($"No history found for the item with internal ID: {internalId}.");
-                return;
+                return results; // Returner tom liste hvis ingen historikk er funnet
             }
 
-            
-            Console.WriteLine($"(Internal ID: {internalId}):");
-            Console.WriteLine($"{"Date",-20} | {"Old Location",-20} | {"New Location",-20}");
-            Console.WriteLine(new string('-', 60)); 
-
+            // Legger til gyldige historikkelementer til resultatlisten
             foreach (var itemHistory in singleItemHistory)
             {
-                var oldZoneDisplay = itemHistory.oldZone.HasValue ? $"Zone {itemHistory.oldZone.Value}" : "None";
-                var newZoneDisplay = $"Zone {itemHistory.newZone}";
-                Console.WriteLine($"{itemHistory.dateTime,-20:dd.MM.yyyy HH:mm} | {oldZoneDisplay,-20} | {newZoneDisplay,-20}");
+                results.Add(itemHistory);
+                Console.WriteLine($"History added for item ID {internalId}: Zone {itemHistory.oldZone} to {itemHistory.newZone} at {itemHistory.dateTime}.");
             }
         }
-        catch (ServiceException ex)
+        catch (Exception ex) // Endret til Exception for å fange alle typer unntak, ikke bare ServiceException
         {
-            Console.WriteLine($"Error retrieving item history for internal ID {internalId}: {ex.Message}");
+            Console.WriteLine($"An error occurred while retrieving item history for internal ID {internalId}: {ex.Message}");
         }
+
+        // Returnerer listen av historikkobjekter, som nå kan være tom eller fylt basert på funnene
+        return results;
     }
+
+
 
 
     /// <summary>
