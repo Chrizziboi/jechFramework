@@ -47,9 +47,9 @@ namespace MyConsoleApp
 
             waresInService.WaresIn(1,1, DateTime.Now, 1, TimeSpan.FromMinutes(30), incomingItems);
 
-            itemService.FindHowManyItemsInItemList(1,1);
+            itemService.FindHowManyItemsInZone(1,1);
 
-            itemService.FindHowManyItemQuantityByInternalId(1,1);
+            itemService.FindItemQuantityInWarehouse(1,1);
 
             // Flytting av varen til ulike lokasjoner og sporing av varehistorikk
             itemService.MoveItemToLocation(1,6, 2);
