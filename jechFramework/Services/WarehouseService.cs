@@ -342,6 +342,7 @@ namespace jechFramework.Services
         }
 
 
+
         /// <summary>
         /// Funksjon for å finne en sone ved hjelp av Id.
         /// </summary>
@@ -745,7 +746,7 @@ namespace jechFramework.Services
             }
         }
 
-        public int CalculateTotalCapacityInZone(int zoneId)
+        public int CalculateTotalItemCapacityInZone(int zoneId)
         {
             int totalCapacity = 0;
             foreach (var warehouse in warehouseList)
@@ -765,15 +766,7 @@ namespace jechFramework.Services
             return 0; // Returnerer 0 hvis sonen ikke ble funnet
         }
 
-        public bool HasAvailableCapacity(Shelf shelf)
-        {
-            // Anta at Shelf-objektet har en egenskap 'PalletCapacity' som angir maks antall paller,
-            // og en liste over paller 'Pallets' som allerede er plassert på reolen.
-            int currentPalletCount = palletService.palletList.Count;
-
-            // Sjekker om antallet paller som allerede er plassert på reolen er mindre enn reolens totale kapasitet.
-            return currentPalletCount < shelf.palletCapacity;
-        }
+        
 
 
         public void PlaceItemOnShelf(int warehouseId, int zoneId, int shelfId, int internalId)
@@ -797,10 +790,7 @@ namespace jechFramework.Services
                 throw new ServiceException($"Shelf with ID {shelfId} not found in zone {zoneId}.");
             }
 
-            if (!HasAvailableCapacity(shelf))
-            {
-                throw new ServiceException($"No available capacity on shelf {shelf.shelfId} in zone {zoneId}.");
-            }
+            
 
             var item = warehouse.itemList.FirstOrDefault(i => i.internalId == internalId);
             if (item == null)
@@ -844,6 +834,39 @@ namespace jechFramework.Services
                 return zone.storageType == item.storageType || zone.storageType == StorageType.None;
             }
         }
+        /*public bool IsStorageTypeCompatible(Zone zone, Item item)
+        {
+            Console.WriteLine("Zone: " + zone.storageType);
+            Console.WriteLine("Item Storage Type: " + item.storageType);
+
+            // Hvis zone.zonePacketList er definert og ikke tom
+            if (zone.zonePacketList != null && zone.zonePacketList.Any())
+            {
+                Console.WriteLine("Zone Packet List: " + string.Join(",", zone.zonePacketList));
+
+                // Sjekk om item.storageType er en av de tillatte lagringstypene i zone.zonePacketList
+                if (zone.zonePacketList.Contains(item.storageType))
+                {
+                    Console.WriteLine("Item is compatible with zone");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Item is not compatible with zone");
+                    return false;
+                }
+            }
+            else
+            {
+                // Hvis ingen spesifikke lagringstyper er oppgitt, antar vi at alle lagringstyper er tillatt
+                Console.WriteLine("No specific storage types defined in zone, assuming all are allowed");
+                return true;
+            }
+        
+        }
+*/
+
+
 
     }
 }

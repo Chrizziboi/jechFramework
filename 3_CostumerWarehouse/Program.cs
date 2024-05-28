@@ -168,7 +168,7 @@ namespace Program
 
             Console.WriteLine("\n----- Wares In -----");
 
-            waresInService.WaresIn(1, 1, incomingItems, waresOutService, DateTime.Now);
+            waresInService.WaresIn(1, 1, incomingItems, palletService.palletList, DateTime.Now);
 
 
             IService.GetItemAllInfo(1, 8);

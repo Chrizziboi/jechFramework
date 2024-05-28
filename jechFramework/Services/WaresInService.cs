@@ -26,7 +26,7 @@ namespace jechFramework.Services
 
 
 
-        public void WaresIn(int warehouseId, int orderId, List<Item> incomingItems, WaresOutService waresOutServicen, DateTime scheduledTime)
+        public void WaresIn(int warehouseId, int orderId, List<Item> incomingItems, List<Pallet> palletList, DateTime scheduledTime)
 
         {
             try
@@ -76,7 +76,7 @@ namespace jechFramework.Services
                         }
                         for (int i = 0; i < numberOfPallets; i++)
                         {
-                            palletService.addPallet(palletService.palletList);
+                            palletService.addPallet(palletList);
                         }
                     }
 
