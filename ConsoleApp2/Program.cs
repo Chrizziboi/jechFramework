@@ -16,7 +16,7 @@ namespace MyConsoleApp
             ItemService itemService = new ItemService(warehouseService);
             ItemHistoryService itemHistoryService = new ItemHistoryService();
             WaresInService waresInService = new WaresInService(itemService, warehouseService);
-            WaresOutService waresOutService = new WaresOutService(itemService);
+            WaresOutService waresOutService = new WaresOutService();
 
             warehouseService.CreateWarehouse(1, "Warehouse 1", 5);
             warehouseService.FindWarehouseInWarehouseListWithPrint(1);

@@ -13,7 +13,7 @@ namespace Program
             ItemHistoryService IHService = new();
             //Item Item = new();
             WaresInService waresInService = new WaresInService(IService, WService);
-            WaresOutService waresOutService = new WaresOutService(IService);
+            WaresOutService waresOutService = new WaresOutService();
 
             PalletService palletService = new();
 
