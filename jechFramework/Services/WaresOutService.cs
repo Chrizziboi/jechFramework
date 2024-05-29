@@ -15,18 +15,18 @@ namespace jechFramework.Services
 
         public int lastShipmentNumber = 0;
 
-        
+
 
         public delegate void WaresOutScheduledEventHandler(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber);
 
         public event EventHandler<WaresOutEventArgs> WaresOutScheduledSentOut;
-        
+
         public void OnWaresOutScheduledSentOut(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber)
         {
             WaresOutScheduledSentOut?.Invoke(this, new WaresOutEventArgs(warehouseId, orderId, scheduledTime, destination, outgoingItems, lastShipmentNumber));
         }
 
-        public WaresOutService() 
+        public WaresOutService()
         { }
 
         // Constructor to inject ItemService
@@ -48,12 +48,12 @@ namespace jechFramework.Services
         /// <exception cref="ServiceException"></exception>
         public void WaresOut(int warehouseId, int orderId, string destination, List<Models.Item> outgoingItems, DateTime scheduledTime)
         {
-            
+
             if (itemService == null)
             {
                 throw new InvalidOperationException("ItemService is not initialized.");
             }
-            
+
             if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
             if (scheduledWaresOuts == null) scheduledWaresOuts = new List<WaresOut>();
 
@@ -94,7 +94,79 @@ namespace jechFramework.Services
             scheduledWaresOuts.Add(waresOut);
             OnWaresOutScheduledSentOut(warehouseId, orderId, scheduledTime, destination, successfullyRemovedItems, lastShipmentNumber);
         }
+        public void ScheduleWaresOut(int warehouseId, int orderId, string destination, List<Models.Item> outgoingItems, DateTime scheduledTime, RecurrencePattern frequency)
+        {
+            if (itemService == null)
+            {
+                throw new InvalidOperationException("ItemService is not initialized.");
+            }
 
+            if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
+            if (scheduledWaresOuts == null) scheduledWaresOuts = new List<WaresOut>();
+
+            if (scheduledWaresOuts.Any(wo => wo.orderId == orderId))
+            {
+                throw new ServiceException($"Wares out with orderId {orderId} is already scheduled.");
+            }
+
+            List<Models.Item> successfullyRemovedItems = new List<Models.Item>();
+
+            foreach (var item in outgoingItems)
+            {
+                var quantityAvailable = itemService.FindItemQuantityInWarehouse(warehouseId, item.internalId);
+                if (quantityAvailable < item.quantity)
+                {
+                    Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
+                    continue; // Skip this item but continue with others
+                }
+
+                itemService.RemoveItem(warehouseId, item.internalId, item.quantity);
+                successfullyRemovedItems.Add(item); // Track successfully processed items
+            }
+
+            if (!successfullyRemovedItems.Any())
+            {
+                throw new ServiceException("No items could be processed for this order due to stock limitations.");
+            }
+
+            lastShipmentNumber++;
+            var waresOut = new WaresOut
+            {
+                orderId = orderId,
+                scheduledTime = scheduledTime,
+                destination = destination,
+                items = successfullyRemovedItems // Only include successfully processed items
+            };
+
+            scheduledWaresOuts.Add(waresOut);
+            ScheduledWaresOutPrint(warehouseId, orderId, scheduledTime, destination, successfullyRemovedItems, lastShipmentNumber);
+
+            // Planlegg neste forekomst basert på frekvensen
+            switch (frequency)
+            {
+                case RecurrencePattern.Daily:
+                    ScheduleNextOccurrence(orderId, scheduledTime.AddDays(1));
+                    break;
+                case RecurrencePattern.Weekly:
+                    ScheduleNextOccurrence(orderId, scheduledTime.AddDays(7));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(frequency), "Invalid frequency type.");
+            }
+        }
+
+        private void ScheduleNextOccurrence(int orderId, DateTime nextScheduledTime)
+        {
+            // Logikk for å planlegge neste forekomst av ordreutgående varer
+            Console.WriteLine($"Next occurrence for order {orderId} scheduled at {nextScheduledTime}");
+            // Her kan du implementere logikken for å faktisk planlegge den neste forekomsten
+        }
+
+        private void ScheduledWaresOutPrint(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Models.Item> items, int shipmentNumber)
+        {
+            // Logikk for å håndtere når varer er planlagt for utsending
+            Console.WriteLine($"Wares out scheduled for warehouse {warehouseId}, order {orderId}, destination {destination}, scheduled at {scheduledTime}, shipment number {shipmentNumber}");
+        }
     }
 }
 

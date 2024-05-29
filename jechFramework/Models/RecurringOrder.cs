@@ -20,7 +20,7 @@ namespace jechFramework.Models
         // ... eventuelle ekstra konstruktører og metoder ...
     }
 
-   internal enum RecurrencePattern
+   public enum RecurrencePattern
    {
         Daily,
         Weekly,

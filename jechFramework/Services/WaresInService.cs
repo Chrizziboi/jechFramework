@@ -114,5 +114,85 @@ namespace jechFramework.Services
             }
         }
 
+        public void ScheduleWaresIn(int warehouseId, int orderId, List<Item> incomingItems, List<Pallet> palletList, DateTime scheduledTime, RecurrencePattern frequency)
+        {
+            try
+            {
+                // Sjekk for eksistensen av varehuset
+                var warehouse = warehouseService.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
+                if (warehouse == null) throw new ServiceException("Warehouse not found.");
+
+                // Sjekker at innkommende varer ikke er null og at ordreID ikke allerede er planlagt
+                if (incomingItems == null) throw new ArgumentNullException(nameof(incomingItems));
+                if (WaresIns.Any(wi => wi.orderId == orderId)) throw new ServiceException("Order ID already scheduled.");
+
+                foreach (var item in incomingItems)
+                {
+                    // Finn en kompatibel sone for hver vare basert på storageType
+                    Zone compatibleZone = null;
+                    foreach (var zone in warehouse.zoneList)
+                    {
+                        if (warehouseService.IsStorageTypeCompatible(zone, item))
+                        {
+                            compatibleZone = zone;
+                            break;
+                        }
+                    }
+
+                    if (compatibleZone == null)
+                    {
+                        Console.WriteLine($"No compatible zone found for item {item.internalId} with storage type {item.storageType}.");
+                        continue; // Går til neste item hvis ingen kompatibel sone ble funnet
+                    }
+
+                    // Oppretter varen i lageret hvis den ikke eksisterer
+                    if (!itemService.ItemExists(warehouseId, item.internalId))
+                    {
+                        itemService.CreateItem(warehouseId, item.internalId, item.externalId, item.name, item.storageType);
+                    }
+                    var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
+                    var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
+                    itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
+
+                    /*if (item.quantity > 0)
+                    {
+                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
+                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
+                        {
+                            numberOfPallets++; // Legg til en pall hvis det er en rest
+                        }
+                        for (int i = 0; i < numberOfPallets; i++)
+                        {
+                            palletService.AddPallet(palletList);
+                        }
+                    }*/
+                }
+
+                // Planlegg neste forekomst basert på frekvensen
+                switch (frequency)
+                {
+                    case RecurrencePattern.Daily:
+                        ScheduleNextOccurrence(orderId, scheduledTime.AddDays(1));
+                        break;
+                    case RecurrencePattern.Weekly:
+                        ScheduleNextOccurrence(orderId, scheduledTime.AddDays(7));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(frequency), "Invalid frequency type.");
+                }
+            }
+            catch (ServiceException ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+            
+            
+        }
+        private void ScheduleNextOccurrence(int orderId, DateTime nextScheduledTime)
+                    {
+                        // Logikk for å planlegge neste forekomst av ordreinnkommende varer
+                        Console.WriteLine($"Next occurrence for order {orderId} scheduled at {nextScheduledTime}");
+                        // Her kan du implementere logikken for å faktisk planlegge den neste forekomsten
+                    }
     }
 }
