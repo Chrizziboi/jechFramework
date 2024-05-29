@@ -15,7 +15,6 @@ namespace jechFramework.Services
         private readonly Shelf shelfInstance;
         private readonly ItemService itemService;
         private readonly WaresOutService waresOutService;
-        private readonly PalletService palletService;
 
         public List<Warehouse> warehouseList = new List<Warehouse>();
         // Liste med varehus

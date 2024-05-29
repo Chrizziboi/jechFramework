@@ -11,7 +11,6 @@ namespace jechFramework.Models
         public int internalPalletId { get; set; } = 10;
         //Pallet.internalPalletId + Item.internalId
 
-
         public string? palletName { get; set; } = null;
 
         public string? palletDescription { get; set; } = null;
