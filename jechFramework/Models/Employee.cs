@@ -11,44 +11,82 @@ namespace jechFramework.Models
     /// </summary>
     public class Employee
     {
+        /// <summary>
+        /// Henter eller setter ID for den ansatte.
+        /// </summary>
         public int employeeId  { get; set; }
 
+        /// <summary>
+        /// Henter eller setter navnet til den ansatte.
+        /// </summary>
         public string employeeName { get; set; }
 
+        /// <summary>
+        /// Henter eller setter en beskrivelse av den ansatte.
+        /// </summary>
         public string employeeDescription { get; set; }
 
+        /// <summary>
+        /// Henter eller setter alderen til den ansatte.
+        /// </summary>
         public int employeeAge { get; set; }
 
+        /// <summary>
+        /// Henter eller setter den personlige ID-en til den ansatte.
+        /// </summary>
         public int employeePersonalId { get; set; }
 
+        /// <summary>
+        /// Henter eller setter adressen til den ansatte.
+        /// </summary>
         public string employeeAddress { get; set; }
 
+        /// <summary>
+        /// Henter eller setter byen til den ansatte.
+        /// </summary>
         public string employeeCity { get; set; }
 
+        /// <summary>
+        /// Henter eller setter telefonnummeret til den ansatte.
+        /// </summary>
         public string employeeTelephoneNumber { get; set; }
 
+        /// <summary>
+        /// Henter eller setter en verdi som indikerer om den ansatte har autorisasjon til høyverdi varer.
+        /// </summary>
         public bool employeeAuthorizationToHighValueGoods { get; set; } = false;
 
-
+        /// <summary>
+        /// Initialiserer en ny instans av Employee-klassen med to parametere.
+        /// </summary>
+        /// <param name="employeeId">ID for den ansatte.</param>
+        /// <param name="employeeName">Navnet til den ansatte.</param>
         public Employee(int employeeId, string employeeName)
         {
             this.employeeId = employeeId;
             this.employeeName = employeeName;
             
         }
+
         /// <summary>
-        /// her har man bare en konstruktør fordi når man skal legge til en ny ansatt så må man legge til all informasjon.
+        /// Initialiserer en ny instans av Employee-klassen med alle parametere.
         /// </summary>
-        /// <param name="employeeId">Ansatt id.</param>
-        /// <param name="employeeName">Ansatt navn.</param> 
-        /// <param name="employeeDescription">Ansatt sin beskrivelse, her kan det muligens være kort ekstra informasjon f.eks at den ansatte er vikar.</param> 
-        /// <param name="employeeAge">Ansatt alder.</param> 
-        /// <param name="empployeePersonalId">Ansatt personlig id.</param> 
-        /// <param name="employeeAddress">Ansatt adresse.</param> 
-        /// <param name="employeeCity">Ansatt by.</param> 
-        /// <param name="employeeTelephoneNumber">Ansatt telefon nummer.</param> 
-        public Employee(int employeeId, string employeeName, string employeeDescription,
-            int employeeAge, int empployeePersonalId, string employeeAddress, string employeeCity,
+        /// <param name="employeeId">ID for den ansatte.</param>
+        /// <param name="employeeName">Navnet til den ansatte.</param>
+        /// <param name="employeeDescription">En beskrivelse av den ansatte, for eksempel at den ansatte er vikar.</param>
+        /// <param name="employeeAge">Alderen til den ansatte.</param>
+        /// <param name="employeePersonalId">Den personlige ID-en til den ansatte.</param>
+        /// <param name="employeeAddress">Adressen til den ansatte.</param>
+        /// <param name="employeeCity">Byen til den ansatte.</param>
+        /// <param name="employeeTelephoneNumber">Telefonnummeret til den ansatte.</param>
+        public Employee(
+            int employeeId, 
+            string employeeName, 
+            string employeeDescription,
+            int employeeAge, 
+            int empployeePersonalId, 
+            string employeeAddress, 
+            string employeeCity,
             string employeeTelephoneNumber) 
         {
             this.employeeId = employeeId;

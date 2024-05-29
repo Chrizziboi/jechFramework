@@ -13,7 +13,6 @@ namespace PalletBallet
             ItemHistoryService IHService = new();
             WaresInService waresInService = new(IService, WService, PService);
             WaresOutService waresOutService = new(IService, PService);
-            PalletService palletService = new();
 
 
             //            Subscriptions
@@ -78,7 +77,7 @@ namespace PalletBallet
                 new Item() { internalId = 1, quantity = 20, storageType = StorageType.ClimateControlled }, // Prøver å sende ut mer Soda enn tilgjengelig
                 new Item() { internalId = 2, quantity = 40, storageType = StorageType.HighValue }  // Dette antallet er tilgjengelig
             };
-            waresInService.ScheduleWaresIn(1, 2, scheduledIncomingItems, DateTime.Now, RecurrencePattern.Weekly);
+            waresInService.ScheduleWaresIn(1, 2, scheduledIncomingItems, DateTime.Now, ScheduleType.Weekly);
 
             Console.WriteLine("\n----- Pallets testing after WaresIn -----\n");
             PService.CountPallets();
@@ -102,7 +101,7 @@ namespace PalletBallet
                 new Item() { internalId = 1, quantity = 10 }, // Prøver å sende ut mer Soda enn tilgjengelig
                 new Item() { internalId = 2, quantity = 5 }  // Dette antallet er tilgjengelig
             };
-            waresOutService.ScheduleWaresOut(1, 3, "Partytown", ScheduledOutgoingItems, DateTime.Now, RecurrencePattern.Weekly);
+            waresOutService.ScheduleWaresOut(1, 3, "Partytown", ScheduledOutgoingItems, DateTime.Now, ScheduleType.Weekly);
             PService.CountPallets();
 
             //IService.GetItemAllInfo(1, 10); // Skal vise at Soda fortsatt har 50 enheter, ingen ble fjernet

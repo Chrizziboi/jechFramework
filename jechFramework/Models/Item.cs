@@ -6,51 +6,62 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
+    /// <summary>
+    /// Item-klassen representerer en gjenstand i lageret. Den inneholder informasjon som intern og ekstern ID, navn, beskrivelse, vekt, type, lagertype, sone ID, mengde og tidspunkt for siste endring.
+    /// </summary>
     public class Item
     {
         public int shelfId;
 
         /// <summary>
-        /// Item klassen er laget for å kunne opprette gjenstander på lageret.
+        /// Henter eller setter intern ID for varen. 
         /// </summary>
-
         public int internalId { get; set; }
 
+        /// <summary>
+        /// Henter eller setter ekstern ID for varen, hvis tilgjengelig.
+        /// </summary>
         public int? externalId { get; set; } = null;
 
+        /// <summary>
+        /// Henter eller setter navnet på varen.
+        /// </summary>
         public string? name { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Henter eller setter en beskrivelse av varen.
+        /// </summary>
         public string? description { get; set; } = null;
 
+        /// <summary>
+        /// Henter eller setter vekten til varen.
+        /// </summary>
         public int weight { get; set; }
 
-        //public int itemSize { get; set; }
+        /// <summary>
+        /// Henter eller setter typen av varen.
+        /// </summary>
         public string type { get; set; }
 
+        /// <summary>
+        /// Henter eller setter lagertypen for varen.
+        /// </summary>
         public StorageType storageType { get; set; }
 
+        /// <summary>
+        /// Henter eller setter sone ID for varen. Kan være null.
+        /// </summary>
         public int? zoneId { get; set; } = 0;
 
+        /// <summary>
+        /// Henter eller setter mengden av varen.
+        /// </summary>
         public ushort quantity { get; set; } = 1;
 
-        public DateTime dateTime { get; set; } = DateTime.Now;
-
-        //public List<StorageType> itemPacketList { get; set; } = new List<StorageType>();
-        
-
         /// <summary>
-        ///  Enum for å definere forskjellige gjenstands-størrelser.
+        /// Henter eller setter tidspunktet for siste endring av varen.
         /// </summary>
-        //public enum StorageType
-        //{
-        //    None = 0,
-        //    Small = 1,
-        //    Medium = 2,
-        //    Large = 3,
-        //    Standard,
-        //    ClimateControlled,
-        //    HighValue
-        //}
+        public DateTime dateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Initialiserer en ny instans av Item-klassen uten parametere.
@@ -61,12 +72,12 @@ namespace jechFramework.Models
         }
 
         /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 4 parameter.
+        /// Initialiserer en ny instans av Item-klassen med fire parametere.
         /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        /// <param name="externalId">externalId for tilfellene man skulle trenge leverandør sin produkt id.</param>
-        /// <param name="name">name er for å kunne gi navn til en gitt vare.</param>
-        /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
+        /// <param name="internalId">Intern ID for å identifisere varen i lageret.</param>
+        /// <param name="externalId">Ekstern ID for leverandørens produkt ID.</param>
+        /// <param name="name">Navn på varen.</param>
+        /// <param name="type">Type av varen, for eksempel mikroklut kontra vanlig klut.</param>
         public Item(int internalId, int externalId, string name, string type)
         {
             this.internalId = internalId;
@@ -75,6 +86,13 @@ namespace jechFramework.Models
             this.type = type;
         }
 
+        /// <summary>
+        /// Initialiserer en ny instans av Item-klassen med fire parametere.
+        /// </summary>
+        /// <param name="internalId">Intern ID for å identifisere varen i lageret.</param>
+        /// <param name="name">Navn på varen.</param>
+        /// <param name="storageType">Lagringstype for varen.</param>
+        /// <param name="zoneId">Sone ID hvor varen er plassert.</param>
         public Item(int internalId, string name, StorageType storageType, int zoneId)
         { 
             this.internalId= internalId;
@@ -85,14 +103,14 @@ namespace jechFramework.Models
 
 
         /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 6 parameter.
+        /// Initialiserer en ny instans av Item-klassen med seks parametere.
         /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        /// <param name="name">name er for å kunne gi navn til en gitt vare.</param>
-        /// <param name="weight">weight er for vekten på en gitt gjenstand.</param>
-        /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
-        /// <param name="storageType">>storageType er for informasjon om hvilket type lager det burde/må stå på.</param>
-        /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
+        /// <param name="internalId">Intern ID for å identifisere varen i lageret.</param>
+        /// <param name="name">Navn på varen.</param>
+        /// <param name="weight">Vekt av varen.</param>
+        /// <param name="type">Type av varen, for eksempel mikroklut kontra vanlig klut.</param>
+        /// <param name="storageType">Lagringstype for varen.</param>
+        /// <param name="dateTime">Tidspunkt for registrering og historikk for varen.</param>
         public Item(int internalId, string name, int weight, string type, StorageType storageType, DateTime dateTime)
         {
             this.internalId = internalId;
@@ -104,16 +122,23 @@ namespace jechFramework.Models
         }
 
         /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 7 parameter.
+        /// Initialiserer en ny instans av Item-klassen med syv parametere.
         /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param>
-        /// <param name="externalId"></param>
-        /// <param name="name">name er for å kunne gi navn til en gitt vare.</param>
-        /// <param name="description">description for å kunne gi en lett beskrivelse av vare og eventuelt ekstra informasjon.</param>
-        /// <param name="weight">weight er for vekten på en gitt gjenstand.</param>
-        /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param>
-        /// <param name="storageType">storageType er for informasjon om hvilket type lager det burde/må stå på.</param>
-        public Item(int internalId, int externalId, string name, string description, int weight, string type, StorageType storageType)
+        /// <param name="internalId">Intern ID for å identifisere varen i lageret.</param>
+        /// <param name="externalId">Ekstern ID for leverandørens produkt ID.</param>
+        /// <param name="name">Navn på varen.</param>
+        /// <param name="description">Beskrivelse av varen for ekstra informasjon.</param>
+        /// <param name="weight">Vekt av varen.</param>
+        /// <param name="type">Type av varen, for eksempel mikroklut kontra vanlig klut.</param>
+        /// <param name="storageType">Lagringstype for varen.</param>
+        public Item(
+            int internalId, 
+            int externalId, 
+            string name, 
+            string description, 
+            int weight, 
+            string type, 
+            StorageType storageType)
         {
             this.internalId = internalId;
             this.externalId = externalId;
@@ -126,19 +151,29 @@ namespace jechFramework.Models
 
 
         /// <summary>
-        /// Initialiserer en ny instans av Item-klassen med 10 parameter.
+        /// Initialiserer en ny instans av Item-klassen med ti parametere.
         /// </summary>
-        /// <param name="internalId">internalId for å vise iden på produktet internt for varehuset.</param> 
-        /// <param name="externalId">externalId for tilfellene man skulle trenge leverandør sin produkt id.</param> 
-        /// <param name="name">navn er for å kunne gi navn til en gitt vare.</param> 
-        /// <param name="description">description for å kunne gi en lett beskrivelse av vare og eventuelt ekstra informasjon.</param> 
-        /// <param name="weight">weight er for vekten på en gitt gjenstand.</param>
-        /// <param name="type">type er ment for foreksempel at et gitt produkt er en mikroklut, og ikke en vanlig klut.</param> 
-        /// <param name="storageType">storageType er for informasjon om hvilket type lager det burde/må stå på.</param> 
-        /// <param name="location">Lcation er for å vise hvor i lageret det ligger.</param> 
-        /// <param name="quantity">Quantity er for hvor mange av den gitte varen det er på lager.</param>
-        /// <param name="dateTime">dateTime er for registrering og historikk for Item.cs objekter.</param>
-        public Item(int internalId, int externalId, string name, string description, int weight, string type, StorageType storageType, int zoneId, ushort quantity, DateTime dateTime)
+        /// <param name="internalId">Intern ID for å identifisere varen i lageret.</param> 
+        /// <param name="externalId">Ekstern ID for leverandørens produkt ID.</param> 
+        /// <param name="name">Navn på varen.</param> 
+        /// <param name="description">Beskrivelse av varen for ekstra informasjon.</param> 
+        /// <param name="weight">Vekt av varen.</param>
+        /// <param name="type">Type av varen, for eksempel mikroklut kontra vanlig klut.</param> 
+        /// <param name="storageType">Lagringstype for varen.</param> 
+        /// <param name="zoneId">Sone ID hvor varen er plassert.</param> 
+        /// <param name="quantity">Antall av varen på lager.</param>
+        /// <param name="dateTime">Tidspunkt for registrering og historikk for varen.</param>
+        public Item(
+            int internalId, 
+            int externalId, 
+            string name, 
+            string description, 
+            int weight, 
+            string type, 
+            StorageType storageType, 
+            int zoneId, 
+            ushort quantity, 
+            DateTime dateTime)
         {
             this.internalId = internalId;
             this.externalId = externalId;

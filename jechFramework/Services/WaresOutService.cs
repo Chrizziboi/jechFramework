@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace jechFramework.Services
 {
+
+    /// <summary>
+    /// Tjeneste for å håndtere utsending av varer fra lageret.
+    /// </summary>
     public class WaresOutService
     {
         private List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
@@ -15,36 +19,76 @@ namespace jechFramework.Services
 
         public int lastShipmentNumber = 0;
 
+        /// <summary>
+        /// Delegat for hendelse når varer er planlagt for utsending.
+        /// </summary>
+        public delegate void WaresOutScheduledEventHandler(
+            int warehouseId,
+            int orderId,
+            DateTime scheduledTime,
+            string destination,
+            List<Item> outgoingItems,
+            int lastShipmentNumber);
 
-
-        public delegate void WaresOutScheduledEventHandler(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber);
-
+        /// <summary>
+        /// Hendelse som utløses når varer er planlagt for utsending.
+        /// </summary>
         public event EventHandler<WaresOutEventArgs> WaresOutScheduledSentOut;
 
-        public void OnWaresOutScheduledSentOut(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber)
+        /// <summary>
+        /// Utløser hendelsen WaresOutScheduledSentOut.
+        /// </summary>
+        /// <param name="warehouseId">ID-en til lageret.</param>
+        /// <param name="orderId">ID-en til ordren.</param>
+        /// <param name="scheduledTime">Tidspunktet for planlagt utsending.</param>
+        /// <param name="destination">Destinasjonen for varene.</param>
+        /// <param name="outgoingItems">Liste over varer som skal sendes ut.</param>
+        /// <param name="lastShipmentNumber">Siste sending nummer.</param>
+        public void OnWaresOutScheduledSentOut(
+            int warehouseId, 
+            int orderId, 
+            DateTime scheduledTime, 
+            string destination, 
+            List<Item> outgoingItems, 
+            int lastShipmentNumber)
         {
-            WaresOutScheduledSentOut?.Invoke(this, new WaresOutEventArgs(warehouseId, orderId, scheduledTime, destination, outgoingItems, lastShipmentNumber));
+            WaresOutScheduledSentOut?.Invoke(this, new WaresOutEventArgs(
+                warehouseId, 
+                orderId, 
+                scheduledTime, 
+                destination, 
+                outgoingItems, 
+                lastShipmentNumber));
         }
 
+        /// <summary>
+        /// Konstruktør for WaresOutService.
+        /// </summary>
+        /// <param name="itemService">Instans av ItemService.</param>
+        /// <param name="palletService">Instans av PalletService.</param>
         public WaresOutService(ItemService itemService, PalletService palletService)
         {
             this.itemService = itemService;
             this.palletService = palletService ?? throw new ArgumentNullException(nameof(palletService));
         }
 
-
         /// <summary>
-        /// Metoden ScheduleWaresOut er designet for å håndtere planlegging av varer som skal sendes ut fra en lokasjon til 
-        /// en bestemt destinasjon på et gitt tidspunkt. Den tar i bruk flere inputparametere for å utføre denne oppgaven og 
-        /// utfører flere sjekker for å sikre at prosessen kan utføres korrekt. 
+        /// Planlegger utsending av varer fra et lager til en destinasjon på et gitt tidspunkt.
         /// </summary>
-        /// <param name="orderId">En unik identifikator for ordren som skal sendes ut.</param>
-        /// <param name="scheduledTime">Det spesifikke tidspunktet varene er planlagt å sendes ut på.</param>
-        /// <param name="destination">Destinasjonen hvor varene skal sendes.</param>
-        /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ServiceException"></exception>
-        public void WaresOut(int warehouseId, int orderId, string destination, List<Item> outgoingItems, DateTime scheduledTime)
+        /// <param name="warehouseId">ID-en til lageret.</param>
+        /// <param name="orderId">ID-en til ordren.</param>
+        /// <param name="destination">Destinasjonen for varene.</param>
+        /// <param name="outgoingItems">Liste over varer som skal sendes ut.</param>
+        /// <param name="scheduledTime">Tidspunktet for planlagt utsending.</param>
+        /// <exception cref="InvalidOperationException">Kastes hvis ItemService ikke er initialisert.</exception>
+        /// <exception cref="ArgumentNullException">Kastes hvis listen over utgående varer er null.</exception>
+        /// <exception cref="ServiceException">Kastes hvis ordren allerede er planlagt eller hvis ingen varer kunne behandles på grunn av lagerbegrensninger.</exception>
+        public void WaresOut(
+            int warehouseId, 
+            int orderId, 
+            string destination, 
+            List<Item> outgoingItems, 
+            DateTime scheduledTime)
         {
 
             if (itemService == null)
@@ -52,8 +96,15 @@ namespace jechFramework.Services
                 throw new InvalidOperationException("ItemService is not initialized.");
             }
 
-            if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
-            if (scheduledWaresOuts == null) scheduledWaresOuts = new List<WaresOut>();
+            if (outgoingItems == null)
+            {
+                throw new ArgumentNullException(nameof(outgoingItems));
+            }
+
+            if (scheduledWaresOuts == null)
+            {
+                scheduledWaresOuts = new List<WaresOut>();
+            }
 
             if (scheduledWaresOuts.Any(wo => wo.orderId == orderId))
             {
@@ -65,6 +116,7 @@ namespace jechFramework.Services
             foreach (var item in outgoingItems)
             {
                 var quantityAvailable = itemService.FindItemQuantityInWarehouse(warehouseId, item.internalId);
+
                 if (quantityAvailable < item.quantity)
                 {
                     Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
@@ -94,15 +146,43 @@ namespace jechFramework.Services
             scheduledWaresOuts.Add(waresOut);
             OnWaresOutScheduledSentOut(warehouseId, orderId, scheduledTime, destination, successfullyRemovedItems, lastShipmentNumber);
         }
-        public void ScheduleWaresOut(int warehouseId, int orderId, string destination, List<Item> outgoingItems, DateTime scheduledTime, RecurrencePattern frequency)
+
+        /// <summary>
+        /// Planlegger utsending av varer med en gitt frekvens (daglig eller ukentlig).
+        /// </summary>
+        /// <param name="warehouseId">ID-en til lageret.</param>
+        /// <param name="orderId">ID-en til ordren.</param>
+        /// <param name="destination">Destinasjonen for varene.</param>
+        /// <param name="outgoingItems">Liste over varer som skal sendes ut.</param>
+        /// <param name="scheduledTime">Tidspunktet for planlagt utsending.</param>
+        /// <param name="frequency">Frekvensen for utsending (daglig eller ukentlig).</param>
+        /// <exception cref="InvalidOperationException">Kastes hvis ItemService ikke er initialisert.</exception>
+        /// <exception cref="ArgumentNullException">Kastes hvis listen over utgående varer er null.</exception>
+        /// <exception cref="ServiceException">Kastes hvis ordren allerede er planlagt eller hvis ingen varer kunne behandles på grunn av lagerbegrensninger.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Kastes hvis frekvensen for utsending er ugyldig.</exception>
+
+        public void ScheduleWaresOut(
+            int warehouseId, 
+            int orderId, 
+            string destination, 
+            List<Item> outgoingItems, 
+            DateTime scheduledTime, 
+            ScheduleType frequency)
         {
             if (itemService == null)
             {
                 throw new InvalidOperationException("ItemService is not initialized.");
             }
 
-            if (outgoingItems == null) throw new ArgumentNullException(nameof(outgoingItems));
-            if (scheduledWaresOuts == null) scheduledWaresOuts = new List<WaresOut>();
+            if (outgoingItems == null)
+            {
+                throw new ArgumentNullException(nameof(outgoingItems));
+            }
+
+            if (scheduledWaresOuts == null)
+            {
+                scheduledWaresOuts = new List<WaresOut>();
+            }
 
             if (scheduledWaresOuts.Any(wo => wo.orderId == orderId))
             {
@@ -114,6 +194,7 @@ namespace jechFramework.Services
             foreach (var item in outgoingItems)
             {
                 var quantityAvailable = itemService.FindItemQuantityInWarehouse(warehouseId, item.internalId);
+
                 if (quantityAvailable < item.quantity)
                 {
                     Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
@@ -147,10 +228,10 @@ namespace jechFramework.Services
             // Planlegg neste forekomst basert på frekvensen
             switch (frequency)
             {
-                case RecurrencePattern.Daily:
+                case ScheduleType.Daily:
                     ScheduleNextOccurrence(orderId, scheduledTime.AddDays(1));
                     break;
-                case RecurrencePattern.Weekly:
+                case ScheduleType.Weekly:
                     ScheduleNextOccurrence(orderId, scheduledTime.AddDays(7));
                     break;
                 default:
@@ -158,17 +239,37 @@ namespace jechFramework.Services
             }
         }
 
+        /// <summary>
+        /// Planlegger neste forekomst av ordreutgående varer.
+        /// </summary>
+        /// <param name="orderId">ID-en til ordren.</param>
+        /// <param name="nextScheduledTime">Tidspunktet for neste planlagte utsending.</param>
         private void ScheduleNextOccurrence(int orderId, DateTime nextScheduledTime)
         {
             // Logikk for å planlegge neste forekomst av ordreutgående varer
-            Console.WriteLine($"Next occurrence for order {orderId} scheduled at {nextScheduledTime}");
+            Console.WriteLine($"Next occurrence for order {orderId} scheduled at {nextScheduledTime}.");
             // Her kan du implementere logikken for å faktisk planlegge den neste forekomsten
         }
 
-        private void ScheduledWaresOutPrint(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Models.Item> items, int shipmentNumber)
+        /// <summary>
+        /// Skriver ut informasjon når varer er planlagt for utsending.
+        /// </summary>
+        /// <param name="warehouseId">ID-en til lageret.</param>
+        /// <param name="orderId">ID-en til ordren.</param>
+        /// <param name="scheduledTime">Tidspunktet for planlagt utsending.</param>
+        /// <param name="destination">Destinasjonen for varene.</param>
+        /// <param name="items">Liste over varer som skal sendes ut.</param>
+        /// <param name="shipmentNumber">Forsendelsesnummeret.</param>
+        private void ScheduledWaresOutPrint(
+            int warehouseId, 
+            int orderId, 
+            DateTime scheduledTime, 
+            string destination, 
+            List<Item> items, 
+            int shipmentNumber)
         {
             // Logikk for å håndtere når varer er planlagt for utsending
-            Console.WriteLine($"Wares out scheduled for warehouse {warehouseId}, order {orderId}, destination {destination}, scheduled at {scheduledTime}, shipment number {shipmentNumber}");
+            Console.WriteLine($"Wares out scheduled for warehouse {warehouseId}, order {orderId}, destination {destination}, scheduled at {scheduledTime}, shipment number {shipmentNumber}.");
         }
     }
 }

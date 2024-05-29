@@ -85,21 +85,18 @@ namespace jechFramework.Services
                     {
 
                         numberOfPallets++;
-
                     }
 
                     // Sørger for at antallet paller ikke blir negativt
                     if (numberOfPallets <= 0)
                     {
-                      
-
                         numberOfPallets = 0;
                         Console.WriteLine("No pallets removed from outgoing delivery.");
                     }
+
                     if(numberOfPallets > totalPallets) 
                     {
                         int palletQuantity = 20;
-
                         OrderPallets(palletQuantity);
                     }                
 
@@ -113,13 +110,10 @@ namespace jechFramework.Services
                 {
                     Console.WriteLine("No pallets removed from outgoing delivery.");
                 }
-
-
             }
             catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
-
             }
         }
        
