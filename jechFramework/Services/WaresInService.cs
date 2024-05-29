@@ -13,15 +13,17 @@ namespace jechFramework.Services
         private List<WaresIn> WaresIns = new List<WaresIn>();
         private ItemService itemService;
         private WarehouseService warehouseService; // Ny avhengighet
-        private WaresOutService waresOutService = new(); // Ny avhengighet
-        private PalletService palletService = new PalletService();
-        private Warehouse warehouse = new();
+        private WaresOutService waresOutService; // Ny avhengighet
+        private PalletService palletService;
+        private Warehouse warehouse;
 
 
-        public WaresInService(ItemService itemService, WarehouseService warehouseService)
+        public WaresInService(ItemService itemService, WarehouseService warehouseService, PalletService palletService)
         {
             this.itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
             this.warehouseService = warehouseService ?? throw new ArgumentNullException(nameof(warehouseService));
+            this.palletService = palletService ?? throw new ArgumentNullException(nameof(palletService));
+
         }
 
 
@@ -93,7 +95,7 @@ namespace jechFramework.Services
             }
         }
 
-        public void ScheduleWaresIn(int warehouseId, int orderId, List<Item> incomingItems, List<Pallet> palletList, DateTime scheduledTime, RecurrencePattern frequency)
+        public void ScheduleWaresIn(int warehouseId, int orderId, List<Item> incomingItems, DateTime scheduledTime, RecurrencePattern frequency)
         {
             try
             {
@@ -133,19 +135,10 @@ namespace jechFramework.Services
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
                     itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
 
-                    /*if (item.quantity > 0)
-                    {
-                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
-                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
-                        {
-                            numberOfPallets++; // Legg til en pall hvis det er en rest
-                        }
-                        for (int i = 0; i < numberOfPallets; i++)
-                        {
-                            palletService.AddPallet(palletList);
-                        }
-                    }*/
+
                 }
+
+                palletService.AddPallets(incomingItems);
 
                 // Planlegg neste forekomst basert på frekvensen
                 switch (frequency)

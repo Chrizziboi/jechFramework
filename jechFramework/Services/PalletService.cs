@@ -13,21 +13,10 @@ namespace jechFramework.Services
     public class PalletService
     {
 
-        private WarehouseService warehouseService = new();
-
-        private Warehouse warehouse = new();
-
-        private ItemService itemService;
-
-        private WaresOutService waresOutService = new();
-
-        private WaresInService waresInService;
-
         public int totalPallets = 0;
 
         public PalletService()
         {
-
 
         }
 

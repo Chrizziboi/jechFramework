@@ -11,28 +11,27 @@ namespace Program
             PalletService PService = new();
             ItemService IService = new(WService);
             ItemHistoryService IHService = new();
-            //Item Item = new();
-            WaresInService waresInService = new WaresInService(IService, WService);
-            WaresOutService waresOutService = new WaresOutService();
+            WaresInService waresInService = new(IService, WService, PService);
+            WaresOutService waresOutService = new(IService);
             PalletService palletService = new();
 
 
-          //            Subscriptions
-           WService.WarehouseCreated += Service_OnWarehouseCreated;
-           WService.WarehouseRemoved += Service_OnWarehouseRemoved;
-           WService.ZoneCreated += Service_OnZoneCreated;
-           WService.ZoneRemoved += Service_OnZoneRemoved;
-           WService.EmployeeCreated += Service_OnEmployeeCreated;
-           WService.EmployeeRemoved += Service_OnEmployeeRemoved;
-           
-           IService.ItemCreated += Service_OnItemCreated;
-           IService.ItemAdded += Service_OnItemAdded;
-           IService.ItemRemoved += Service_OnItemRemoved;
-           IService.ItemMoved += Service_OnItemMoved;
-
+            //            Subscriptions
+            WService.WarehouseCreated += Service_OnWarehouseCreated;
+            WService.WarehouseRemoved += Service_OnWarehouseRemoved;
+            WService.ZoneCreated += Service_OnZoneCreated;
+            WService.ZoneRemoved += Service_OnZoneRemoved;
+            WService.EmployeeCreated += Service_OnEmployeeCreated;
+            WService.EmployeeRemoved += Service_OnEmployeeRemoved;
+            
+            IService.ItemCreated += Service_OnItemCreated;
+            IService.ItemAdded += Service_OnItemAdded;
+            IService.ItemRemoved += Service_OnItemRemoved;
+            IService.ItemMoved += Service_OnItemMoved;
+            
             Console.WriteLine("----- Create Warehouse -----");
             WService.CreateWarehouse(1, "Testhouse", 400);
-            WService.CreateWarehouse(2, "Your mom's house", 500);
+            WService.CreateWarehouse(2, "Testhouse 2", 500);
             
             Console.WriteLine("\n----- Creating Zone -----");
             WService.CreateZone(1, 1, "Cold Zone", 50, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.ClimateControlled);
@@ -52,8 +51,6 @@ namespace Program
             IService.CreateItem(1, 1, 1, "Snickers", StorageType.ClimateControlled);
             IService.CreateItem(1, 2, 2, "Rolex", StorageType.HighValue);
 
-            //Create Pallet
-            PService.addPallet(palletService.palletList);
 
             Console.WriteLine("\n----- Add Item -----");
             IService.AddItem(1, 1, 1, DateTime.Now);
@@ -110,32 +107,13 @@ namespace Program
                 new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 31 },
                 new Item() { internalId = 7, name = "Dressing", storageType = StorageType.ClimateControlled, quantity = 40 }
             };
+
             waresInService.WaresIn(1, 1, incomingItems, DateTime.Now);
+            waresInService.ScheduleWaresIn(1, 2, incomingItems, DateTime.Now, RecurrencePattern.Weekly);
 
             Console.WriteLine("\n----- Pallets testing -----");
 
-            List<Item> shitlist = new List<Item>() {
-                new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 31 },
-                new Item() { internalId = 7, name = "Dressing", storageType = StorageType.ClimateControlled, quantity = 1 }
-            };
-
-            int totalQuantity = shitlist.Sum(x => x.quantity);
-
-            Console.WriteLine(totalQuantity);
-
             Console.WriteLine("\n----- Count Pallets -----");
-            //PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
-
-            Console.WriteLine("\n----- Wares In -----");
-            List<Item> incomingItems = new List<Item>() {
-                new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 31 },
-                new Item() { internalId = 7, name = "Dressing", storageType = StorageType.ClimateControlled }
-            };
-            //waresInService.WaresIn(1, 1, incomingItems, palletService.palletList, DateTime.Now);
-            waresInService.ScheduleWaresIn(1, 2, incomingItems, palletService.palletList, DateTime.Now, RecurrencePattern.Weekly);
-
-            //PService.countPalletInWarehouse(1, palletService.palletList, WService.warehouseList);
-
 
             Console.WriteLine("\n----- Wares Out -----");
             IService.CreateItem(1, 10, null, "Soda", StorageType.ClimateControlled);
@@ -151,8 +129,8 @@ namespace Program
                 new Item() { internalId = 11, quantity = 20 }  // Dette antallet er tilgjengelig
             };
 
-            //waresOutService.WaresOut(1, 12, "Downtown Hub", outgoingItems, DateTime.Now);
-            waresOutService.ScheduleWaresOut(1, 3, "Partytown", outgoingItems, DateTime.Now, RecurrencePattern.Weekly);
+            waresOutService.WaresOut(1, 12, "Downtown Hub", outgoingItems, DateTime.Now);
+            //waresOutService.ScheduleWaresOut(1, 3, "Partytown", outgoingItems, DateTime.Now, RecurrencePattern.Weekly);
             IService.GetItemAllInfo(1, 10); // Skal vise at Soda fortsatt har 50 enheter, ingen ble fjernet
             IService.GetItemAllInfo(1, 11); // Skal vise at Water er redusert til 10 enheter (30 - 20)
 

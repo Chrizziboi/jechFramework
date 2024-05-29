@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace jechFramework.Models
 {
-    internal class RecurringOrder
+    public class RecurringOrder
     {
         public int OrderId { get; set; }
         
@@ -17,13 +17,12 @@ namespace jechFramework.Models
             Items = new List<Item>();
         }
 
-        // ... eventuelle ekstra konstruktører og metoder ...
+        
     }
 
    public enum RecurrencePattern
    {
         Daily,
         Weekly,
-        // ... andre gjentakelsesmønstre om nødvendig ...
     }
 }

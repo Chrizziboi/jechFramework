@@ -11,10 +11,10 @@ namespace jechFramework.Services
     public class WarehouseService //Service klasse for Warehouse.cs, Employee.cs og Zone.cs
     {
 
-        private readonly Warehouse warehouseInstance = new();
-        private readonly Shelf shelfInstance = new();
-
-        private readonly WaresOutService waresOutService = new WaresOutService();
+        private readonly Warehouse warehouseInstance;
+        private readonly Shelf shelfInstance;
+        private readonly ItemService itemService;
+        private readonly WaresOutService waresOutService;
         private readonly PalletService palletService;
 
         public List<Warehouse> warehouseList = new List<Warehouse>();
