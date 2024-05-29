@@ -71,7 +71,7 @@ namespace jechFramework.Services
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
                     itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
 
-                    palletService.AddPallets(incomingItems);
+                    
 
                     // Legg til varen i den kompatible sonen
                     //itemService.AddItem(item.internalId, compatibleZone.zoneId, scheduledTime, warehouseId, item.quantity);
@@ -86,6 +86,8 @@ namespace jechFramework.Services
                     itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
                     */
                 }
+
+                palletService.AddPallets(incomingItems);
 
             }
             catch (ServiceException ex)

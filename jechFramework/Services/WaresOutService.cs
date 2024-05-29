@@ -26,9 +26,10 @@ namespace jechFramework.Services
             WaresOutScheduledSentOut?.Invoke(this, new WaresOutEventArgs(warehouseId, orderId, scheduledTime, destination, outgoingItems, lastShipmentNumber));
         }
 
-        public WaresOutService(ItemService itemService)
+        public WaresOutService(ItemService itemService, PalletService palletService)
         {
             this.itemService = itemService;
+            this.palletService = palletService ?? throw new ArgumentNullException(nameof(palletService));
         }
 
 
@@ -43,7 +44,7 @@ namespace jechFramework.Services
         /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ServiceException"></exception>
-        public void WaresOut(int warehouseId, int orderId, string destination, List<Models.Item> outgoingItems, DateTime scheduledTime)
+        public void WaresOut(int warehouseId, int orderId, string destination, List<Item> outgoingItems, DateTime scheduledTime)
         {
 
             if (itemService == null)
@@ -59,7 +60,7 @@ namespace jechFramework.Services
                 throw new ServiceException($"Wares out with orderId {orderId} is already scheduled.");
             }
 
-            List<Models.Item> successfullyRemovedItems = new List<Models.Item>();
+            List<Item> successfullyRemovedItems = new List<Item>();
 
             foreach (var item in outgoingItems)
             {
@@ -80,6 +81,8 @@ namespace jechFramework.Services
             }
 
             lastShipmentNumber++;
+            palletService.RemovePallets(outgoingItems);
+
             var waresOut = new WaresOut
             {
                 orderId = orderId,
@@ -127,6 +130,9 @@ namespace jechFramework.Services
             }
 
             lastShipmentNumber++;
+
+            palletService.RemovePallets(outgoingItems);
+
             var waresOut = new WaresOut
             {
                 orderId = orderId,

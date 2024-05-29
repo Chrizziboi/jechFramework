@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2FunctionsTester", "Functio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3CustomerWarehouse", "3_CostumerWarehouse\3CustomerWarehouse.csproj", "{EAA617E7-CC7A-43A2-9CCE-A1910DFE97D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4Delinnlevering4", "4Delinnlevering4\4Delinnlevering4.csproj", "{25FA7CF9-3D8B-48C7-BC6C-C9BF4B9E39CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4Delinnlevering4", "4Delinnlevering4\4Delinnlevering4.csproj", "{25FA7CF9-3D8B-48C7-BC6C-C9BF4B9E39CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5PalletBallet", "PalletBallets\5PalletBallet.csproj", "{0B88889A-50CA-41DB-BC9D-619A4F0A4283}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{25FA7CF9-3D8B-48C7-BC6C-C9BF4B9E39CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{25FA7CF9-3D8B-48C7-BC6C-C9BF4B9E39CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25FA7CF9-3D8B-48C7-BC6C-C9BF4B9E39CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B88889A-50CA-41DB-BC9D-619A4F0A4283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B88889A-50CA-41DB-BC9D-619A4F0A4283}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B88889A-50CA-41DB-BC9D-619A4F0A4283}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B88889A-50CA-41DB-BC9D-619A4F0A4283}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
