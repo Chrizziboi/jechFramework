@@ -16,6 +16,9 @@ namespace jechFramework.Models
         public int zoneId { get; set; }
         public List<Item> incomingItems { get; set; }
 
+        /// <summary>
+        /// Initialiserer en ny instans av WaresIn-klassen uten parametere.
+        /// </summary>
         public WaresIn()
         {
 
@@ -35,9 +38,7 @@ namespace jechFramework.Models
             this.zoneId = zoneId;
             this.incomingItems = incomingItems;
         }
-        /// <summary>
-        /// Initialiserer en ny instans av WaresIn-klassen uten parametere.
-        /// </summary>
+
 
     }
 }

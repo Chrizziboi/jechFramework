@@ -13,187 +13,106 @@ namespace jechFramework.Services
     public class PalletService
     {
 
-        //var warehouseServiceInstance = new WarehouseService();
-        //var shelfInstance = new Shelf();
+        private WarehouseService warehouseService = new();
 
-        private readonly WarehouseService warehouseServiceInstance = new();
+        private Warehouse warehouse = new();
 
-        private readonly Warehouse warehouseInstance = new();
+        private ItemService itemService;
 
-        private readonly WaresOutService WaresOutServiceInstance = new();
+        private WaresOutService waresOutService = new();
 
-        public List<Pallet> palletList = new();
+        private WaresInService waresInService;
 
-        private readonly PalletService palletService;
+        public int totalPallets = 0;
 
-        public List<Pallet> GetPallets()
+        public PalletService()
         {
-            return palletList;
+
+
         }
 
-        /// <summary>
-        /// Metoden for å fjerne en palle fra palleList
-        /// </summary>
-        /// <param name="palletList">Liste over pallet</param>
-        public void addPallet(List<Pallet> palletList)
+        public void AddPallets(List<Item> incomingItems) 
         {
             try
-            { 
-                if(palletList == null)
+            {
+                
+                int totalQuantity = incomingItems.Sum(item => item.quantity);
+
+                if (totalQuantity > 0)
                 {
-                    throw new ServiceException($"palletList not found or does not exist");
+                    int numberOfPallets = totalQuantity / 30; // Beregner antallet paller
+
+                    if (totalQuantity % 30 != 0) // Sjekker om det er en rest etter deling
+                    {
+
+                        numberOfPallets++;
+
+                        Console.WriteLine($"Added {numberOfPallets} pallets to Warehouse.");
+                        Console.WriteLine($"Current total pallets: {totalPallets}.");
+                       
+                    }
+
+                        totalPallets += numberOfPallets;
+                    
                 }
 
-                Pallet newPallet = new Pallet();
-                palletList.Add(newPallet);
+                else 
+                {   
+                    Console.WriteLine("No new pallets from incoming delivery.");
+                }
+
+                    
             }
-            catch (Exception ex)
+            catch (ServiceException ex) 
             {
                 Console.WriteLine(ex.Message);
+                
             }
+            
         }
 
-
-        /// <summary>
-        /// Meotden for å fjerne en palle fra palleList
-        /// </summary>
-        /// <param name="palletList">Liste over paller</param>
-        public void removePallet(List<Pallet> palletList)
-        {
+       public void RemovePallets(List<Item> outgoingItems)
+       {
             try
             {
-                if (palletList == null)
+
+                int totalQuantity = outgoingItems.Sum(item => item.quantity);
+
+                if (totalQuantity > 0)
                 {
-                    //håndtere tilfelle det palletList er null
-                    throw new ServiceException($"palletList not found or does not exist");
+                    int numberOfPallets = totalQuantity / 30; // Beregner antallet paller
+
+                    if (totalQuantity % 30 != 0) // Sjekker om det er en rest etter deling
+                    {
+
+                        numberOfPallets--;
+
+                        Console.WriteLine($"Removed {numberOfPallets} pallets from Warehouse.");
+                        Console.WriteLine($"Current total pallets: {totalPallets}.");
+
+                    }
+
+                    totalPallets -= numberOfPallets;
+
                 }
 
-                if (palletList.Any())
-                {
-                    Pallet palletToRemove = palletList.First();
-                    palletList.Remove(palletToRemove);
-                }
                 else
                 {
-                    throw new ServiceException($"PalletList is empty");
+                    Console.WriteLine("No pallets removed from outgoing delivery.");
                 }
+
+
             }
             catch (ServiceException ex)
             {
                 Console.WriteLine(ex.Message);
+
             }
         }
-
-        //private int lastPalletId = 0;
-        //
-        //public void AddPallet(int warehouseId, int internalId)
-        //{
-        //    lastPalletId++;
-        //  
-        //    string internalIdString = internalId.ToString();
-        //    string warehouseIdString = warehouseId.ToString();
-        //    string zoneIdString = "5";
-        //
-        //    string combinedIdString = warehouseIdString + zoneIdString + lastPalletId.ToString() + internalIdString;
-        //
-        //    int combinedId = int.Parse(combinedIdString);
-        //
-        //    Pallet newPallet = new Pallet
-        //    {
-        //        internalPalletId = combinedId
-        //    };
-        //
-        //    shelfInstance.palletList.Add(newPallet);
-        //}
-        // internalPalletId + Item.internalId
-        //private static List<Pallet> palletList = new List<Pallet>();
-        //
-        // int x = 5;
-        // int y = 10;
-        // int sum;
-        // sum = Convert.ToInt32("" + x + y);
-        //
-        /// <summary>
-        ///  en funksjon for å kunne kalkulere hvor mye en pall vil veie uten at man skulle trenge å veie hver pall.
-        ///  det er en forventing til hva slags pall som skal brukes, denne forventningen er satt til europaller som veier fra 20 til 25 kilo.
-        ///  det er derfor vi setter 25 før kalkulasjonen.
-        /// </summary>
-        /// <returns></returns>
-        //public int CalculateWeightForPallet(int internalPalletId)
-        //{
-        //    int totalWeight = 25;
-        //
-        //    var shelf = 
-        //
-        //    var pallet = shelfInstance.palletList.FirstOrDefault(pallet => pallet.internalPalletId == internalPalletId);
-        //
-        //    if (pallet != null)
-        //    {
-        //        foreach (var item in pallet.itemList)
-        //        {
-        //            totalWeight += item.weight;
-        //        }
-        //                                       
-        //    }
-        //       
-        //
-        //    
-        //    return totalWeight;
-        //}
-        //
-        //public void MovePalletToLocation(int internalPalletId, string newLocation)
-        //{
-        //    var pallet = shelfInstance.palletList.FirstOrDefault(pallet => pallet.internalPalletId == internalPalletId);
-        //
-        //    if (internalPalletId != null)
-        //    {
-        //        pallet.palletLocation = newLocation;
-        //
-        //    }
-        //
-        //}
-        //
-
-  
-        /*
-        public int countPalletInWarehouse(int warehouseId)
-        {
-            //var warehouse = WarehouseService.warehouseList.FirstOrDefault(Warehouse => Warehouse.warehouseId == warehouseId);
-
-            try
-            {
-                var warehouse = warehouseServiceInstance.FindWarehouseInWarehouseListWithPrint(warehouseId, false);
-                if (warehouse == null)
-                {
-                    throw new ServiceException($"Warehouse with ID {warehouseId} not found in warehouseList.");
-                    //return -1;
-                }
-
-                var palletList = palletService.GetPallets();
-                int palletCount = palletList.Count(p => p. == warehouseId);
-
-                return palletCount;
-
-
-                /*
-                if (warehouseList.Any(w => w.warehouseId == warehouseId))
-                {
-                    var warehouse = warehouseList.FirstOrDefault(w => w.warehouseId == warehouseId);
-                    //var zone = warehouseInstance.zoneList;
-                    //var shelf = shelfInstance.palletList;
-                
-                   
-                    int palletCount = palletList.Count;
-                    Console.WriteLine($"Number of pallets in warehouse: {palletCount}");
-                    return palletCount;
-                }
-                
-            }
-            catch (ServiceException ex)
-            {
-                throw new ServiceException($"Warehouse with Id {warehouseId} not found in warehouseList");
-                return -1;
-            }
-        }*/
-        }
-    }
+       
+       //public int CountPallets()
+       //{
+       //
+       //}
+    }  //
+}

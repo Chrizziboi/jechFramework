@@ -26,7 +26,7 @@ namespace jechFramework.Services
 
 
 
-        public void WaresIn(int warehouseId, int orderId, List<Item> incomingItems, List<Pallet> palletList, DateTime scheduledTime)
+        public void WaresIn(int warehouseId, int orderId, List<Item> incomingItems, DateTime scheduledTime)
 
         {
             try
@@ -52,6 +52,8 @@ namespace jechFramework.Services
                         }
                     }
 
+                    
+
                     if (compatibleZone == null)
                     {
                         Console.WriteLine($"No compatible zone found for item {item.internalId} with storage type {item.storageType}.");
@@ -67,22 +69,11 @@ namespace jechFramework.Services
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
                     itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
 
-                    if (item.quantity > 0)
-                    {
-                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
-                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
-                        {
-                            numberOfPallets++; // Legg til en pall hvis det er en rest
-                        }
-                        for (int i = 0; i < numberOfPallets; i++)
-                        {
-                            palletService.addPallet(palletList);
-                        }
-                    }
+                    palletService.AddPallets(incomingItems);
 
                     // Legg til varen i den kompatible sonen
                     //itemService.AddItem(item.internalId, compatibleZone.zoneId, scheduledTime, warehouseId, item.quantity);
-                
+
                     /*
                     if (!itemService.ItemExists(warehouseId, item.internalId))
                     {
@@ -91,19 +82,7 @@ namespace jechFramework.Services
                     var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
                     itemService.AddItem(item.internalId, itemZoneId, DateTime.Now, warehouseId); // Legger til item med spesifikk warehouseId
-
-                    if (item.quantity > 0)
-                    {
-                        int numberOfPallets = item.quantity / 30; // Beregner antallet paller
-                        if (item.quantity % 30 != 0) // Sjekk om det er en rest etter deling
-                        {
-                            numberOfPallets++; // Legg til en pall hvis det er en rest
-                        }
-                        for (int i = 0; i < numberOfPallets; i++)
-                        {
-                            palletService.addPallet(waresOutService.palletList);
-                        }
-                    }*/
+                    */
                 }
 
             }

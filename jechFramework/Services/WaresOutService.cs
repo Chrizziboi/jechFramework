@@ -8,14 +8,12 @@ namespace jechFramework.Services
     public class WaresOutService
     {
         private List<WaresOut> scheduledWaresOuts = new List<WaresOut>();
-        private readonly ItemService itemService; // Assuming there is an ItemService to handle items in the warehouse
-        private readonly WarehouseService warehouseService; // Ny avhengighet
-        private readonly Shelf shelf = new(); // Ny avhengighet
-        private readonly PalletService palletService;
+        private ItemService itemService; 
+        private WarehouseService warehouseService; 
+        private Shelf shelf = new(); 
+        private PalletService palletService;
 
         public int lastShipmentNumber = 0;
-
-
 
         public delegate void WaresOutScheduledEventHandler(int warehouseId, int orderId, DateTime scheduledTime, string destination, List<Item> outgoingItems, int lastShipmentNumber);
 
@@ -26,13 +24,17 @@ namespace jechFramework.Services
             WaresOutScheduledSentOut?.Invoke(this, new WaresOutEventArgs(warehouseId, orderId, scheduledTime, destination, outgoingItems, lastShipmentNumber));
         }
 
+
         public WaresOutService()
         { }
 
         // Constructor to inject ItemService
         public WaresOutService(ItemService itemService)
+
         {
-            this.itemService = itemService;
+            this.itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
+            this.warehouseService = warehouseService ?? throw new ArgumentNullException(nameof(warehouseService));
+            this.palletService = palletService ?? throw new ArgumentNullException(nameof(palletService));
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace jechFramework.Services
         /// <param name="outgoingItems">En liste over Item-objekter som representerer de utgående varene.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ServiceException"></exception>
-        public void WaresOut(int warehouseId, int orderId, string destination, List<Models.Item> outgoingItems, DateTime scheduledTime)
+        public void WaresOut(int warehouseId, int orderId, string destination, List<Item> outgoingItems, DateTime scheduledTime)
         {
 
             if (itemService == null)
@@ -62,7 +64,7 @@ namespace jechFramework.Services
                 throw new ServiceException($"Wares out with orderId {orderId} is already scheduled.");
             }
 
-            List<Models.Item> successfullyRemovedItems = new List<Models.Item>();
+            List<Item> successfullyRemovedItems = new List<Item>();
 
             foreach (var item in outgoingItems)
             {
@@ -70,19 +72,21 @@ namespace jechFramework.Services
                 if (quantityAvailable < item.quantity)
                 {
                     Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
-                    continue; // Skip this item but continue with others
+                    continue; 
                 }
 
                 itemService.RemoveItem(warehouseId, item.internalId, item.quantity);
-                successfullyRemovedItems.Add(item); // Track successfully processed items
+                successfullyRemovedItems.Add(item); 
             }
 
             if (!successfullyRemovedItems.Any())
             {
                 throw new ServiceException("No items could be processed for this order due to stock limitations.");
             }
+            palletService.RemovePallets(successfullyRemovedItems);
 
             lastShipmentNumber++;
+
             var waresOut = new WaresOut
             {
                 orderId = orderId,
