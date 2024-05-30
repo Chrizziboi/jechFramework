@@ -17,18 +17,21 @@ public class ItemHistoryService
     public static string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ItemMovements.log");
     private WarehouseService warehouseService = new();
 
-
     /// <summary>
     /// Tom konstruktør for å gjøre kobling mellom klasser enklere.
     /// </summary>
     public ItemHistoryService()
     {
+
     }
 
-
+    /// <summary>
+    /// Sørger for at loggfilen eksisterer, og oppretter den hvis den ikke gjør det.
+    /// </summary>
     public static void EnsureLogfileExists()
     {
-        Console.WriteLine("Checking log file at: " + logFilePath);
+        Console.WriteLine("Checking log file at: " + logFilePath + ".");
+        
         if (!File.Exists(logFilePath))
         {
             using (var stream = File.Create(logFilePath))
@@ -36,7 +39,7 @@ public class ItemHistoryService
                 // Kun opprette filen, ingen skriving av tekst som "Log File Created"
                 stream.Close(); // Lukker strømmen etter opprettelse
             }
-            Console.WriteLine("Log file created: " + logFilePath);
+            Console.WriteLine("Log file created: " + logFilePath + ".");
         }
         else
         {
@@ -44,8 +47,6 @@ public class ItemHistoryService
         }
     }
 
-
-    // Oppdaterer for å lese loggfilen med den nye strukturen
     /// <summary>
     /// Oppdaterer historikken ved å lese loggfilen med den nye strukturen.
     /// </summary>
@@ -54,9 +55,10 @@ public class ItemHistoryService
         try
         {
             itemHistoryList.Clear();
+            
             if (!File.Exists(logFilePath))
             {
-                Console.WriteLine($"Log file not found: {logFilePath}");
+                Console.WriteLine($"Log file not found: {logFilePath}.");
                 return;
             }
 
@@ -64,6 +66,7 @@ public class ItemHistoryService
             foreach (var entry in logEntries)
             {
                 var fields = entry.Split(',');
+                
                 if (fields.Length == 4 && fields[0].All(char.IsDigit)) // Sjekker om første felt er et tall
                 {
                     try
@@ -76,18 +79,16 @@ public class ItemHistoryService
                     }
                     catch (FormatException ex)
                     {
-                        Console.WriteLine($"Unable to parse log entry: {entry}. Error: {ex.Message}");
+                        Console.WriteLine($"Unable to parse log entry: {entry}. Error: {ex.Message}.");
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error reading from log file: {ex.Message}");
+            Console.WriteLine($"Error reading from log file: {ex.Message}.");
         }
     }
-
-
 
     /// <summary>
     /// Funksjon for å hente en liste over alle elementhistorier.
@@ -99,6 +100,12 @@ public class ItemHistoryService
         return itemHistoryList;
     }
 
+    /// <summary>
+    /// Henter elementhistorie basert på intern ID for et gitt lager.
+    /// </summary>
+    /// <param name="warehouseId">ID for lageret.</param>
+    /// <param name="internalId">Intern ID for varen.</param>
+    /// <returns>En liste over elementhistorier for den gitte varen.</returns>
     public List<ItemHistory> GetItemHistoryById(int warehouseId, int internalId)
     {
         List<ItemHistory> results = new List<ItemHistory>();
@@ -133,15 +140,12 @@ public class ItemHistoryService
         }
         catch (Exception ex) // Endret til Exception for å fange alle typer unntak, ikke bare ServiceException
         {
-            Console.WriteLine($"An error occurred while retrieving item history for internal ID {internalId}: {ex.Message}");
+            Console.WriteLine($"An error occurred while retrieving item history for internal ID {internalId}: {ex.Message}.");
         }
 
         // Returnerer listen av historikkobjekter, som nå kan være tom eller fylt basert på funnene
         return results;
     }
-
-
-
 
     /// <summary>
     /// Tømmer historikkloggen ved å slette loggfilen hvis den eksisterer.

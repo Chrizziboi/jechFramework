@@ -3,27 +3,46 @@ using System.Collections.Generic;
 
 namespace jechFramework.Models
 {
+    /// <summary>
+    /// Representerer en utgående ordre fra lageret.
+    /// </summary>
     internal class WaresOut
     {
-        // Egenskaper for WaresOut modellen
+        /// <summary>
+        /// Henter eller setter ordre-ID-en for den utgående ordren.
+        /// </summary>
         public int orderId { get; set; }
+
+        /// <summary>
+        /// Henter eller setter det planlagte tidspunktet for den utgående ordren.
+        /// </summary>
         public DateTime scheduledTime { get; set; }
+
+        /// <summary>
+        /// Henter eller setter destinasjonen for den utgående ordren.
+        /// </summary>
         public string destination { get; set; }
+
+        /// <summary>
+        /// Henter eller setter listen over varer for den utgående ordren.
+        /// </summary>
         public List<Item> items { get; set; }
 
+        /// <summary>
+        /// Initialiserer en ny instans av <see cref="WaresOut"/>-klassen.
+        /// </summary>
         public WaresOut()
         {
 
         }
 
         /// <summary>
-        /// Det er en konstruktør for "WaresOut"-klassen: 
-        /// En konstruktør som tar fire parametere for å initialisere egenskapene "OrderId", "ScheduledTime", "Destination" og "Items".
+        /// Initialiserer en ny instans av <see cref="WaresOut"/>-klassen med spesifiserte parametere.
         /// </summary>
-        /// <param name="orderId"> Dette er en ordreId for ordre som skal ut fra et lager</param>
-        /// <param name="scheduledTime"> Dette er noe som sier når en ordre skal ut av et lager</param>
-        /// <param name="destination"> Dette er hvilken kunde ordren skal til</param>
-        /// <param name="items"> Dette er en liste med alle gjenstander som skal ut med en gitt ordre</param> <summary>
+        /// <param name="orderId">Ordre-ID-en for ordren som skal ut fra lageret.</param>
+        /// <param name="scheduledTime">Det planlagte tidspunktet for når ordren skal ut fra lageret.</param>
+        /// <param name="destination">Destinasjonen som ordren skal til.</param>
+        /// <param name="items">Listen over alle varer som skal ut med den gitte ordren.</param>
         public WaresOut(int orderId, DateTime scheduledTime, string destination, List<Item> items)
         {
             this.orderId = orderId;
@@ -31,11 +50,5 @@ namespace jechFramework.Models
             this.destination = destination;
             this.items = items;
         }
-        /// <summary>
-        /// En standardkonstruktør uten parametere som ikke utfører noen spesifikk handling.
-        /// Dette er for å kunne bruke waresout objekter i andre filer.
-        /// </summary>
-         
-
     }
 }

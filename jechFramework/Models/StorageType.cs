@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
+    /// <summary>
+    /// enumer for bevaringsstørrelser.
+    /// </summary>
     public enum StorageType
     {
         None = 0,
@@ -14,7 +17,7 @@ namespace jechFramework.Models
         Large = 3,
         Standard = 4,
         ClimateControlled = 5,
-        HighValue = 6
+        HighValue = 6,
 
     }
 }
