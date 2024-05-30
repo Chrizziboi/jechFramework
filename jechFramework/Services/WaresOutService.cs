@@ -119,7 +119,7 @@ namespace jechFramework.Services
 
                 if (quantityAvailable < item.quantity)
                 {
-                    Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
+                    throw new ServiceException($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
                     continue; // Skip this item but continue with others
                 }
 
@@ -197,7 +197,7 @@ namespace jechFramework.Services
 
                 if (quantityAvailable < item.quantity)
                 {
-                    Console.WriteLine($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
+                    throw new ServiceException($"Not enough stock for item {item.internalId}. Needed: {item.quantity}, Available: {quantityAvailable}.");
                     continue; // Skip this item but continue with others
                 }
 

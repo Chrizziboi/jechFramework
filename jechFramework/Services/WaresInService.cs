@@ -44,9 +44,9 @@ namespace jechFramework.Services
         /// <exception cref="ServiceException">Kastes når det oppstår en tjenesterelatert feil.</exception>
         /// <exception cref="ArgumentNullException">Kastes når outgoingItems er null.</exception>
         public void WaresIn(
-            int warehouseId, 
-            int orderId, 
-            List<Item> incomingItems, 
+            int warehouseId,
+            int orderId,
+            List<Item> incomingItems,
             DateTime scheduledTime)
         {
             try
@@ -85,8 +85,7 @@ namespace jechFramework.Services
 
                     if (compatibleZone == null)
                     {
-                        Console.WriteLine($"No compatible zone found for item {item.internalId} with storage type {item.storageType}.");
-                        continue; // Går til neste item hvis ingen kompatibel sone ble funnet
+                        throw new ServiceException($"No compatible zone found for item {item.internalId} with storage type {item.storageType}.");
                     }
 
                     // Oppretter varen i lageret hvis den ikke eksisterer
@@ -98,7 +97,6 @@ namespace jechFramework.Services
                     var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
                     itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
-
                 }
 
                 palletService.AddPallets(incomingItems);
@@ -107,7 +105,7 @@ namespace jechFramework.Services
             catch (ServiceException ex)
             {
                 Console.WriteLine($"Failed to process WaresIn: {ex.Message}");
-                // Håndterer feilen på en måte som tillater at simulasjonen fortsetter, for eksempel logg feilen
+                throw; // Kaster unntaket på nytt for å sikre at det blir håndtert høyere opp hvis nødvendig
             }
         }
 
@@ -122,10 +120,10 @@ namespace jechFramework.Services
         /// <exception cref="ServiceException">Kastes når det oppstår en tjenesterelatert feil.</exception>
         /// <exception cref="ArgumentNullException">Kastes når incomingItems er null.</exception>
         public void ScheduleWaresIn(
-            int warehouseId, 
-            int orderId, 
-            List<Item> incomingItems, 
-            DateTime scheduledTime, 
+            int warehouseId,
+            int orderId,
+            List<Item> incomingItems,
+            DateTime scheduledTime,
             ScheduleType frequency)
         {
             try
@@ -164,8 +162,7 @@ namespace jechFramework.Services
 
                     if (compatibleZone == null)
                     {
-                        Console.WriteLine($"No compatible zone found for item {item.internalId} with storage type {item.storageType}.");
-                        continue; // Går til neste item hvis ingen kompatibel sone ble funnet
+                        throw new ServiceException($"No compatible zone found for item {item.internalId} with storage type {item.storageType}.");
                     }
 
                     // Oppretter varen i lageret hvis den ikke eksisterer
@@ -177,8 +174,6 @@ namespace jechFramework.Services
                     var existingZoneId = itemService.GetLocationByInternalId(warehouseId, item.internalId);
                     var itemZoneId = existingZoneId ?? compatibleZone.zoneId;
                     itemService.AddItem(warehouseId, compatibleZone.zoneId, item.internalId, scheduledTime, item.quantity); // Legger til item med spesifikk warehouseId
-
-
                 }
 
                 palletService.AddPallets(incomingItems);
@@ -199,10 +194,10 @@ namespace jechFramework.Services
             catch (ServiceException ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
+                throw; // Kaster unntaket på nytt for å sikre at det blir håndtert høyere opp hvis nødvendig
             }
-            
-            
         }
+
 
         /// <summary>
         /// Planlegger neste forekomst av innkommende varer basert på ordreID og tidspunkt.
