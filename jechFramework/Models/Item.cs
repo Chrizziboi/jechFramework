@@ -78,12 +78,12 @@ namespace jechFramework.Models
         /// <param name="externalId">Ekstern ID for leverandørens produkt ID.</param>
         /// <param name="name">Navn på varen.</param>
         /// <param name="type">Type av varen, for eksempel mikroklut kontra vanlig klut.</param>
-        public Item(int internalId, int externalId, string name, string type)
+        public Item(int internalId, int externalId, string name, StorageType storageType)
         {
             this.internalId = internalId;
             this.externalId = externalId;
             this.name = name;
-            this.type = type;
+            this.storageType = storageType;
         }
 
         /// <summary>

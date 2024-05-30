@@ -267,7 +267,7 @@ namespace jechFramework.Services
                     throw new ServiceException($"New zone {newZone} not found.");
                 }
 
-                if (!CheckItemAndZoneCompatibility(item, newZoneObj))
+                if (!warehouseService.IsStorageTypeCompatible(newZoneObj,item))
                 {
                     Console.WriteLine($"Incompatible item {item.name} (ID: {internalId}) for new zone {newZoneObj.zoneName}.");
                     return;
@@ -289,31 +289,6 @@ namespace jechFramework.Services
             }
         }
 
-        /// <summary>
-        /// Funksjon for å sjekke om sonene er kompatible med hverandre, altså storageType passer.
-        /// </summary>
-        /// <param name="item">Gjeldene Item-objekt.</param>
-        /// <param name="availableZone">Gjeldene sone.</param>
-        /// <returns>Returnerer true hvis kompatibel, ellers false.</returns>
-        public bool CheckItemAndZoneCompatibility(Item item, Zone availableZone)
-        {
-            if (availableZone.zonePacketList == null || availableZone.zonePacketList.Count == 0)
-            {
-                Console.WriteLine($"Zone {availableZone.zoneId} has no defined storage types. Defined types are required for compatibility check.");
-                return false;
-            }
-
-            Console.WriteLine($"Checking compatibility for item {item.internalId} with type {item.storageType} against zone {availableZone.zoneId} with types {String.Join(", ", availableZone.zonePacketList)}.");
-            var compatibility = availableZone.zonePacketList.Contains(item.storageType);
-            
-            if (!compatibility)
-            {
-                Console.WriteLine($"Incompatible storage type. Item {item.internalId} with type {item.storageType} cannot be placed in zone {availableZone.zoneId} with types {String.Join(", ", availableZone.zonePacketList)}.");
-                return false;
-            }
-
-            return true;
-        }
 
         /// <summary>
         /// Funksjon for å få tak i all Item-objekt informasjon for en gitt Item.

@@ -8,12 +8,12 @@
 
     <PackageId>jechFrameworkNugget</PackageId>
     <Title>jechFramework 1</Title>
-    <Version>1.0.4</Version>
+    <Version>1.0.6</Version>
 
     <Authors>JECH</Authors>
     <Company>JECH</Company>
     <Product>jechFramework</Product>
-    <PackageIcon>JECH_logo.png</PackageIcon>
+    <PackageIcon></PackageIcon>
     <RepositoryUrl>https://github.com/Chrizziboi/jechFramework</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NeutralLanguage>en</NeutralLanguage>
@@ -34,13 +34,6 @@
 
   <ItemGroup>
     <None Remove="Models\NewFile1.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\..\..\Documents\JECH_logo.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

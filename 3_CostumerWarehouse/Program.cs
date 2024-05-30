@@ -12,8 +12,8 @@ namespace Program
             ItemService IService = new(WService);
             ItemHistoryService IHService = new();
             //Item Item = new();
-            WaresInService waresInService = new WaresInService(IService, WService);
-            WaresOutService waresOutService = new WaresOutService();
+            WaresInService waresInService = new WaresInService(IService, WService, PService);
+            WaresOutService waresOutService = new WaresOutService(IService, PService);
 
             PalletService palletService = new();
 
@@ -73,12 +73,13 @@ namespace Program
             WService.CreateZoneWithMultipleType(1, 4, "Small Item Shelving", 30, TimeSpan.FromSeconds(110), TimeSpan.FromSeconds(70), zoneStorageTypes);
             WService.CreateZone(1, 5, "Packing/Stacking", 150, TimeSpan.FromSeconds(50), TimeSpan.FromSeconds(50), StorageType.None);
             WService.CreateZone(1, 6, "High Value Goods2", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
+            Zone zone1 = new Zone(7, "High Value Goods2", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
 
             Console.WriteLine("\n----- Get All Zones in Warehouse -----");
             //WService.GetAllWarehouses();
             WService.GetAllZonesInWarehouse(1);
             WService.FindZoneById(1,1);
-            /*
+            
             Console.WriteLine("\n----- Adding Shelf to Zone -----");
             //Shelf newShelf = new Shelf(200, 40, 100, 2);
             WService.AddShelfToZone(1,1, 200, 40, 100);
@@ -121,7 +122,7 @@ namespace Program
             WService.GetAllShelvesInZone(1, 2);
             WService.GetAllShelvesInZone(1, 3);
             WService.GetAllShelvesInZone(1, 4);
-            
+            */
 
 
             Console.WriteLine("\n----- Create Item -----");
@@ -131,7 +132,10 @@ namespace Program
             IService.AddItem(1,1, 1, DateTime.Now, 101);
             IService.AddItem(1,1, 1, DateTime.Now, 1);
             IService.AddItem(1,1, 2, DateTime.Now,  1);
+            IService.AddItem(1, 2, 1, DateTime.Now, 1);
+            Item item1 = new Item(8, 1, "Ball'o'Cheese", StorageType.HighValue);
 
+            //Console.WriteLine(IService.CheckItemAndZoneCompatibility(item1,zone1));
             Console.WriteLine("\n----- Get all info on Items in Warehouse -----");
             Console.WriteLine(IService.GetItemAllInfo(1, 1));
             IService.GetItemAllInfo(1, 2);
@@ -161,11 +165,12 @@ namespace Program
             IService.CreateItem(1, 5, null, "Pizza", StorageType.ClimateControlled);
             IService.CreateItem(1, 6, null, "Cola", StorageType.ClimateControlled);
 
+
             List<Item> incomingItems = new List<Item>() {
                 new Item() { internalId = 8, name = "Cheese", storageType = StorageType.ClimateControlled, quantity = 31 },
                 new Item() { internalId = 7, name = "Dressing", storageType = StorageType.Standard }
             };
-
+            /*
             Console.WriteLine("\n----- Wares In -----");
 
             waresInService.WaresIn(1, 1, incomingItems, palletService.palletList, DateTime.Now);
