@@ -268,12 +268,12 @@ namespace jechFramework.Services
         /// <param name="zonePacketList">Liste over lagringstyper for sonen.</param>
         /// <exception cref="ServiceException">Kastes hvis det oppstår en feil ved opprettelse av sonen.</exception>
         public void CreateZoneWithMultipleType(
-            int warehouseId, 
-            int zoneId, 
-            string zoneName, 
-            int zoneCapacity, 
-            TimeSpan itemPlacementTime, 
-            TimeSpan itemRetrievalTime, 
+            int warehouseId,
+            int zoneId,
+            string zoneName,
+            int zoneCapacity,
+            TimeSpan itemPlacementTime,
+            TimeSpan itemRetrievalTime,
             List<StorageType> zonePacketList)
         {
             try
@@ -302,16 +302,12 @@ namespace jechFramework.Services
                     throw new ServiceException("Zone must have at least one storage type defined.");
                 }
 
-                Zone newZone = new Zone
-                {
-                    zoneId = zoneId,
-                    zoneName = zoneName,
-                    shelfCapacity = zoneCapacity,
-                    itemPlacementTime = itemPlacementTime,
-                    itemRetrievalTime = itemRetrievalTime,
-                    zonePacketList = zonePacketList // Bruker listen som er gitt
-                };
+                Zone newZone = new Zone(zoneId, zoneName, zoneCapacity, itemPlacementTime, itemRetrievalTime, zonePacketList);
                 warehouse.zoneList.Add(newZone);
+
+                // Print the storage types for verification
+                Console.WriteLine($"Zone Created: {zoneName} and ID: {zoneId} with Storage Types: {string.Join(", ", zonePacketList)}");
+
                 OnZoneCreated(warehouse, newZone);
             }
             catch (ServiceException ex)
@@ -319,6 +315,8 @@ namespace jechFramework.Services
                 Console.WriteLine(ex.Message);
             }
         }
+
+
 
         /// <summary>
         /// Fjerner en sone fra et varehus.
@@ -401,7 +399,7 @@ namespace jechFramework.Services
             try
             {
                 var warehouse = warehouseList.FirstOrDefault(warehouse => warehouse.warehouseId == warehouseId);
-                
+
                 if (warehouse == null)
                 {
                     throw new ServiceException($"Warehouse with id: {warehouseId} does not exist.");
@@ -417,7 +415,7 @@ namespace jechFramework.Services
                 Console.WriteLine($"Zones in Warehouse {warehouse.warehouseName}:");
                 foreach (var zone in warehouse.zoneList)
                 {
-                    Console.WriteLine($"Zone ID: {zone.zoneId}, Name: {zone.zoneName}, Capacity: {zone.shelfCapacity}, Placement Time: {zone.itemPlacementTime.TotalSeconds}s, Retrieval Time: {zone.itemRetrievalTime.TotalSeconds}s, Storage Type: {zone.storageType}.");
+                    Console.WriteLine(zone.ToString());
                 }
 
                 return warehouse.zoneList; // Returnerer listen av soner

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace jechFramework.Models
 {
@@ -54,7 +52,7 @@ namespace jechFramework.Models
         /// <summary>
         /// Henter eller setter listen over reoler i sonen.
         /// </summary>
-        public List<Shelf> shelves { get; set; }
+        public List<Shelf> shelves { get; set; } = new List<Shelf>();
 
         /// <summary>
         /// Henter eller setter listen over lagringstyper som er tillatt i sonen.
@@ -66,82 +64,6 @@ namespace jechFramework.Models
         /// </summary>
         public Zone()
         {
-            shelves = new List<Shelf>();
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av <see cref="Zone"/>-klassen med spesifiserte parametere.
-        /// </summary>
-        /// <param name="zoneId">ID-en til sonen.</param>
-        /// <param name="zoneName">Navnet til sonen.</param>
-        /// <param name="zoneCapacity">Reolkapasiteten til sonen.</param>
-        /// <param name="zonePacketList">Listen over lagringstyper som er tillatt i sonen.</param>
-        public Zone(int zoneId, string zoneName, int zoneCapacity, List<StorageType> zonePacketList)
-        {
-            this.zoneId = zoneId;
-            this.zoneName = zoneName;
-            this.shelfCapacity = zoneCapacity;
-            this.zonePacketList = zonePacketList;
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av <see cref="Zone"/>-klassen med spesifiserte parametere.
-        /// </summary>
-        /// <param name="zoneId">ID-en til sonen.</param>
-        /// <param name="zoneName">Navnet til sonen.</param>
-        /// <param name="zoneCapacity">Reolkapasiteten til sonen.</param>
-        /// <param name="storageType">Lagringstypen til sonen.</param>
-        public Zone(int zoneId, string zoneName, int zoneCapacity, StorageType storageType)
-        {
-            this.zoneId = zoneId;
-            this.zoneName = zoneName;
-            this.shelfCapacity = zoneCapacity;
-            this.storageType = storageType;
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av <see cref="Zone"/>-klassen med spesifiserte parametere.
-        /// </summary>
-        /// <param name="zoneId">ID-en til sonen.</param>
-        /// <param name="zoneName">Navnet til sonen.</param>
-        /// <param name="zoneDescription">Beskrivelsen av sonen.</param>
-        /// <param name="zoneCapacity">Reolkapasiteten til sonen.</param>
-        /// <param name="storageType">Lagringstypen til sonen.</param>
-        public Zone(int zoneId, string zoneName, string zoneDescription, int zoneCapacity, StorageType storageType)
-        {
-            this.zoneId = zoneId;
-            this.zoneName = zoneName;
-            this.zoneDescription = zoneDescription;
-            this.shelfCapacity = zoneCapacity;
-            this.itemsInZoneList = itemsInZoneList;
-            this.storageType = storageType;
-        }
-
-        /// <summary>
-        /// Initialiserer en ny instans av <see cref="Zone"/>-klassen med spesifiserte parametere.
-        /// </summary>
-        /// <param name="zoneId">ID-en til sonen.</param>
-        /// <param name="zoneName">Navnet til sonen.</param>
-        /// <param name="zoneCapacity">Reolkapasiteten til sonen.</param>
-        /// <param name="itemPlacementTime">Tiden det tar å plassere en vare i sonen.</param>
-        /// <param name="itemRetrievalTime">Tiden det tar å hente en vare fra sonen.</param>
-        /// <param name="storageType">Lagringstypen til sonen.</param>
-        public Zone(
-            int zoneId, 
-            string zoneName, 
-            int zoneCapacity, 
-            TimeSpan itemPlacementTime, 
-            TimeSpan itemRetrievalTime, 
-            StorageType storageType)
-        {
-            this.zoneId = zoneId;
-            this.zoneName = zoneName;
-            this.shelfCapacity = zoneCapacity;
-            this.itemPlacementTime = itemPlacementTime;
-            this.itemRetrievalTime = itemRetrievalTime;
-            itemsInZoneList = new List<Item>();
-            shelves = new List<Shelf>();
-            this.storageType = storageType;
         }
 
         /// <summary>
@@ -154,11 +76,11 @@ namespace jechFramework.Models
         /// <param name="itemRetrievalTime">Tiden det tar å hente en vare fra sonen.</param>
         /// <param name="zonePacketList">Listen over lagringstyper som er tillatt i sonen.</param>
         public Zone(
-            int zoneId, 
-            string zoneName, 
-            int zoneCapacity, 
-            TimeSpan itemPlacementTime, 
-            TimeSpan itemRetrievalTime, 
+            int zoneId,
+            string zoneName,
+            int zoneCapacity,
+            TimeSpan itemPlacementTime,
+            TimeSpan itemRetrievalTime,
             List<StorageType> zonePacketList)
         {
             this.zoneId = zoneId;
@@ -166,40 +88,46 @@ namespace jechFramework.Models
             this.shelfCapacity = zoneCapacity;
             this.itemPlacementTime = itemPlacementTime;
             this.itemRetrievalTime = itemRetrievalTime;
-            itemsInZoneList = new List<Item>();
-            shelves = new List<Shelf>();
-            this.zonePacketList = zonePacketList;
+            this.zonePacketList = zonePacketList ?? new List<StorageType>();
         }
-
 
         /// <summary>
         /// Initialiserer en ny instans av <see cref="Zone"/>-klassen med spesifiserte parametere.
         /// </summary>
         /// <param name="zoneId">ID-en til sonen.</param>
         /// <param name="zoneName">Navnet til sonen.</param>
-        /// <param name="zoneDescription">Beskrivelsen av sonen.</param>
-        /// <param name="shelfCapacity">Reolkapasiteten til sonen.</param>
+        /// <param name="zoneCapacity">Reolkapasiteten til sonen.</param>
         /// <param name="itemPlacementTime">Tiden det tar å plassere en vare i sonen.</param>
         /// <param name="itemRetrievalTime">Tiden det tar å hente en vare fra sonen.</param>
         /// <param name="storageType">Lagringstypen til sonen.</param>
         public Zone(
-            int zoneId, 
-            string zoneName, 
-            string zoneDescription, 
-            int shelfCapacity, 
-            TimeSpan itemPlacementTime, 
-            TimeSpan itemRetrievalTime, 
+            int zoneId,
+            string zoneName,
+            int zoneCapacity,
+            TimeSpan itemPlacementTime,
+            TimeSpan itemRetrievalTime,
             StorageType storageType)
         {
             this.zoneId = zoneId;
             this.zoneName = zoneName;
-            this.zoneDescription = zoneDescription;
-            this.shelfCapacity = shelfCapacity;
+            this.shelfCapacity = zoneCapacity;
             this.itemPlacementTime = itemPlacementTime;
             this.itemRetrievalTime = itemRetrievalTime;
-            itemsInZoneList = new List<Item>();
-            shelves = new List<Shelf>();
             this.storageType = storageType;
         }
+
+        /// <summary>
+        /// Returnerer en strengrepresentasjon av sonen.
+        /// </summary>
+        /// <returns>En streng som representerer sonen.</returns>
+        public override string ToString()
+        {
+            var storageTypes = zonePacketList.Any()
+                ? string.Join(", ", zonePacketList)
+                : storageType.ToString();
+
+            return $"Zone ID: {zoneId}, Name: {zoneName}, Capacity: {shelfCapacity}, Placement Time: {itemPlacementTime.TotalSeconds}s, Retrieval Time: {itemRetrievalTime.TotalSeconds}s, Storage Type(s): {storageTypes}.";
+        }
+
     }
-} 
+}

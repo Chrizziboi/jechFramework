@@ -63,6 +63,7 @@ namespace Program
             WService.SetAccessToHighValueGoods(1, 1, true);
             accessStatus = WService.CheckEmployeeAccessStatus(1, 1);
             Console.WriteLine($"Employee 1 has authorization status: {accessStatus}");
+            /*
 
             List<StorageType> zoneStorageTypes = new List<StorageType> { StorageType.Small, StorageType.Medium, StorageType.Large };
 
@@ -79,7 +80,24 @@ namespace Program
             //WService.GetAllWarehouses();
             WService.GetAllZonesInWarehouse(1);
             WService.FindZoneById(1,1);
-            
+            */
+
+            Console.WriteLine("\n----- Creating Zones -----");
+            WService.CreateZone(1, 1, "High Value Goods", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
+            WService.CreateZone(1, 2, "Climate Controlled Storage Area", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.ClimateControlled);
+            WService.CreateZone(1, 3, "Pallet Racking", 5, TimeSpan.FromMinutes(4), TimeSpan.FromMinutes(4), StorageType.Standard);
+
+            List<StorageType> zoneStorageTypes = new List<StorageType> { StorageType.Standard, StorageType.ClimateControlled };
+            WService.CreateZoneWithMultipleType(1, 4, "Small Item Shelving", 30, TimeSpan.FromSeconds(110), TimeSpan.FromSeconds(70), zoneStorageTypes);
+
+            WService.CreateZone(1, 5, "Packing/Stacking", 150, TimeSpan.FromSeconds(50), TimeSpan.FromSeconds(50), StorageType.None);
+            WService.CreateZone(1, 6, "High Value Goods2", 5, TimeSpan.FromSeconds(70), TimeSpan.FromSeconds(210), StorageType.HighValue);
+
+            Console.WriteLine("\n----- Get All Zones in Warehouse -----");
+            WService.GetAllZonesInWarehouse(1);
+            WService.FindZoneById(1, 1);
+
+            /*
             Console.WriteLine("\n----- Adding Shelf to Zone -----");
             //Shelf newShelf = new Shelf(200, 40, 100, 2);
             WService.AddShelfToZone(1,1, 200, 40, 100);
@@ -124,7 +142,7 @@ namespace Program
             WService.GetAllShelvesInZone(1, 4);
             */
 
-
+            /*
             Console.WriteLine("\n----- Create Item -----");
             IService.CreateItem(1, 1, null, "Cheese", StorageType.HighValue);
             IService.CreateItem(1, 2, null, "Ball'o'Cheese", StorageType.HighValue);
@@ -174,7 +192,7 @@ namespace Program
             Console.WriteLine("\n----- Wares In -----");
 
             waresInService.WaresIn(1, 1, incomingItems, palletService.palletList, DateTime.Now);
-
+            
 
             IService.GetItemAllInfo(1, 8);
             IService.GetItemAllInfo(1, 7);

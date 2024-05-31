@@ -181,11 +181,6 @@ namespace jechFramework.Services
                 Console.WriteLine($"Service exception while adding item: {ex.Message}");
                 throw; // Kaster ServiceException på nytt for å bli håndtert høyere opp
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error while adding item: {ex.Message}");
-                throw new ServiceException("An unexpected error occurred while adding the item.", ex);
-            }
         }
 
 
@@ -305,11 +300,6 @@ namespace jechFramework.Services
                 Console.WriteLine($"Service error: {ex.Message}.");
                 throw; // Rethrow for higher-level handling
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected error: {ex.Message}.");
-                throw; // Rethrow for higher-level handling
-            }
         }
 
 
@@ -375,7 +365,7 @@ namespace jechFramework.Services
 
                 return item;
             }
-            catch (Exception ex)
+            catch (ServiceException ex)
             {
                 Console.WriteLine($"Error retrieving item information: {ex.Message}.");
                 return null;
